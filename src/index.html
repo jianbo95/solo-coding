@@ -27,20 +27,9 @@
     <div class="container">
         <h1>Welcome to My Vercel Site</h1>
         <p>This is a simple static website hosted on Vercel.</p>
-        <button onclick="callApi()">测试 API</button>
-        <p id="apiResult"></p>
     </div>
 
     <script>
-        async function callApi() {
-            try {
-                const response = await fetch('/api/hello');
-                const data = await response.json();
-                document.getElementById('apiResult').textContent = JSON.stringify(data, null, 2);
-            } catch (error) {
-                document.getElementById('apiResult').textContent = '调用 API 出错: ' + error.message;
-            }
-        }
     </script>
 </body>
 </html>
