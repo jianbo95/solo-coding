@@ -1,0 +1,303 @@
+// body,html {
+//     height:100%;
+// }
+// .line-icon-box {
+//     background-color: rgb(72, 137, 241);
+//     border-radius: 15%;
+//     height:30px;
+//     .line-icon {
+//         position: relative;
+//         top:9px;
+//     }
+//     .line {
+//         position: absolute;
+//         background-color: #fff;
+//         height: 2px;
+//         width: 11px;
+//         margin-left: 8px;
+//     }
+// }
+// .el-menu--vertical {
+//     .is-active {
+//         /* background-color: #87b4fc; */
+//         background-color: rgb(72, 137, 241);
+//         color: #fff;
+//     }
+//     .el-submenu__title i {
+//         color: white;
+//     }
+//     .el-submenu {
+//         color: white;
+//     }
+//     .el-submenu .el-menu-item {
+//         min-width: 150px;
+//     }
+
+//     .el-submenu__title {
+//         color: white;
+//         background-color: rgb(71, 120, 199);
+//     }
+//     .el-menu {
+//         color: white;
+//         /* background-color: rgb(71, 120, 199); */
+//         background-color: rgb(43, 104, 202); /*深色*/
+//     }
+//     .el-menu-item {
+//         color: white;
+//     }
+    
+//     .el-menu-item:focus, .el-menu-item:hover, .el-submenu__title:hover {
+//         /* background-color: rgb(85, 136, 219); */
+//         background-color: rgb(72, 137, 241);
+//     }
+//     /* IE 颜色修复 start */
+//     .el-submenu__title:focus, .el-submenu__title:hover {
+//         outline: 0;
+//         background-color: #4198fc;
+//     }
+//     /* IE 颜色修复 end */
+// }
+// .app-plus {
+//     height:100%;
+    
+//     .is-active {
+//         /* background-color: #87b4fc; */
+//         background-color: rgb(72, 137, 241);
+//         color: #fff;
+//     }
+//     .el-submenu__title i {
+//         color: white;
+//     }
+//     .el-submenu {
+//         color: white;
+//     }
+//     .el-submenu .el-menu-item {
+//         min-width: 150px;
+//     }
+
+//     .el-submenu__title {
+//         color: white;
+//         background-color: rgb(71, 120, 199);
+//     }
+//     .el-menu {
+//         color: white;
+//         /* background-color: rgb(71, 120, 199); */
+//         background-color: rgb(43, 104, 202); /*深色*/
+//     }
+//     .el-menu-item {
+//         color: white;
+//     }
+    
+//     .el-menu-item:focus, .el-menu-item:hover, .el-submenu__title:hover {
+//         /* background-color: rgb(85, 136, 219); */
+//         background-color: rgb(72, 137, 241);
+//     }
+//     /* IE 颜色修复 start */
+//     .el-submenu__title:focus, .el-submenu__title:hover {
+//         outline: 0;
+//         background-color: #4198fc;
+//     }
+//     /* IE 颜色修复 end */
+    
+//     .aside {
+//         overflow-x: hidden;
+//         border-top: 1px solid #6399f0; position: relative;
+//     }
+//     .image-div {
+//         height: 100%;
+//         pointer-events: none;
+//         position: absolute;
+//         top:0px; z-index: 100;
+//         overflow: hidden;
+//     }
+//     .sidebar-wrapper-bg {
+//         width:228px;
+//         height: 100%;
+//         opacity: 0.8;
+//     }
+//     .el-main {
+//         padding:0px;
+//     }
+
+//     .tag-icon {
+//         font-size:25px; line-height: 40px;
+//     }
+//     .head-button a {
+//         cursor: pointer;
+//     }
+//     .head-button span {
+//         padding: 5px;
+//         border-radius: 10%;
+//     }
+//     .head-button span:hover {
+//         background-color: #2662c4;
+//         cursor: pointer;
+//     }
+// }
+// base color
+@blue:#324157;
+@light-blue:#3A71A8;
+@red:#C03639;
+@pink: #E65D6E;
+@green: #30B08F;
+@tiffany: #4AB7BD;
+@yellow:#FEC171;
+@panGreen: #30B08F;
+// sidebar---- start
+@sideBarWidth: 210px;
+@menuText:#bfcbd9;
+@menuActiveText:#409EFF;
+@subMenuActiveText:#f4f4f5;
+@menuBg:#2f4050;
+@menuHover:#263445;
+// @subMenuBg:#1f2d3d;
+@subMenuBg:#2f4050;
+@subActicBg:#1f2d3d;
+@subMenuHover:#001528;
+@menuActiceLeft:#19aa8d;
+@asideTop:#42b59e;
+// sidebar---- end
+@titleLeftColor:#2f4050;//查询条件/查询结果左边的颜色设置
+// header---start
+@headerTagBottomLine:#2f4050;
+@tagBtnBg:#2f4050;
+@tagBtnText:#a7b1c2;
+@tagIconCloseHover:#c00;
+// header---end
+
+body,html {
+    height:100%;
+}
+
+.app-plus {
+    height:100%;
+    .tag-icon {
+        font-size:25px; line-height: 40px;
+    }
+    .head-button a {
+        cursor: pointer;
+    }
+    .head-button span {
+        padding: 5px;
+        border-radius: 10%;
+    }
+    // .head-button span:hover {
+    //     background-color: #19b696;
+    //     cursor: pointer;
+    // }
+    .btn-groupt{
+        text-align: center;
+        background: #fff;
+        height: 39px;
+        border: 1px solid #eee;
+    }
+    .el-menu-item.nav-header:focus, .el-menu-item.nav-header:hover, .el-submenu__title:hover {
+        background-color: unset;
+    }
+    .el-menu-item.nav-header{
+        height: 90px;
+        padding-top: 10px;
+    }
+
+    .title-left{
+        border-left:6px solid @titleLeftColor; 
+        padding-left:10px;
+    }
+    // header -----start
+    .page-tag {
+        border-bottom: 0px @headerTagBottomLine solid;
+        .tag-click{
+            background: @tagBtnBg;
+            color: @tagBtnText;
+        }
+        .tag-click:hover{
+            color: #fff;
+        }
+        .cc-tag.tag-click{
+            .el-tag{
+                .el-icon-close{
+                    background-color: #ccc;
+                    color: @tagBtnBg;
+                    font-weight:bolder;
+                    height: 13px;
+                    width: 13px;
+                    line-height: 13px;
+                }
+                .el-icon-close:hover{
+                    background-color: @tagIconCloseHover;
+                    color: #fff;
+                }
+                .el-icon-error{
+                    // background-color: #ccc;
+                    // color: @tagBtnBg;
+                    color: #ccc;
+                    // font-weight:bolder;
+                    // height: 13px;
+                    // width: 13px;
+                    // line-height: 13px;
+                }
+                .el-icon-error:hover{
+                    // background-color: @tagIconCloseHover;
+                    // color: #fff;
+                    color:  #fff;
+                }
+            }
+        }
+        .cc-tag.tag-unclick{
+            .el-tag{
+                .el-icon-error{
+                    color: #ccc;
+                }
+                .el-icon-error:hover{
+                    // background-color: @tagIconCloseHover;
+                    // color: #fff;
+                    color:  @tagIconCloseHover;
+                }
+            }
+        }
+    }
+    // header -----end
+}
+
+.el-menu--vertical {
+&>.el-menu {
+    .svg-icon {
+    margin-right: 16px;
+    }
+    .sub-el-icon {
+    margin-right: 12px;
+    margin-left: -2px;
+    }
+}
+
+.nest-menu .el-submenu>.el-submenu__title,
+.el-menu-item {
+    &:hover {
+    // you can use @subMenuHover
+    background-color: @menuHover !important;
+    }
+}
+.el-menu-item { 
+    background-color: @menuHover !important;
+}
+
+// the scroll bar appears when the subMenu is too long
+>.el-menu--popup {
+    max-height: 100vh;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar-track-piece {
+    background: #d3dce6;
+    }
+
+    &::-webkit-scrollbar {
+    width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+    background: #99a9bf;
+    border-radius: 20px;
+    }
+}
+}
+  

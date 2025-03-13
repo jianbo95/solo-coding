@@ -1,0 +1,329 @@
+// @tableThBg:#F3F3F4; // 头部背景颜色
+@tableThBg:#f9f9f9; // 头部背景颜色
+@tableThText:#676A6C; // 头部字体颜色
+// @tableTrBg:#F9F9F9;
+@tableTrBg:#fff;
+// @tableTrBg2:#efefef;
+@tableTrBg2:#f9f9f9;
+// @tableTrBg2:#F3F3F4;
+
+@tableCurrentRow:#e4ebf1;
+@paginationBg:#fff; // 分页
+@paginationClickBg:#f4f4f4;
+@trHover:#e4ebf1;
+@subMenuBg:#1f2d3d;
+@paginHover:#415b72;
+@btn-blue:#1c84c6;
+@btn-greenBlue:#23c6c8;
+@btn-greenBlue-hover:#21b9bb;
+
+.ss {
+    .el-icon-car:before{
+        content: url('../../images/icon/car.png')
+    }
+    .el-icon-car-money:before{
+        content: url('../../images/icon/car-money.png')
+    }
+    .el-icon-car-wt:before{
+        content: url('../../images/icon/car-wt.png')
+    }
+    .el-icon-paimai:before{
+        content: url('../../images/icon/paimai.png')
+    }
+
+    .el-button--blue{
+        background-color: @btn-blue;
+        border-color: @btn-blue;
+        color: #fff;
+    }
+    /* 表单间距设置 */
+    .el-form-item {
+        margin-bottom: 0px;
+        // margin-bottom: 5px;
+    }
+    .el-form .is-error {
+        margin-bottom: 20px;
+    }
+
+    .el-input--mini .el-input__inner {
+        /* height: 25px; */
+    }
+    .el-pagination {
+        color: rgb(100, 99, 99);
+    }
+    .el-dialog__body {
+        padding:0px;
+    }
+    .el-dialog--center .el-dialog__body {
+        padding:0px;
+    }
+    .el-dialog__header {
+        padding: 10px 20px 10px;
+    }
+    .el-dialog__headerbtn {
+        top: 15px;
+    }
+
+    .el-input-group__append, .el-input-group__prepend {
+        color: #2f2f30;
+    }
+    .el-form-item__content {
+        padding-right: 20px;
+    }
+
+    /* 表格设置 start */
+    /* 表格字体颜色设置 */
+    .el-table {
+        color: #000;
+    }
+    .el-table tr{
+        background-color: @tableTrBg;
+    }
+    .el-table--striped .el-table__body tr.el-table__row--striped td {
+        background-color:@tableThBg;
+    }
+
+    /* 表格间距设置 */
+    .el-table--mini td, .el-table--mini th {
+        padding: 3px 0;
+    }
+    /* 表格当前项背景设置 */
+    .el-table__body tr.hover-row>td,
+    .el-table__body tr.hover-row.el-table__row--striped>td,
+    .el-table__body tr.hover-row.el-table__row--striped>td
+    ,.el-table__body tr.hover-row>td{
+        background-color: @trHover;
+    }
+
+    /* hover 项 浅色 */
+    .el-table--enable-row-hover .el-table__body tr:hover>td{
+        background-color: @trHover;
+    }
+
+    .el-table--enable-row-hover .el-table__body .current-row tr:hover>td{
+        background-color: @tableCurrentRow;
+    }
+
+    /* 让 hover 对 .current-row 不生效 */
+    .el-table__body tr.current-row:hover td {
+        background-color: @tableCurrentRow;
+    }
+
+    .el-table--striped .el-table__body tr.el-table__row--striped.current-row td {
+        background-color: @tableCurrentRow;
+    }
+    .ss .el-table--enable-row-hover .el-table__body tr.current-row:hover > td{
+        background-color: @tableCurrentRow;
+    }
+    .el-table__body tr.hover-row.current-row>td,
+    .el-table__body tr.hover-row.el-table__row--striped.current-row>td{
+        // background-color: @trHover;
+    }
+
+    /* 选中项颜色加深 */
+    .el-table__body tr.current-row td {
+        background-color: @tableCurrentRow;
+        color: #000;
+    }
+    .el-table--border td, .el-table--border th{
+        border-right: 1px solid #ddd;
+    }
+    .el-table td, .el-table th.is-leaf{
+        border-bottom: 1px solid #ddd;
+    }
+    .el-table--border, .el-table--group{
+        border: 1px solid #dddddd;
+    }
+    .el-table--border::after, .el-table--group::after, .el-table::before{
+        background-color: #dddddd;
+    }
+
+    /**/
+    .el-table .caret-wrapper {
+        height: 34px;
+    }
+
+    /* 表格header设置 */
+    // .el-table__header {
+    //     background-color: @tableThBg;
+    //     color: @tableThText;
+    // }
+    .el-table th {
+        background-color: @tableThBg;
+        color: @tableThText;
+    }
+    .el-table thead {
+        background-color: @tableThBg;
+        color: @tableThText;
+    }
+    /* 表格header设置 end */
+    /* 表格设置 end */
+
+    .scroll-y {
+        overflow-y: auto;
+    }
+    .el-custom-loading {
+        z-index: 2010!important;
+    }
+    .el-table th{
+        height:40px;
+    }
+    .el-table td{
+        height:50px;
+    }
+    .el-dialog{
+        margin: 0 auto 0;
+        background-color:#f3f3f4;
+    }
+    // 分页
+    .el-pagination.is-background .btn-next, .el-pagination.is-background .btn-prev, .el-pagination.is-background .el-pager li{
+        border: 1px solid #DDDDDD;
+        background-color: @paginationBg;
+
+    }
+    .el-pagination.is-background .el-pager li:not(.disabled).active{
+        // background-color: @tableThBg;
+        background-color: #f4f4f4;
+        border-color: #DDDDDD;
+        color: #676a6c;
+    }
+    .el-pagination.is-background .el-pager li:not(.disabled).active:hover{
+        background-color: #f4f4f4;
+        border-color: #DDDDDD;
+        color: #676a6c;
+    }
+    .el-pagination.is-background .el-pager li:not(.disabled):hover{
+        // color: @tableThBg;
+        color: #23527c;
+        background-color: #eee;
+        border-color: #ddd;
+    }
+
+    .form-control.el-input{
+        input[disabled], input[readonly], fieldset[disabled] input{
+            background-color: #eee;
+            opacity: 1;
+            cursor: pointer;
+        }
+    }
+    .el-button--success{
+        background-color: #1ab394;
+        border-color:#1ab394;
+    }
+    .el-button--success:hover{
+        background-color: #18a689;
+        border-color:#18a689;
+    }
+    .el-tag--dark.el-tag--success{
+        background-color: #1ab394;
+        border-color:#1ab394;
+    }
+
+
+}
+.el-button--blue{
+    background-color: @btn-blue;
+    border-color: @btn-blue;
+    color: #fff;
+}
+.el-button--success{
+    background-color: #1ab394;
+    border-color:#1ab394;
+}
+.el-button--success:focus,.el-button--success:hover{
+    background-color: #18a689;
+    border-color:#18a689;
+}
+.el-button--success.is-disabled, .el-button--success.is-disabled:active, .el-button--success.is-disabled:focus, .el-button--success.is-disabled:hover{
+    background-color:#69d5c0;
+    border-color:#69d5c0;
+}
+.el-button--warning{
+    background-color: #f8ac59;
+    border-color: #f8ac59;
+    color: #FFFFFF;
+}
+.el-button--warning:focus,.el-button--warning:hover{
+    background-color: #f7a54a;
+    border-color: #f7a54a;
+    color: #FFFFFF;
+}
+.el-button--greenblue{
+    background-color: @btn-greenBlue;
+    border-color: @btn-greenBlue;
+    color: #FFFFFF;
+}
+.el-button--greenblue:focus,.el-button--greenblue:hover{
+    background-color: @btn-greenBlue-hover;
+    border-color: @btn-greenBlue-hover;
+    color: #FFFFFF;
+}
+.el-message-box__btns{
+    .el-button--primary{
+        background-color: #1E9FFF;
+        border-color:#1E9FFF;
+    }
+}
+// 弹窗
+.el-dialog__header{
+    background-color: #F8F8F8;
+    color: #333;
+}
+.dialog-setwin{
+    position: absolute;
+    right: 30px;
+    top: 5px;
+    font-size: 0;
+    line-height: initial;
+    a{
+        position: relative;
+        width: 16px;
+        height: 16px;
+        margin-left: 10px;
+        font-size: 12px;
+        vertical-align:top;
+        cursor: pointer;
+        color: #337ab7;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .dialog-ico{
+        background: url('../../images/icon.png') no-repeat;
+    }
+    .dialog-min{
+        background-position: -65px -40px
+    }
+    .dialog-min:hover{
+        background-position: -49px -40px
+    }
+    .dialog-max{
+        background-position: -32px -40px;
+    }
+    .dialog-max:hover{
+        background-position: -16px -40px
+    }
+}
+
+.el-dialog{
+    background-color:#f3f3f4;
+}
+.el-dialog.dialog-bg-white{
+    background-color: #fff;
+}
+.scroll-y{
+    .section-content{
+        // width: 820px;
+        width: 90%;
+        margin: 20px auto;
+        // height: 400px;
+        height: auto;
+        background-color: #ffffff;
+        padding: 20px;
+    }
+}
+.el-tooltip__popper {
+    max-width: 800px;
+}
+.el-input__inner{
+    border: 1px solid #9ea8bf;  
+}

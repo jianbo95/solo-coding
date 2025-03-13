@@ -1,0 +1,111 @@
+
+//自动生成
+        import AuthRoleMenu from '@/module/demo/authRoleMenu.vue';
+        pushRoute('/authRoleMenu', AuthRoleMenu);
+        import SysLock from '@/module/demo/sysLock.vue';
+        pushRoute('/sysLock', SysLock);
+        import Prpdcompany from '@/module/demo/prpdcompany.vue';
+        pushRoute('/prpdcompany', Prpdcompany);
+        import SysDbRecord from '@/module/demo/sysDbRecord.vue';
+        pushRoute('/sysDbRecord', SysDbRecord);
+        import SysMenu from '@/module/demo/sysMenu.vue';
+        pushRoute('/sysMenu', SysMenu);
+        import SysArea from '@/module/demo/sysArea.vue';
+        pushRoute('/sysArea', SysArea);
+        import SysFile from '@/module/demo/sysFile.vue';
+        pushRoute('/sysFile', SysFile);
+        import WorkOrderPic from '@/module/demo/workOrderPic.vue';
+        pushRoute('/workOrderPic', WorkOrderPic);
+        import SysUser from '@/module/demo/sysUser.vue';
+        pushRoute('/sysUser', SysUser);
+
+import sysApiRecord from '@/module/demo/sysApiRecord.vue';
+pushRoute('/sysApiRecord', sysApiRecord);
+
+import sysArea from '@/module/demo/sysArea.vue';
+pushRoute('/sysArea', sysArea);
+
+import sysAuctioneerUser from '@/module/demo/sysAuctioneerUser.vue';
+pushRoute('/sysAuctioneerUser', sysAuctioneerUser);
+
+import sysDept from '@/module/demo/sysDept.vue';
+pushRoute('/sysDept', sysDept);
+
+import sysDeptArea from '@/module/demo/sysDeptArea.vue';
+pushRoute('/sysDeptArea', sysDeptArea);
+
+import sysDeptPic from '@/module/demo/sysDeptPic.vue';
+pushRoute('/sysDeptPic', sysDeptPic);
+
+import sysDict from '@/module/demo/sysDict.vue';
+pushRoute('/sysDict', sysDict);
+
+import sysFile from '@/module/demo/sysFile.vue';
+pushRoute('/sysFile', sysFile);
+
+import sysLog from '@/module/demo/sysLog.vue';
+pushRoute('/sysLog, sysLog');
+
+import sysLoginIp from '@/module/demo/sysLoginIp.vue';
+pushRoute('/sysLoginIp', sysLoginIp);
+
+import sysMenu from '@/module/demo/sysMenu.vue';
+pushRoute('/sysMenu', sysMenu);
+
+import sysNotice from '@/module/demo/sysNotice.vue';
+pushRoute('/sysNotice', sysNotice);
+
+import sysNotify from '@/module/demo/sysNotify.vue';
+pushRoute('/sysNotify', sysNotify);
+
+import sysOaNotify from '@/module/demo/sysOaNotify.vue';
+pushRoute('/sysOaNotify', sysOaNotify);
+
+import sysOaNotifyRecord from '@/module/demo/sysOaNotifyRecord.vue';
+pushRoute('/sysOaNotifyRecord', sysOaNotifyRecord);
+
+import sysRole from '@/module/demo/sysRole.vue';
+pushRoute('/sysRole', sysRole);
+
+import sysRoleMenu from '@/module/demo/sysRoleMenu.vue';
+pushRoute('/sysRoleMenu', sysRoleMenu);
+
+import sysSession from '@/module/demo/sysSession.vue';
+pushRoute('/sysSession', sysSession);
+
+import sysTask from '@/module/demo/sysTask.vue';
+pushRoute('/sysTask', sysTask);
+
+import sysUser from '@/module/demo/sysUser.vue';
+pushRoute('/sysUser', sysUser);
+
+import sysUserRole from '@/module/demo/sysUserRole.vue';
+pushRoute('/sysUserRole', sysUserRole);
+
+import workAuction from '@/module/demo/workAuction.vue';
+pushRoute('/workAuction', workAuction);
+
+import workInquiry from '@/module/demo/workInquiry.vue';
+pushRoute('/workInquiry', workInquiry);
+
+import workInquiryMain from '@/module/demo/workInquiryMain.vue';
+pushRoute('/workInquiryMain', workInquiryMain);
+
+import workOrder from '@/module/demo/workOrder.vue';
+pushRoute('/workOrder', workOrder);
+
+import workOrderCase from '@/module/demo/workOrderCase.vue';
+pushRoute('/workOrderCase', workOrderCase);
+
+import workOrderFlow from '@/module/demo/workOrderFlow.vue';
+pushRoute('/workOrderFlow', workOrderFlow);
+
+import workOrderOpinions from '@/module/demo/workOrderOpinions.vue';
+pushRoute('/workOrderOpinions', workOrderOpinions);
+
+import workOrderPaocedurres from '@/module/demo/workOrderPaocedurres.vue';
+pushRoute('/workOrderPaocedurres', workOrderPaocedurres);
+
+import workOrderPic from '@/module/demo/workOrderPic.vue';
+pushRoute('/workOrderPic', workOrderPic);
+

@@ -1,0 +1,20 @@
+<!-- Start require-js mode auto code -->
+<script type="text/javascript" src="<%= root %>static/lib/pure-lib/babel.min.js"></script>
+<script type="text/javascript" src="<%= root %>static/lib/core-util.js"></script>
+<script type="text/javascript" src="<%= root %>static/lib/pure-lib/require.js"></script>
+<script type="text/javascript" src="<%= root %>static/merge.js"></script>
+<script type="text/javascript" src="<%= root %>static/pure-merge.js"></script>
+<script type="text/javascript" src="<%= root %>static/lib/pure-lib/less.min.js"></script>
+<script type="text/babel">
+    
+    logTime();
+
+    if(window.CompileMode == null) {
+        window.CompileMode = '<%= runMode %>';
+    }
+    require('<%= root %>static/lib/pure/httpVuePlus2.js');
+    require('<%= root %>static/lib/pure/httpVueLoader2.js');
+    require('<%= entry %>'); 
+
+</script>
+<!-- End require-js mode auto code -->

@@ -1,0 +1,48 @@
+@font-face {
+    font-family: iconfont;
+    src: url("iconfont.woff?eb52c4c0") format("woff"),
+             url("iconfont.ttf?eb52c4c0") format("truetype"); 
+    font-weight: normal;
+    font-style: normal;
+}
+
+[class^="cc-icon"], [class*=" cc-icon"] {
+    font-family: 'iconfont' !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-style: normal;
+}
+
+
+.cc-icon-arrow-left::before {
+    content: "\ea01";
+}
+
+.cc-icon-arrow-right::before {
+    content: "\ea02";
+}
+
+.cc-icon-bike::before {
+    content: "\ea03";
+}
+
+.cc-icon-bike2::before {
+    content: "\ea04";
+}
+
+.cc-icon-bike3::before {
+    content: "\ea05";
+}
+
+.cc-icon-chart::before {
+    content: "\ea06";
+}
+
+.cc-icon-video::before {
+    content: "\ea07";
+}
+
+.cc-icon-wechat::before {
+    content: "\ea08";
+}
+
