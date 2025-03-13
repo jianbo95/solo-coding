@@ -1,1 +1,0 @@
-console.log('in test4.js');
