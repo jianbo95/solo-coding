@@ -6,11 +6,11 @@ const pushRoute = EasyRouter.pushRoute;
 Vue.use(Router);
 
 // router config start
-import Test from '@/html/index/module/home.vue';
-pushRoute('/test', Test);
+import Home from '@/html/index/module/home.vue';
+pushRoute('/', Home);
 
 import IeTest from '@/module/test/ie/ie-test.vue';
-pushRoute('/', IeTest);
+pushRoute('/test', IeTest);
 // router config end
 
 RouterManager.setRouterManager(EasyRouter.getRouterManager())
