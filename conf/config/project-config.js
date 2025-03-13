@@ -1,5 +1,5 @@
 module.exports = {
-    title: '快速开发系统',
+    title: 'solo-coding',
     login: {
         title: '快速开发系统-登录'
     },

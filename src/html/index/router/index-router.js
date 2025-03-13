@@ -6,8 +6,11 @@ const pushRoute = EasyRouter.pushRoute;
 Vue.use(Router);
 
 // router config start
-import Home from '@/html/index/module/home.vue';
+import Home from '@/html/index/module/main/home.vue';
 pushRoute('/', Home);
+
+import article from '@/html/index/module/main/article.vue';
+pushRoute('/article', article);
 
 import IeTest from '@/module/test/ie/ie-test.vue';
 pushRoute('/test', IeTest);
