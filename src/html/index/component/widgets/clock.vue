@@ -1,7 +1,7 @@
 <template>
     <div class="clock-widget">
         <div class="widget-title">当前时间</div>
-        <canvas ref="clock" width="280" height="280"></canvas>
+        <canvas ref="clock" width="230" height="230"></canvas>
     </div>
 </template>
 
@@ -29,12 +29,12 @@ export default {
         },
         drawClock() {
             const ctx = this.ctx;
-            const radius = 130;
-            const centerX = 140;
-            const centerY = 140;
+            const radius = 105;  // 调整半径
+            const centerX = 115; // 调整中心点X
+            const centerY = 115; // 调整中心点Y
 
             // 清空画布
-            ctx.clearRect(0, 0, 280, 280);
+            ctx.clearRect(0, 0, 230, 230);
 
             // 绘制外圈渐变
             const gradient = ctx.createRadialGradient(centerX, centerY, radius - 5, centerX, centerY, radius);
@@ -50,18 +50,19 @@ export default {
             ctx.stroke();
 
             // 绘制罗马数字
-            ctx.font = 'bold 20px Arial';
+             // 绘制罗马数字
+             ctx.font = 'bold 18px Arial';  // 调大字体
             ctx.fillStyle = '#303133';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             
             this.romanNumerals.forEach((numeral, index) => {
                 const angle = (index * Math.PI) / 6 - Math.PI / 2;
-                const x = centerX + (radius - 30) * Math.cos(angle);
-                const y = centerY + (radius - 30) * Math.sin(angle);
+                const x = centerX + (radius - 30) * Math.cos(angle);  // 调整距离
+                const y = centerY + (radius - 30) * Math.sin(angle);  // 调整距离
                 ctx.fillText(numeral, x, y);
             });
-
+            
             // 绘制小刻度
             for (let i = 0; i < 60; i++) {
                 const angle = (i * Math.PI) / 30;

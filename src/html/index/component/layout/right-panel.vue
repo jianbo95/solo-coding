@@ -3,7 +3,11 @@
         <article-list></article-list>
         <div class="widgets-container">
             <recent-articles></recent-articles>
-            <tag-cloud></tag-cloud>
+            <color-tag :tags="[
+                { name: 'JavaScript', count: 15 },
+                { name: 'Vue', count: 12 },
+                { name: 'CSS3', count: 8 }
+            ]"></color-tag>
             <clock></clock>
             <site-calendar></site-calendar>
             <site-info></site-info>
@@ -12,7 +16,7 @@
 </template>
 
 <script>
-import TagCloud from '../widgets/tag-cloud.vue';
+import ColorTag from '../widgets/color-tag.vue';
 import Clock from '../widgets/clock.vue';
 import ArticleList from '../article/article-list.vue';
 import RecentArticles from '../widgets/recent-articles.vue';
@@ -21,7 +25,7 @@ import SiteInfo from '../widgets/site-info.vue';
 
 export default {
     components: {
-        TagCloud,
+        ColorTag,
         Clock,
         ArticleList,
         RecentArticles,
@@ -38,7 +42,7 @@ export default {
     gap: 20px;
     
     .widgets-container {
-        width: 300px;
+        width: 270px;
         
         > * {
             margin-bottom: 20px;
