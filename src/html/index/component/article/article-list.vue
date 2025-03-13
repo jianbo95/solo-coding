@@ -20,14 +20,28 @@ export default {
             articles: [
                 {
                     id: 1,
-                    title: '第一篇文章',
+                    title: '我独自升级',
                     summary: '这是第一篇文章的简介...',
                     date: '2023-10-20',
                     tags: ['JavaScript', 'Vue']
                 },
                 {
                     id: 2,
-                    title: '第二篇文章',
+                    title: '我独自打码',
+                    summary: '这是第二篇文章的简介...',
+                    date: '2023-10-21',
+                    tags: ['Web开发', 'CSS']
+                },
+                {
+                    id: 2,
+                    title: '我独自打码',
+                    summary: '这是第二篇文章的简介...',
+                    date: '2023-10-21',
+                    tags: ['Web开发', 'CSS']
+                },
+                {
+                    id: 2,
+                    title: '我独自打码',
                     summary: '这是第二篇文章的简介...',
                     date: '2023-10-21',
                     tags: ['Web开发', 'CSS']
