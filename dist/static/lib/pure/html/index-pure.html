@@ -1,0 +1,38 @@
+<!-- browser import -->
+  <script type="text/javascript" src="./static/lib/pure-lib/less.min.js"></script>
+  <script type="module">
+    
+    import plus from "./static/lib/pure/httpVuePlus2.js";
+    import loader from './static/lib/pure/httpVueLoader2.js';
+
+    import { Vue } from './app/NodeModule.js'
+    import { ElementUI } from './app/NodeModule.js'
+    
+    // First Vue Page Need Import In First Vue Page!
+    const AppUltra = loader('./AppUltra.vue')
+    const App = loader('./App.vue')
+    const TestVue = loader('./component/test.vue')
+    const AppTest = loader('./AppTest.vue')
+
+    import store from './app/data/Store.js'
+    import cmpt from './app/config/global-cmpt.js'
+    import loadJs from './app/config/loadJs.js'
+    import IndexRouter from './html/index/router/index-router.js'
+
+    Vue.use(ElementUI) // ui库
+
+    let vue = new Vue({
+      el: '#app',
+      router: IndexRouter,
+      store: store,
+      components: {
+        'App': AppTest
+      },
+      template: '<App/>' 
+    })
+    window.vue = vue
+    window.App = vue
+
+    cmpt.log();
+    loadJs.init(vue);
+  </script>
