@@ -176,8 +176,8 @@ var compile = {
         console.log('handleSrc finish');
         this.handleStatic();
         console.log('handleStatic finish');
-        this.handleSite();
-        console.log('handleSite finish');
+        // this.handleSite();
+        // console.log('handleSite finish');
     },
     cleanDist() {
         var path = tool.getRootPath();
