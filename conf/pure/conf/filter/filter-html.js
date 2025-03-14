@@ -42,6 +42,7 @@ module.exports = {
         projectConfig.mockConfig = JSON.stringify(mockConfig, ' ', 4);
         projectConfig.proxyConfig = JSON.stringify(proxyConfig, ' ', 4);
         projectConfig.pageData = '';
+        projectConfig.version = new Date().getTime();
         
         var richHtml = false;
 

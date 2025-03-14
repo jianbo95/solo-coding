@@ -29,7 +29,7 @@ export default {
   methods: {
     loadGames() {
       $.ajax({
-        url: '/html/index/app/game.json',
+        url: '/html/index/app/game.json?version=' + window.Version,
         method: 'GET',
         success: (res) => {
           this.games = res;

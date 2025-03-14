@@ -534,7 +534,7 @@ window.cmptMap = {};
 			// });
 
 			var xhr = new XMLHttpRequest();
-			xhr.open('GET', url + '?version='+new Date().getTime());
+			xhr.open('GET', url + '?version=' + window.Version);
 			xhr._url = url;
 			xhr._resolve = resolve;
 			var md5 = window.md5(new Date().getTime() + '');
