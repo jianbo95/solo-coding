@@ -12,6 +12,9 @@ pushRoute('/', Home);
 import article from '@/html/index/module/main/article.vue';
 pushRoute('/article', article);
 
+import game from '@/html/index/module/main/game.vue';
+pushRoute('/game', game);
+
 import IeTest from '@/module/test/ie/ie-test.vue';
 pushRoute('/test', IeTest);
 // router config end
