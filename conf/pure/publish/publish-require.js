@@ -29,6 +29,41 @@ projectConfig.proxyConfig = '';
 projectConfig.pageData = pageData;
 projectConfig.frontPath = "D:\\www\\jianbo_plus\\h5\\lowcode-front-v2";
 
+var path = tool.getRootPath();
+var static = path + 'src/html/index/app';
+var files = tool.readFiles(static);
+var data = {};
+var routerCode = '';
+
+for(var i in files) {
+    var file = files[i];
+    console.log('file', file);
+    if(file.indexOf('game.json') + 9 == file.length) {
+        // .json 结尾
+        continue;
+    }
+    if(file.indexOf('.json') + 5 == file.length) {
+        // .json 结尾
+        var json = tool.readFileBuffer(file);
+        var gameData = JSON.parse(json);
+        data[gameData.id] = gameData;
+
+        var router = file.substring(0, file.indexOf('.json')) + '.vue';
+
+        var path = tool.getRootPath();
+        var src = path + 'src/';
+        var relativePath = router.replace(src, '');
+        var id = gameData.id;
+        var lineCode = 'import ' + id + ' from \'@/' + relativePath + '\';\n'
+            + "pushRoute('/game/"+ id +"', "+ id +");\n\n";
+        routerCode += lineCode;
+    }
+}
+
+// console.log(data);
+// console.log(routerCode);
+// return;
+
 var compile = {
     options: {
         mergeJs: true,
@@ -42,6 +77,11 @@ var compile = {
 
     copyFile: function(file, fileType, relativePath, path) {
         var code = tool.readFileBuffer(file);
+        
+        if(relativePath == 'html/index/app/game.json') {
+            code = JSON.stringify(data);
+        }
+
         var target = path + 'dist/' + relativePath;
         console.log('copyFile', target);
         tool.writeFileBuffer(target, code);
@@ -132,8 +172,15 @@ var compile = {
             }
         }
         var code = tool.readFile(file);
-        var output = this.babel(code);
+        if(relativePath == 'html/index/router/index-router.js') {
+            var start = '// router config start';
+            code = code.replace(start, start + '\n' + routerCode);
+        }
         var url = relativePath;
+        // 增加filter功能
+        // TODO 自动路由，自动游戏数据
+
+        var output = this.babel(code);
         // TODO 这里有问题！！！ 跟 require.js 有差异！！！
         // console.log(filepath, newCode);
     
