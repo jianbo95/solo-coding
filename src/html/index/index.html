@@ -60,7 +60,7 @@
     window.CloseLoading = function() {
       const door = document.getElementById('super-door');
       door.style.opacity = '0';
-      setTimeout(() => {
+      setTimeout(function (){
         door.style.display = 'none';
       }, 800);
     };
