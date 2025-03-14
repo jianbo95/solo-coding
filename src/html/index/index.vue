@@ -13,6 +13,13 @@ export default {
     data() {
         return {}
     },
+    created() {
+        if(window.CloseLoading != null) {
+            setTimeout(() => {
+                window.CloseLoading();
+            }, 100);
+        }
+    },
     components: {
       'cc-header': header
     }

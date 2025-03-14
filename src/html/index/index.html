@@ -19,6 +19,69 @@
     console.log('加载编译前系统配置参数完成，全局变量名为Conf')
   </script>
   
+  
+</head>
+
+<body class="ss">
+  <div id="super-door">
+    <div class="loading-text">Loading...</div>
+  </div>
+  <style>
+    #super-door {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 999;
+      background: #fff;
+      transition: opacity 0.8s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .loading-text {
+      font-size: 48px;
+      color: #333;
+      font-weight: 300;
+      letter-spacing: 4px;
+      animation: fadeInOut 2s ease-in-out infinite;
+    }
+
+    @keyframes fadeInOut {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+  </style>
+  
+  <script>
+    window.CloseLoading = function() {
+      const door = document.getElementById('super-door');
+      door.style.opacity = '0';
+      setTimeout(() => {
+        door.style.display = 'none';
+      }, 800);
+    };
+  </script>
+  <div id="particles-js"></div>
+
+  <style>
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      background-color: #e4e4e4;
+      background-image: url('./static/images/bg.jpeg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+  </style>
+
   <link rel="stylesheet" href="./static/css/base.css">
 	<link rel="stylesheet" href="https://unpkg.com/element-ui@2.15.13/lib/theme-chalk/index.css">
   <link rel="stylesheet" href="https://unpkg.com/element-ui@2.15.13/lib/theme-chalk/display.css">
@@ -41,25 +104,7 @@
   <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/miaoaaa/miaoaaa/bg/bg.js"></script> -->
    <!-- 添加粒子效果 -->
   <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-  <style>
-    #particles-js {
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      z-index: -1;
-      background-color: #e4e4e4;
-      background-image: url('./static/images/bg.jpeg');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-    }
-  </style>
-</head>
-
-<body class="ss">
-  <div id="particles-js"></div>
+  
   <div id="app"></div>
 </body>
 
