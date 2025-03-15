@@ -132,6 +132,7 @@ export default {
   background-color: #fff;
   padding: 1rem;
   max-width: 800px;
+  margin: 0 auto;
 }
 
 .towers {

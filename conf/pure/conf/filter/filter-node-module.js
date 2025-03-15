@@ -3,7 +3,7 @@ module.exports = {
 
         var code = JavaApi.getData('code');
         var url = JavaApi.getData('url');
-        console.log("fiter-router-manager.js " + url);
+        console.log("fiter-node-module.js " + url);
 
         code = JavaApi.read('@/conf/pure/conf/filter/data/data-node-module.js');
 

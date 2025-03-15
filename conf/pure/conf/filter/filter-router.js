@@ -25,7 +25,7 @@ module.exports = {
 
         var code = JavaApi.getData('code');
         var url = JavaApi.getData('url');
-        console.log("fiter-router-manager.js " + url);
+        console.log("fiter-router.js " + url);
 
         var PureEdit = require('@/conf/pure/pure-edit.js');
 

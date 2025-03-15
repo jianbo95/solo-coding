@@ -8,14 +8,20 @@
                 </keep-alive>
             </div>
         </div>
+        <cc-footer></cc-footer>
     </div>
 </template>
 
 <script>
+import footer from './component/layout/footer.vue';
 import header from './component/layout/header.vue';
 import api from './util/api.js';
 
 export default {
+    components: {
+        'cc-footer': footer,
+        'cc-header': header,
+    },
     data() {
         return {
             init: false
@@ -47,9 +53,6 @@ export default {
                 _call();
             });
         }
-    },
-    components: {
-      'cc-header': header
     }
 }
 </script>

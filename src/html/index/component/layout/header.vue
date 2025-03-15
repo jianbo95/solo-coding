@@ -88,6 +88,7 @@ export default {
 @media screen and (max-width: 768px) {
     .header-container {
         .header-content {
+            width: 100%;
             .logo {
                 display: none;
             }

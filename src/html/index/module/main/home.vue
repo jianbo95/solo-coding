@@ -12,7 +12,7 @@
                 </div>
                 <div style="font-size: 20px; margin-top:15px;">
                     <span class="outlined-text">
-                        Get Your Things Secure And Take Your Mind In Peace!!!
+                        Let you experience happiness And Take Your Mind In Peace!!!
                     </span>
                 </div>
             </div>
