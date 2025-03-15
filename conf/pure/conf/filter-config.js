@@ -1,7 +1,6 @@
 module.exports = {
     "#/**.html**": "filter/filter-html.js",
     "/app/config/global-cmpt.js": "filter/filter-global-cmpt.js",
-    "#/html/index/app/game.json": "filter/filter-game.js",
     "#/html/**-router-manager.js": "filter/filter-router-manager.js",
     "#/html/**-router.js": "filter/filter-router.js",
     "/app/NodeModule.js": "filter/filter-node-module.js",

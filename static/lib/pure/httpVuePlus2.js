@@ -193,6 +193,9 @@ var HttpVuePlus = {
      */
     loadImport (line, url, counter) {
         line = line.trim();
+        if(line.indexOf('//') != -1) {
+            line = line.split('//')[0];
+        }
         var info = UrlParser.parse(url);
         var splits = line.split('from');
         var name = splits[0].replace('import', '').trim();

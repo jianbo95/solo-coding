@@ -5,6 +5,10 @@ const ejs = require('../compile/ejs.js');
 const projectConfig = require('../../config/project-config.js');
 const pageConfig = require('../../config/page-config.js');
 const pageConfigUtil = require('../../../conf/function/page-config-util.js');
+const apiConfig = require('../../../conf/pure/conf/api-config.js');
+require('./pure-in-node.js');
+
+console.log('apiConfig', apiConfig);
 
 var pageConfigMap = {};
 for(var i in pageConfig) {
@@ -71,6 +75,19 @@ var compile = {
         minifyJs: false,
         compileJs: true,
     },
+    handleApi: function() {
+        // 遍历 apiConfig
+        // 遍历 apiConfig
+        for(var api in apiConfig) {
+            var apiDefine = apiConfig[api];
+            var path = tool.getRootPath();
+            var jsFile = require( path +'conf/pure/conf/' + apiDefine );
+            jsFile.run();
+            var code = JavaApi.getData('code');
+            var apiFile = path + 'dist' + api;
+            tool.writeFileBuffer(apiFile, code);
+        }
+    },
     babel: function(content) {
         var output = Babel.transform(content, { presets: ['es2015'] }).code;
         return output;
@@ -84,7 +101,6 @@ var compile = {
         }
 
         var target = path + 'dist/' + relativePath;
-        console.log('copyFile', target);
         tool.writeFileBuffer(target, code);
     },
     compileHtml: function(file, fileType, relativePath, path, codeMap) {
@@ -105,7 +121,6 @@ var compile = {
             outputPath = pageConfigMap[relativePath].output;
         }
         
-        console.log('compileHtml', relativePath); //compileHtml html/test/test.html
         if(outputPath == '/ie.html') {
             // 读取ie-pure.html
             var purePath = path + 'static/lib/pure/html/ie-pure.html';
@@ -138,9 +153,6 @@ var compile = {
             projectConfig.entry = requireConfig.requireEntry;
             projectConfig.runMode = 'prd';
 
-            console.log('root', projectConfig.root)
-            console.log('runMode', 'prd')
-            console.log('entry', projectConfig.entry)
             var purePath = path + 'static/lib/pure/tpl/require-js.html';
             var pureCode = tool.readFile(purePath);
             // 获取 root 
@@ -215,11 +227,12 @@ var compile = {
         } else {
             tool.writeFile(path + 'dist/' + relativePath, output);
         }
-    
         return true;
     },
     run() {
         this.cleanDist();
+        this.handleApi();
+        console.log('handleApi finish');
         this.handleSrc();
         console.log('handleSrc finish');
         this.handleStatic();
@@ -242,7 +255,6 @@ var compile = {
             var fileType = file.substring(file.lastIndexOf('.') + 1);
             var data = tool.readFileBuffer(file);
             // console.log('writePath:', path + 'dist/static/' + relativePath);
-            console.log('relativePath:' + relativePath);
             if(fileType == 'js' && relativePath.indexOf('static/lib/pure/') == 0) {
                 var compileJs = this.compileJs(file, fileType, relativePath, path, codeMap, false);
                 if(compileJs == true) {
@@ -250,7 +262,6 @@ var compile = {
                 }
             }
             tool.writeFileBuffer(path + 'dist/' + relativePath, data);
-            console.log('relativePath', relativePath);
             // const { execSync } = require('child_process');
             // execSync(`sleep 2000`);
         }

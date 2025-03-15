@@ -5,11 +5,13 @@
             :key="article.id"
             :article="article">
         </article-card>
+        <!-- 加一个分页 -->
     </div>
 </template>
 
 <script>
 import ArticleCard from './article-card.vue';
+import api from '../../util/api.js';
 
 export default {
     components: {
@@ -31,22 +33,19 @@ export default {
                     summary: '这是第二篇文章的简介...',
                     date: '2023-10-21',
                     tags: ['Web开发', 'CSS']
-                },
-                {
-                    id: 2,
-                    title: '我独自打码',
-                    summary: '这是第二篇文章的简介...',
-                    date: '2023-10-21',
-                    tags: ['Web开发', 'CSS']
-                },
-                {
-                    id: 2,
-                    title: '我独自打码',
-                    summary: '这是第二篇文章的简介...',
-                    date: '2023-10-21',
-                    tags: ['Web开发', 'CSS']
                 }
             ]
+        }
+    },
+    created() {
+        this.loadArticle();
+    },
+    methods: {
+        loadArticle() {
+            const store = StoreFactory.getStore('mem');
+            var res = store.get('articles');
+            console.log('res', res);
+            this.articles = res;
         }
     }
 }

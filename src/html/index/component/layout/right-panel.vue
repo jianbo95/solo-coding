@@ -1,6 +1,5 @@
 <template>
     <div class="right-panel">
-        <article-list></article-list>
         <div class="widgets-container">
             <recent-articles></recent-articles>
             <color-tag :tags="[
@@ -18,7 +17,6 @@
 <script>
 import ColorTag from '../widgets/color-tag.vue';
 import Clock from '../widgets/clock.vue';
-import ArticleList from '../article/article-list.vue';
 import RecentArticles from '../widgets/recent-articles.vue';
 import SiteCalendar from '../widgets/site-calendar.vue';
 import SiteInfo from '../widgets/site-info.vue';
@@ -27,7 +25,6 @@ export default {
     components: {
         ColorTag,
         Clock,
-        ArticleList,
         RecentArticles,
         SiteCalendar,
         SiteInfo
@@ -37,12 +34,13 @@ export default {
 
 <style lang="less" scoped>
 .right-panel {
-    flex: 1;
+    width: 300px;
+    flex-shrink: 0; // 防止被压缩
     display: flex;
     gap: 20px;
     
     .widgets-container {
-        width: 270px;
+        width: 100%; // 改为100%以充满父容器
         
         > * {
             margin-bottom: 20px;
@@ -53,6 +51,7 @@ export default {
 @media screen and (max-width: 768px) {
     .right-panel {
         flex-direction: column;
+        width: 100%; // 在移动端占满宽度
         
         .widgets-container {
             width: 100%;

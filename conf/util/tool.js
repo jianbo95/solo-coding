@@ -126,5 +126,9 @@ module.exports = {
             }
         }
         return arr;
+    },
+    sleep(second) {
+        const { execSync } = require('child_process');
+        execSync(`sleep ` + second);
     }
 };

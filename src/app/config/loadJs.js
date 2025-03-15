@@ -25,7 +25,9 @@ import Crud from '../service/Crud.js';
 import Counter from '../util/Counter.js';
 import BinWrap from '../util/data/BinWrap.js';
 import * as NodeModule from '../NodeModule.js';
+import StoreFactory from '../core/store/store-factory.js';
 
+window.StoreFactory = StoreFactory;
 window.RouterManager = RouterManager;
 window.ApiPath = ApiPath;
 window.Api = Api;

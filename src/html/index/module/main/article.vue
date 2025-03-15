@@ -1,3 +1,4 @@
+<!-- 文章单独页 -->
 <template>
     <div class="article-page">
         <div class="article-container">
@@ -17,7 +18,8 @@ export default {
         RightPanel
     },
     data() {
-        return {}
+        return {
+        }
     }
 }
 </script>

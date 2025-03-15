@@ -4,7 +4,7 @@
         <div class="meta">
             <span class="time">
                 <i class="el-icon-time"></i>
-                {{ article.date }}
+                {{ article.time }}
             </span>
             <span class="tags">
                 <i class="el-icon-collection-tag"></i>
@@ -63,6 +63,13 @@ export default {
         gap: 20px;
         margin-bottom: 15px;
         color: #666;
+        align-items: center;  /* 添加垂直居中对齐 */
+        
+        .time {
+            display: flex;
+            align-items: center;  /* 时间图标垂直居中 */
+            gap: 5px;  /* 图标和文字的间距 */
+        }
         
         .tags {
             display: flex;

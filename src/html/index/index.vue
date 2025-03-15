@@ -1,5 +1,5 @@
 <template>
-    <div class="app-container">
+    <div class="app-container" v-if="init">
         <cc-header></cc-header>
         <div class="main-content">
             <router-view></router-view>
@@ -9,15 +9,38 @@
 
 <script>
 import header from './component/layout/header.vue';
+import api from './util/api.js';
+
 export default {
     data() {
-        return {}
+        return {
+            init: false
+        }
     },
     created() {
         if(window.CloseLoading != null) {
-            setTimeout(() => {
+            this.initData(() => {
+                this.init = true;
                 window.CloseLoading();
-            }, 100);
+            });
+        }
+    },
+    methods: {
+        initData(_call) {
+            const store = StoreFactory.getStore('mem');
+            api.getArticle((res) => {
+                console.log('res', res);
+                store.put('articles', res);
+                var articles = res;
+                // 记录id到文章的映射
+                var idToArticle = {};
+                for (var i = 0; i < articles.length; i++) {
+                    idToArticle[articles[i].id] = articles[i].path;
+                }
+                // 使用 StoreFactory 获取本地存储对象并保存数据
+                store.put('idToArticle', idToArticle);
+                _call();
+            });
         }
     },
     components: {
@@ -28,6 +51,7 @@ export default {
 
 <style lang="less" scoped>
 .app-container {
+    font-size: 15px;
     width: 100%;
     min-height: 100vh;
     

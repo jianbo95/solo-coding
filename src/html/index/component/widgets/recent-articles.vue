@@ -3,8 +3,8 @@
         <div class="widget-title">最近文章</div>
         <ul class="article-list">
             <li v-for="article in recentArticles" :key="article.id" @click="goToArticle(article.id)">
-                <span class="title">{{ article.title }}</span>
-                <span class="date">{{ article.date }}</span>
+                <span class="title">{{ article.name }}</span>
+                <!-- <span class="date">{{ article.time }}</span> -->
             </li>
         </ul>
     </div>
@@ -16,13 +16,24 @@ export default {
     data() {
         return {
             recentArticles: [
-                { id: 1, title: '第一篇文章', date: '2023-10-20' },
-                { id: 2, title: '第二篇文章', date: '2023-10-21' },
-                { id: 3, title: '第三篇文章', date: '2023-10-22' }
             ]
         }
     },
+    created() {
+        this.loadArticle();
+    },
     methods: {
+        loadArticle() {
+            // 指定返回的数据是json格式
+            $.ajax({
+                url: '/html/index/article/article-recently.json?version=' + window.Version,
+                method: 'GET',
+                dataType: 'json',
+                success: (res) => {
+                    this.recentArticles = res;
+                }
+            });
+        },
         goToArticle(id) {
             this.$router.push({
                 path: '/article',

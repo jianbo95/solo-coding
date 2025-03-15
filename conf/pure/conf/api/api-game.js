@@ -10,17 +10,17 @@ module.exports = {
         var data = {};
         for(var i in files) {
             var file = files[i];
-            if(file.indexOf('game.json') + 9 == file.length()) {
+            if(file.indexOf('game.json') + 9 == file.length) {
                 // .json 结尾
                 continue;
             }
-            if(file.indexOf('.json') + 5 == file.length()) {
+            if(file.indexOf('.json') + 5 == file.length) {
                 // .json 结尾
                 var gameData = JSON.parse(JavaApi.read(file));
                 data[gameData.id] = gameData;
             }
         }
-        
+        console.log('putData game.json');
         JavaApi.putData('code', JSON.stringify(data));
     }
 };

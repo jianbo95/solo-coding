@@ -19,8 +19,8 @@ export default {
     name: 'SiteInfo',
     data() {
         return {
-            articleCount: 10,
-            visitCount: 1000
+            articleCount: '开发中...',
+            visitCount: '开发中...'
         }
     }
 }
