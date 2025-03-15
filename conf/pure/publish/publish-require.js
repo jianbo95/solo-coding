@@ -97,10 +97,6 @@ var compile = {
     copyFile: function(file, fileType, relativePath, path) {
         var code = tool.readFileBuffer(file);
         
-        if(relativePath == 'html/index/app/game.json') {
-            code = JSON.stringify(data);
-        }
-
         var target = path + 'dist/' + relativePath;
         tool.writeFileBuffer(target, code);
     },

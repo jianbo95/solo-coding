@@ -6,7 +6,7 @@ export default {
         })
     },
     getGameData(_call) {
-        http.get('/html/index/app/game.json', (res) => {
+        http.get('/html/index/apps/game.json', (res) => {
             _call(res);
         })
     }

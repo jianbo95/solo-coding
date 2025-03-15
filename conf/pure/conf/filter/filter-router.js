@@ -1,7 +1,7 @@
 module.exports = {
     run: function() {
 
-        var filesJson = JavaApi.files('@/src/html/index/app');
+        var filesJson = JavaApi.files('@/src/html/index/apps');
         var files = JSON.parse(filesJson);
         var data = {};
         var routerCode = '';

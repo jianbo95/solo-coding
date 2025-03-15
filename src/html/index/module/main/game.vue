@@ -6,7 +6,7 @@
            class="game-item"
            @click="enterGame(game.id)">
         <div class="game-icon">
-            <img :src="`/html/index/app/${game.id}/${game.icon}`" :alt="game.name">
+            <img :src="`/html/index/apps/${game.id}/${game.icon}`" :alt="game.name">
         </div>
         <div class="game-name">{{ game.name }}</div>
       </div>

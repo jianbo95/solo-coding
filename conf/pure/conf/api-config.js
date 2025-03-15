@@ -1,6 +1,6 @@
 module.exports = {
     // 游戏数据
-    "/html/index/app/game.json": "api/api-game.js",
+    "/html/index/apps/game.json": "api/api-game.js",
     // 文章数据
     "/html/index/article/article.json": "api/api-article.js",
     // 最近文章
