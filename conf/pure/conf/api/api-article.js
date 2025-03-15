@@ -5,7 +5,7 @@ module.exports = {
         // 添加路由
         // 合并游戏数据
         // D:\www\solo-coding\src\html\index\app
-        var ApiUtil = require('@/conf/pure/conf/util/api-util.js');
+        var ApiUtil = _require('@/conf/pure/conf/util/api-util.js');
         var filesJson = JavaApi.files('@/src/html/index/article');
         var files = JSON.parse(filesJson);
         var data = [];

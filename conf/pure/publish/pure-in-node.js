@@ -1,6 +1,16 @@
 const tool = require('../../util/tool.js');
 
 global.JavaApi = {
+    require: function(path) {
+        var code = JavaApi.read(path);
+        try {
+            var result = eval( code + 'module.exports;');
+            return result;
+        } catch (e) {
+            console.error('执行JS代码失败:', path, e);
+            return null;
+        }
+    },
     files: function(path) {
         var fs = require('fs');
         var root = tool.getRootPath();
@@ -36,3 +46,5 @@ global.JavaApi = {
         return path;
     },
 };
+
+global._require = _require;

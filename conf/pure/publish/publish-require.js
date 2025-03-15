@@ -1,4 +1,4 @@
-require('./pre.js');
+// require('./pre.js');
 const tool = require('../../util/tool.js');
 const Babel = require('../compile/babel.min.js');
 const Uglify = require('../compile/terser.min.js');
