@@ -4,5 +4,11 @@ export default {
         http.get('/html/index/article/article.json', (res) => {
             _call(res);
         })
+    },
+    getGameData(_call) {
+        http.get('/html/index/app/game.json', (res) => {
+            _call(res);
+        })
     }
+
 }

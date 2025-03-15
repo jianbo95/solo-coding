@@ -17,6 +17,7 @@
     };
 
     var loadJS = function( url, callback ){
+        console.log('loadJS', url);
 
         var script = document.createElement('script'),
 

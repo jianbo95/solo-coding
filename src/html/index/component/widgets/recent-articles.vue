@@ -35,6 +35,10 @@ export default {
             });
         },
         goToArticle(id) {
+            // 检查当前路由是否已经是文章页面且 id 相同
+            if (this.$route.path === '/article' && this.$route.query.id === id) {
+                return;
+            }
             this.$router.push({
                 path: '/article',
                 query: { id }

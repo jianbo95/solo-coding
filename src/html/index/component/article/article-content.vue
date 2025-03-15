@@ -1,31 +1,29 @@
 <template>
     <div class="article-content">
-        <h1 class="title">{{ articleData ? articleData.title : '加载中...' }}</h1>
+        <h1 class="title">{{ title || '加载中...' }}</h1>
         <div class="meta">
             <span class="time">
                 <i class="el-icon-time"></i>
-                {{ articleData ? articleData.time : '' }}
+                {{ time }}
             </span>
             <span class="tags">
                 <i class="el-icon-collection-tag"></i>
                 <el-tag 
                     :size="window.size" 
-                    v-for="tag in (articleData ? articleData.tags : [])" 
+                    v-for="tag in tags" 
                     :key="tag">
                     {{ tag }}
                 </el-tag>
             </span>
         </div>
-        <div class="content" v-init="init">
-            <cc-markdown style="height:100%;" 
+        <div class="content" v-if="init">
+            <cc-lite-markdown style="height:100%;" 
             relative='out'
             :tab-right="20"
             :tab-top="0"
+            :code="content"
             >
-            
-            {{ articleData.content }}
-            
-            </cc-markdown>
+            </cc-lite-markdown>
         </div>
     </div>
 </template>
@@ -36,17 +34,27 @@ export default {
     data() {
         return {
             init: false,
-            articleData: null
+            title: '',
+            time: '',
+            tags: [],
+            content: ''
         }
     },
-    created() {
-        // 从 URL 查询参数中获取文章 id
-        const articleId = this.$route.query.id;
-        if (articleId) {
-            this.loadArticle(articleId, (articleData) => {
-                this.articleData = articleData;
-                this.init = true;
-            });
+    watch: {
+        '$route.query.id': {
+            immediate: true,
+            handler(newId) {
+                if (newId) {
+                    this.init = false;
+                    this.loadArticle(newId, (articleData) => {
+                        this.title = articleData.title;
+                        this.time = articleData.time;
+                        this.tags = articleData.tags;
+                        this.content = articleData.content;
+                        this.init = true;
+                    });
+                }
+            }
         }
     },
     methods: {
@@ -54,8 +62,6 @@ export default {
             const store = StoreFactory.getStore('mem');
             const map = store.get('idToArticle');
             const articleInfo = map[id];
-            // 这里可以根据文章 id 从后端获取文章数据
-            // 这里只是一个示例，你需要根据你的实际情况进行修改
             const articleData = {
                 title: articleInfo.name,
                 time: articleInfo.time,
@@ -63,6 +69,7 @@ export default {
             };
             const path = articleInfo.path;
             http.getStr(path, (text) => {
+                text = text.substring(text.indexOf('\n') + 1);
                 articleData.content = text;
                 _call(articleData);
             });

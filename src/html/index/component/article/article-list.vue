@@ -44,7 +44,6 @@ export default {
         loadArticle() {
             const store = StoreFactory.getStore('mem');
             var res = store.get('articles');
-            console.log('res', res);
             this.articles = res;
         }
     }

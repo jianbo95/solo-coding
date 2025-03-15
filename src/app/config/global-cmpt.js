@@ -254,6 +254,9 @@ Vue.component('b-div', BDiv);
 import Markdown from '@/component/content/markdown.vue'
 Vue.component('cc-markdown', Markdown);
 
+import LiteMarkdown from '@/component/content/lite-markdown.vue'
+Vue.component('cc-lite-markdown', LiteMarkdown);
+
 import ImageTag from '@/component/content/image-tag.vue'
 Vue.component('cc-image-tag', ImageTag);
 

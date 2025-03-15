@@ -15,6 +15,7 @@
 </template>
 
 <script>
+import api from './util/api.js';
 export default {
   data() {
     return {
@@ -28,13 +29,9 @@ export default {
   
   methods: {
     loadGames() {
-      $.ajax({
-        url: '/html/index/app/game.json?version=' + window.Version,
-        method: 'GET',
-        success: (res) => {
-          this.games = res;
-        }
-      });
+      api.getGameData(res => {
+        this.games = res;
+      })
     },
     
     enterGame(id) {

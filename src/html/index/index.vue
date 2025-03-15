@@ -2,7 +2,9 @@
     <div class="app-container" v-if="init">
         <cc-header></cc-header>
         <div class="main-content">
-            <router-view></router-view>
+            <keep-alive exclude="article">
+                <router-view></router-view>
+            </keep-alive>
         </div>
     </div>
 </template>
@@ -29,13 +31,14 @@ export default {
         initData(_call) {
             const store = StoreFactory.getStore('mem');
             api.getArticle((res) => {
-                console.log('res', res);
+                console.log('初始化文章列表', res);
                 store.put('articles', res);
                 var articles = res;
                 // 记录id到文章的映射
                 var idToArticle = {};
                 for (var i = 0; i < articles.length; i++) {
-                    idToArticle[articles[i].id] = articles[i];
+                    var info = articles[i];
+                    idToArticle[info.id] = info;
                 }
                 // 使用 StoreFactory 获取本地存储对象并保存数据
                 store.put('idToArticle', idToArticle);

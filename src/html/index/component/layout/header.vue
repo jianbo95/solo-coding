@@ -2,7 +2,11 @@
     <div class="header-container">
         <div class="header-content">
             <div class="logo">Solo Coding</div>
-            <el-menu mode="horizontal" :size="window.size" router>
+            <el-menu 
+                mode="horizontal" 
+                :size="window.size" 
+                router
+                :default-active="$route.path">
                 <el-menu-item index="/">首页</el-menu-item>
                 <el-menu-item index="/game">游戏</el-menu-item>
             </el-menu>

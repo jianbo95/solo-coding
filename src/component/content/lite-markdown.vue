@@ -3,44 +3,8 @@
 
     <!-- TODO markdown 支持自限高度 -->
     <div style="height: 100%; overflow-y:auto;">
-        <cc-debug v-if="debug" class="content">
-            <div>
-                markdown文档
-            </div>
-            <template v-if="url != null">
-                <div>
-                    url: {{url}}
-                </div>
-                <div>
-                    directory: {{directory}}
-                </div>
-                <div>
-                    fullUrl: {{fullUrl}}
-                </div>
-                <div>
-                    fullPath: {{fullPath}}
-                </div>
-            </template>
-            <div v-if="url == null">
-                <div>
-                    <span>
-                    展示markdown源码：
-                    </span>
-                    <el-switch
-                        v-model="debugData.showCode"
-                        active-color="#13ce66"
-                        inactive-color="#eee"></el-switch>
-                </div>
-                <pre v-html="mdContent" v-if="debugData.showCode">
-                </pre>
-            </div>
-        </cc-debug>
 
         <div :id="id" class="content">
-        </div>
-
-        <div :id="'content'+id" style="display:none;">
-            <slot></slot>
         </div>
 
         <div class="tab-menu-box" :style="tabMenuBoxStyle">
@@ -60,7 +24,8 @@
                     <div style="padding: 10px; font-size: 25px; line-height: 45px; display:inline-block;">内容目录</div>
                     <div style="padding: 10px; font-size: 13px;">
                         <template v-for="(menu, i) in menus">
-                            <div :style="'margin-left:' + menu.size + 'px;'" class='link-div' @click="anchorPoint(menu.id)" :key="i">
+                            <div :style="'margin-left:' + menu.size + 'px;'" class='link-div' @click="anchorPoint(menu.id)" 
+                                >
                                 <a class="link" >{{menu.text}}</a>
                             </div>
                         </template>
@@ -69,9 +34,6 @@
             </div>
         </div>
 
-        <cc-dialog title="Markdown编辑" width="80%" min-height="80%" :visible="dialogVisible" @on-close="dialogVisible = false" :show-footer="false">
-            <iframe style="width:100%; height:calc(100% - 10px)" :src="editSrc" frameborder="0"></iframe>
-        </cc-dialog>
     </div>
 </div>
 </template>
@@ -83,10 +45,6 @@ import StringUtil from '../../app/util/StringUtil.js';
 export default {
     data: function() {
         return {
-            debug: false,
-            debugData: {
-                showCode: false
-            },
             allowEdit: false,
             dialogVisible: false,      
             showMenu: false,
@@ -101,9 +59,6 @@ export default {
         }
     },
     props: {
-        url: {
-            type: String
-        },
         code: {
             type: String
         },
@@ -147,46 +102,27 @@ export default {
         }
     },
     created() {
+        console.log('create markdown');
         this.id = Util.UUID();
 
-        if(this.url != null) {
-            this.initUrl();
-        }
-        
-
         this.initJs(() => {
-            this.loadMarkdown();
+            Core.waitDomById(this.id, () => {
+                this.loadMarkdown();
+            });
         });
     },
+    // watch: {
+    //     code: function() {
+    //         this.loadMarkdown();
+    //     }
+    // },
     methods: {
-        initUrl() {
-            // 获取fullUrl
-            if(this.url.indexOf('/') == 0) {
-                this.fullUrl = this.url;
-            } else {
-                let auto = this.$parent.auto;
-                let parentFullUrl = auto.fullUrl;
-                this.directory = parentFullUrl.substring(0, parentFullUrl.lastIndexOf('/') + 1);
-                var fullUrl = this.directory + this.url;
-                this.fullUrl = CommonUtil.shortUrl(fullUrl);
-            }
-            
-            // console.log('location', location);
-            var origin = location.origin;
-            var relativePath = this.fullUrl.substring(origin.length);
-            var basePath = Conf.frontPath;
-            var fullPath = basePath + '/src' + relativePath;
-            this.fullPath = fullPath;
-            this.editSrc = origin + '/ace.html?editor/edit#filename=' + fullPath;
-            this.allowEdit = true;
-        },
         initJs(_call) {
             var modeuls = [
                 'markdownit',
                 'hljs',
                 'loadHighlightCss'];
             ModuleDefine.load(modeuls, () => {
-                console.log('load finish');
                 _call();
             });
         },
@@ -211,24 +147,8 @@ export default {
             return md;
         },
         loadMarkdown() {
-            if(this.url != null) {
-                this.loadMarkdownByUrl();
-            } else if(this.code!= null) {
-                this.mdContent = this.code;
-                this.renderMarkdown(this.code);
-            } else {
-                this.loadMarkdownByContent();
-            }
-        },
-        loadMarkdownByContent() {
-            Core.waitDom('#content' + this.id, () => {
-                var html = $('#content' + this.id).html();
-                // console.log('html', html);
-                html = this.replyCode(html);
-                // this.$refs.mdContent.html(html);
-                this.mdContent = html;
-                this.renderMarkdown(html);
-            });
+            this.mdContent = this.code;
+            this.renderMarkdown(this.code);
         },
         replyCode(code) {
             var strs = code.split('\n');
@@ -270,19 +190,11 @@ export default {
         renderMarkdown(code) {
             const md = this.buildMd();
             const html = md.render(code);
-            // var parseInfo = md.parse(result);
-            // console.log('parseInfo', parseInfo);
+
             var parseInfo = this.parseMenu(html);
             var domElements = parseInfo.domElements;
             this.menus = parseInfo.menus;
-            $("#" + this.id).append(domElements);
-        },
-        loadMarkdownByUrl() {
-            
-            $.get(this.fullUrl, (result) => {
-                // console.log('result', result);
-                this.renderMarkdown(result);
-            });
+            $("#" + this.id).append(domElements); 
         },
 
         anchorPoint(id) {
