@@ -102,7 +102,6 @@ export default {
         }
     },
     created() {
-        console.log('create markdown');
         this.id = Util.UUID();
 
         this.initJs(() => {
@@ -111,17 +110,14 @@ export default {
             });
         });
     },
-    // watch: {
-    //     code: function() {
-    //         this.loadMarkdown();
-    //     }
-    // },
+
     methods: {
         initJs(_call) {
             var modeuls = [
                 'markdownit',
                 'hljs',
-                'loadHighlightCss'];
+                'loadHighlightCss'
+            ];
             ModuleDefine.load(modeuls, () => {
                 _call();
             });
@@ -133,15 +129,16 @@ export default {
                 linkify: true,
                 typographer: true,
                 highlight: function (str, lang) {
+                    var typeDiv = '<div class="codeType">'+lang+'</div>';
                     if (lang && hljs.getLanguage(lang)) {
                         try {
-                            return '<pre><code class="hljs">' +
+                            return `<div class="code">${typeDiv}<pre><code class="hljs">` +
                                 hljs.highlight(str, { language: lang, ignoreIllegals: true }).value +
-                                '</code></pre>';
+                                '</code></pre></div>';
                         } catch (__) {}
                     }
 
-                    return '<pre><code class="hljs">' + md.utils.escapeHtml(str) + '</code></pre>';
+                    return `<div class="code">${typeDiv}<pre><code class="hljs">' + md.utils.escapeHtml(str) + '</code></pre></div>`;
                 }
             });
             return md;
@@ -150,45 +147,9 @@ export default {
             this.mdContent = this.code;
             this.renderMarkdown(this.code);
         },
-        replyCode(code) {
-            var strs = code.split('\n');
-            var regex = /^\s*/g;
-
-            var firstLine = null;
-            for (let i = 0; i < strs.length; i++) {
-                const line = strs[i];
-                // console.log('line', line);
-                if(line.trim() != '') {
-                    firstLine = line;
-                    break;
-                }
-            }
-
-            var matched = regex.exec(firstLine);
-            var tabs = matched[0];
-            var lines = [];
-            var firstBlankLine = false;
-            for (let i = 0; i < strs.length; i++) {
-                var line = strs[i];
-                if(line.trim() == '' && firstBlankLine == false) {
-                    // first blank line;
-                } else {
-                    lines.push(line);
-                }
-            }
-
-            var newLines = [];
-            for (let i = 0; i < lines.length; i++) {
-                var line = lines[i];
-                // console.log('line', line);
-                line = StringUtil.replaceAll(line, tabs, '');
-                newLines[i] = line;
-            }
-            code = newLines.join('\n');
-            return code;
-        },
         renderMarkdown(code) {
             const md = this.buildMd();
+            console.log('code', code);
             const html = md.render(code);
 
             var parseInfo = this.parseMenu(html);

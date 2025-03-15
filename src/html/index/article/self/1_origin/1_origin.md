@@ -4,4 +4,8 @@
 
 擅长写前端
 
-用js写游戏很好
+用js写游戏体验很棒
+
+```javascript
+console.log('Hello World!');
+```

@@ -152,10 +152,10 @@ export default {
         if(this.url != null) {
             this.initUrl();
         }
-        
-
-        this.initJs(() => {
-            this.loadMarkdown();
+        Core.waitDomById(this.id, () => {
+            this.initJs(() => {
+                this.loadMarkdown();
+            });
         });
     },
     methods: {
