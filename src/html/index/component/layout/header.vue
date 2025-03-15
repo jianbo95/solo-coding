@@ -85,11 +85,12 @@ export default {
     }
 }
 
-@media screen and (max-width: 1300px) {
+@media screen and (max-width: 768px) {
     .header-container {
         .header-content {
-            width: 100%;
-            padding: 0 20px;
+            .logo {
+                display: none;
+            }
         }
     }
 }

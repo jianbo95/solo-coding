@@ -1,6 +1,6 @@
 <!-- 文章单独页 -->
 <template>
-    <div class="article-page" style="width: 1300px; margin:0 auto;">
+    <div class="article-page">
         <div class="article-container">
             <article-content></article-content>
         </div>
@@ -28,6 +28,7 @@ export default {
 .article-page {
     display: flex;
     gap: 20px;
+    width: 1300px; margin:0 auto;
     
     .article-container {
         flex: 1;
@@ -41,6 +42,18 @@ export default {
 @media screen and (max-width: 768px) {
     .article-page {
         flex-direction: column;
+        width: calc(100% - 20px) !important;
+        padding: 0 10px;
+        margin: 0;
+
+        .article-container {
+            margin-bottom: 20px;
+        }
+
+        .right-panel {
+            width: 100% !important;
+            margin: 0;
+        }
     }
 }
 </style>

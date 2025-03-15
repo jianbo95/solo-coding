@@ -1,7 +1,7 @@
 <template>
-    <div>
+    <div class="home-page">
         <div style="height:200px;">
-            <div style="padding-top:20px; text-align: center;" >
+            <div class="banner" >
                 <div style="font-size: 30px;">
                     This is Place of
                 </div>
@@ -11,13 +11,15 @@
                     </span>
                 </div>
                 <div style="font-size: 20px; margin-top:15px;">
-                    Get Your Things Secure And Take Your Mind In Peace!!!
+                    <span class="outlined-text">
+                        Get Your Things Secure And Take Your Mind In Peace!!!
+                    </span>
                 </div>
             </div>
         </div>
-        <div style="width: 100%; background-color: #eee; padding-top:20px;">
+        <div class="home-container">
             <!-- 主页容器 -->
-            <div class="home-page" style="width:1300px;margin:20px auto 0 auto;">
+            <div class="home-main" style="width:1300px;margin:0 auto;">
                 <!-- 左侧菜单栏 -->
                 <side-menu></side-menu>
                 <!-- 中间文章列表区域 -->
@@ -50,14 +52,60 @@ export default {
 
 <style lang="less" scoped>
 .home-page {
-    display: flex;  // 使用flex布局
-    gap: 20px;      // 组件之间的间距
-}
 
-// 响应式布局：在移动端将横向排列改为纵向排列
-@media screen and (max-width: 768px) {
-    .home-page {
-        flex-direction: column;
+    .home-main {
+        display: flex;  // 使用flex布局
+        gap: 20px;      // 组件之间的间距
+    }
+
+    .banner {
+        padding-top:20px; 
+        text-align: center;
+    }
+
+    .home-container{ 
+        width: 100%; background-color: #eee; padding-top:20px;
+    }
+    // 响应式布局：在移动端将横向排列改为纵向排列
+    @media screen and (max-width: 768px) {
+        .home-container{ 
+            width: 100%; background-color: #eee; padding-top:10px;
+        } 
+
+        .banner {
+            padding-top: 10px; 
+            text-align: center;
+        }
+
+        .home-main {
+            flex-direction: column;
+            width: calc(100% - 20px) !important;
+            padding: 0 10px;
+
+            .side-menu {
+                display: none;
+            }
+
+            .right-panel {
+                width: 100% !important;
+                margin: 0;
+            }
+        }
+    }
+
+    .outlined-text {
+        color: #000;
+        font-weight: bold;
+        text-shadow: 
+            -1px -1px 0 #fff,
+            1px -1px 0 #fff,
+            -1px 1px 0 #fff,
+            1px 1px 0 #fff,
+            -2px -2px 0 #fff,
+            2px -2px 0 #fff,
+            -2px 2px 0 #fff,
+            2px 2px 0 #fff,
+            0 0 8px #fff;
     }
 }
 </style>

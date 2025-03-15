@@ -1,9 +1,6 @@
 <template>
     <div class="app-container" v-if="init">
         <cc-header></cc-header>
-        
-        
-
         <div style="width:100%;">
             <div class="main-content">
                 <keep-alive exclude="article">
