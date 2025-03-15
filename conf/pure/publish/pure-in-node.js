@@ -47,4 +47,4 @@ global.JavaApi = {
     },
 };
 
-global._require = _require;
+global._require = JavaApi.require;
