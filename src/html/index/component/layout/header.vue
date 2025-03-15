@@ -2,17 +2,13 @@
     <div class="header-container">
         <div class="header-content">
             <div class="logo">Solo Coding</div>
-            <el-menu 
-                mode="horizontal" 
-                :size="window.size" 
-                router
-                :default-active="$route.path">
-                <el-menu-item index="/">首页</el-menu-item>
-                <el-menu-item index="/game">游戏</el-menu-item>
-            </el-menu>
+            <nav class="nav-menu">
+                <router-link to="/" :class="{ active: $route.path === '/' }">首页</router-link>
+                <router-link to="/game" :class="{ active: $route.path === '/game' }">游戏</router-link>
+            </nav>
             <div class="search-box">
                 <el-input 
-                    placeholder="搜索文章..." 
+                    placeholder="文章..." 
                     :size="window.size"
                     prefix-icon="el-icon-search">
                 </el-input>
@@ -32,9 +28,13 @@ export default {
 <style lang="less" scoped>
 .header-container {
     width: 100%;
-    background: #fff;
+    background: #eee;
     box-shadow: 0 2px 8px rgba(0,0,0,.1);
-    
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+
     .header-content {
         width: 1300px;
         margin: 0 auto;
@@ -50,6 +50,37 @@ export default {
         .search-box {
             margin-left: auto;
             width: 300px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 20px;
+            
+            a {
+                padding: 0 20px;
+                line-height: 60px;
+                color: #333;
+                text-decoration: none;
+                position: relative;
+                
+                &:hover {
+                    color: #409EFF;
+                }
+                
+                &.active {
+                    color: #409EFF;
+                    
+                    &:after {
+                        content: '';
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 2px;
+                        background: #409EFF;
+                    }
+                }
+            }
         }
     }
 }

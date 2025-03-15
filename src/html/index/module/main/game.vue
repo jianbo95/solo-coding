@@ -1,5 +1,5 @@
 <template>
-  <div class="game-container">
+  <div class="game-container" style="width: 1300px; margin:0 auto;">
     <div class="game-list">
       <div v-for="game in games" 
            :key="game.id" 

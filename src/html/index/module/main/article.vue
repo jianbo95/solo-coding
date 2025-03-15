@@ -1,6 +1,6 @@
 <!-- 文章单独页 -->
 <template>
-    <div class="article-page">
+    <div class="article-page" style="width: 1300px; margin:0 auto;">
         <div class="article-container">
             <article-content></article-content>
         </div>

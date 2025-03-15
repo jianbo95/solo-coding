@@ -1,10 +1,15 @@
 <template>
     <div class="app-container" v-if="init">
         <cc-header></cc-header>
-        <div class="main-content">
-            <keep-alive exclude="article">
-                <router-view></router-view>
-            </keep-alive>
+        
+        
+
+        <div style="width:100%;">
+            <div class="main-content">
+                <keep-alive exclude="article">
+                    <router-view></router-view>
+                </keep-alive>
+            </div>
         </div>
     </div>
 </template>
@@ -54,14 +59,10 @@ export default {
 
 <style lang="less" scoped>
 .app-container {
-    font-size: 15px;
-    width: 100%;
-    min-height: 100vh;
-    
     .main-content {
-        width: 1300px;
-        margin: 0 auto;
-        padding: 20px;
+        margin: 80px auto 0;  /* 分别设置上、左右、下边距 */
+        width: 100%;
+        padding: 0px;
     }
 }
 
