@@ -70,7 +70,7 @@ var CoreUtil = {
             if(window.pagePath != null) {
                 url = window.pagePath + url;
             } else {
-                url = '/' + url;
+                url = './' + url;
             }
         }
         // console.log('before shortUrl', url);

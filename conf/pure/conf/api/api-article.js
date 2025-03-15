@@ -13,6 +13,7 @@ module.exports = {
             var file = files[i];
             if(file.indexOf('.json') + 5 == file.length) {
                 // .json 结尾
+                console.log('file' + file);
                 var articleFile = file.substring(0, file.length - 5) + '.md';
                 var content = JavaApi.read(articleFile);
                 var summary;

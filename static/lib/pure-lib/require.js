@@ -9,6 +9,7 @@ var requireTool = {
         // 判断是否生产模式
         // 发布时可生成 Merge 加速加载
         if(window.CompileMode == 'prd') {
+            // console.log('will from merge', url);
             if(Merge[url] != null) {
                 // console.log('from merge', url);
                 var code = Merge[url];

@@ -5,7 +5,7 @@ global.JavaApi = {
         var fs = require('fs');
         var root = tool.getRootPath();
         if(path[0] == '@') {
-            path = path.replace('@', root);
+            path = path.replace('@/', root);
         }
         // 遍历path所有文件
         var files = tool.readFiles(path);        
@@ -29,5 +29,10 @@ global.JavaApi = {
         }
         var data = fs.readFileSync(path, {encoding:'utf8', flag:'r'});
         return data;
+    },
+    resourceToUrl: function(path) {
+        var root = tool.getRootPath();
+        path = path.replace(root + 'src', '');
+        return path;
     },
 };

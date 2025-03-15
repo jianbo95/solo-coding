@@ -24,10 +24,10 @@ var ModuleDefine = {
         'HtmlUtil': './static/lib/lowcode/html-util.js',
         'Babel': './static/lib/pure-lib/babel.min.js',
         'loadAce': './static/js/lib/ace/src-min-noconflict/ace.js',
-        'hljs': './static/js/lib/markdown/highlight.min.11.9.0.js',
+        'hljs': './static/lib/markdown/highlight.min.11.9.0.js',
         'axios': './static/js/lib/axios.min.js',
-        'markdownit': './static/js/lib/markdown/markdown-it.min.js',
-        'loadHighlightCss': './static/js/lib/markdown/highlight.css',
+        'markdownit': './static/lib/markdown/markdown-it.min.js',
+        'loadHighlightCss': './static/lib/markdown/highlight.css',
         'purecss': './static/lib/purecss/pure-min.css',
         'difflib': {
             'difflib': './static/lib/difflib/difflib.js',

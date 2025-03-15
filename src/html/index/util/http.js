@@ -9,5 +9,15 @@ export default {
                 call(res);
             }
         });
-    }
+    },
+    getStr(url, call) {
+        $.ajax({
+            url: url + '?version=' + window.Version,
+            method: 'GET',
+            dataType: 'text',
+            success: (res) => {
+                call(res);
+            }
+        });
+    },
 }

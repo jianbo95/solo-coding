@@ -1,3 +1,4 @@
+require('./pre.js');
 const tool = require('../../util/tool.js');
 const Babel = require('../compile/babel.min.js');
 const Uglify = require('../compile/terser.min.js');
@@ -235,8 +236,8 @@ var compile = {
         console.log('handleApi finish');
         this.handleSrc();
         console.log('handleSrc finish');
-        this.handleStatic();
-        console.log('handleStatic finish');
+        // this.handleStatic();
+        // console.log('handleStatic finish');
         // this.handleSite();
         // console.log('handleSite finish');
     },
@@ -328,8 +329,8 @@ var compile = {
             var resultPath = path + 'dist/static/merge.js';
             tool.writeFile(resultPath, result);
 
-            var staticPath = path + 'static/merge.js';
-            tool.writeFile(staticPath, result);
+            // var staticPath = path + 'static/merge.js';
+            // tool.writeFile(staticPath, result);
         }
     }
 };

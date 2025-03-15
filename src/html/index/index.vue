@@ -35,7 +35,7 @@ export default {
                 // 记录id到文章的映射
                 var idToArticle = {};
                 for (var i = 0; i < articles.length; i++) {
-                    idToArticle[articles[i].id] = articles[i].path;
+                    idToArticle[articles[i].id] = articles[i];
                 }
                 // 使用 StoreFactory 获取本地存储对象并保存数据
                 store.put('idToArticle', idToArticle);
