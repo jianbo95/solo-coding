@@ -93,7 +93,7 @@ module.exports = {
 
                     if(isVue) {
                         code = code 
-                            + '<script type="text/javascript" src="'+root+'static/lib/pure-lib/less.min.js"></script>\n'
+                            // + '<script type="text/javascript" src="'+root+'static/lib/pure-lib/less.min.js"></script>\n'
                             + '<script type="module">\n'
                             + 'import plus from "'+root+'static/lib/pure/httpVuePlus2.js";\n'
                             + 'import loader from "'+root+'static/lib/pure/httpVueLoader2.js";\n'
