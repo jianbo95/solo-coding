@@ -20,7 +20,7 @@ module.exports = {
                 data[gameData.id] = gameData;
             }
         }
-        console.log('putData game.json');
+        console.log('putData game.json' + data);
         JavaApi.putData('code', JSON.stringify(data));
     }
 };
