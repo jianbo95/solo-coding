@@ -36,7 +36,7 @@ projectConfig.frontPath = "D:\\www\\jianbo_plus\\h5\\lowcode-front-v2";
 projectConfig.version = new Date().getTime();
 
 var path = tool.getRootPath();
-var static = path + 'src/html/index/app';
+var static = path + 'src/html/index/apps';
 var files = tool.readFiles(static);
 var data = {};
 var routerCode = '';
