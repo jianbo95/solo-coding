@@ -17,13 +17,13 @@
             </span>
         </div>
         <div class="content" v-if="init">
-            <cc-lite-markdown style="height:100%;" 
+            <cc-super-markdown style="height:100%;" 
             relative='out'
             :tab-right="20"
             :tab-top="0"
             :code="content"
             >
-            </cc-lite-markdown>
+            </cc-super-markdown>
         </div>
     </div>
 </template>

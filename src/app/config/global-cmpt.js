@@ -257,6 +257,9 @@ Vue.component('cc-markdown', Markdown);
 import LiteMarkdown from '@/component/content/lite-markdown.vue'
 Vue.component('cc-lite-markdown', LiteMarkdown);
 
+import SuperMarkdown from '@/component/content/super-markdown.vue'
+Vue.component('cc-super-markdown', SuperMarkdown);
+
 import ImageTag from '@/component/content/image-tag.vue'
 Vue.component('cc-image-tag', ImageTag);
 

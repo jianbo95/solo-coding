@@ -1,6 +1,21 @@
 <template>
 <div class="page-markdown" :style="pageStyle">
 
+    <pre>
+        <code class="language-javascript">
+            <div class="code" style="
+                ">
+                <pre class="with-line-numbers" style="">
+                    <div class="line-numbers" style=""><span class="line-number">1</span><span class="line-number">2</span></div>
+                    <code class="hljs" style=""><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">'Hello World! Nima'</span>);
+                    </code>
+                </pre>
+            </div>
+        </code>
+    </pre>
+
+    <div>--------------------------------</div>
+
     <!-- TODO markdown 支持自限高度 -->
     <div style="height: 100%; overflow-y:auto;">
 
@@ -113,31 +128,38 @@ export default {
 
     methods: {
         initJs(_call) {
-            var modeuls = [
-                'markdownit',
-                'hljs',
-                'loadHighlightCss'
-            ];
-            ModuleDefine.load(modeuls, () => {
-                _call();
-            });
+            // var modeuls = [
+            //     'markdownit',
+            //     'hljs',
+            //     'loadHighlightCss'
+            // ];
+            // ModuleDefine.load(modeuls, () => {
+            // });
+            _call();
         },
         buildMd() {
-            // Actual default values
             var md = markdownit({
                 html: true,
                 linkify: true,
                 typographer: true,
                 highlight: function (str, lang) {
                     var typeDiv = '<div class="codeType">'+lang+'</div>';
+                    typeDiv = '';
                     if (lang && hljs.getLanguage(lang)) {
                         try {
-                            return `<div class="code">${typeDiv}<pre><code class="hljs">` +
-                                hljs.highlight(str, { language: lang, ignoreIllegals: true }).value +
-                                '</code></pre></div>';
+                            const lines = str.split('\n');
+                            const lineNumbers = lines.map((_, index) => `<span class="line-number">${index + 1}</span>`).join('');
+                            const code = hljs.highlight(str, { language: lang, ignoreIllegals: true }).value;
+                            
+                            return `<span class="code">
+                                ${typeDiv}
+                                <pre class="with-line-numbers">
+                                    <div class="line-numbers">${lineNumbers}</div>
+                                    <code class="hljs">${code}</code>
+                                </pre>
+                            </span>`;
                         } catch (__) {}
                     }
-
                     return `<div class="code">${typeDiv}<pre><code class="hljs">' + md.utils.escapeHtml(str) + '</code></pre></div>`;
                 }
             });
@@ -200,7 +222,6 @@ export default {
     }
 }
 </script>
-
 <style lang="less">
 .page-markdown {
 
@@ -251,6 +272,54 @@ export default {
         border:1px solid #eee;
         padding:5px 20px;
     }
-  
+    .code {
+
+        position: relative; 
+        border-bottom: 1px solid #000; 
+        padding: 0px; 
+        margin: 0px; 
+        border:1px solid blue; background-color: #000;
+        
+        .with-line-numbers {
+            position: absolute; 
+            top: 0px; 
+            left: 0px; 
+            border:1px solid red; 
+            display: flex;
+            margin: 0;
+            padding: 0;
+            background: #f8f8f8;
+            
+            .line-numbers {
+                padding: 0px 10px 0 10px;
+                background: #f0f0f0;
+                border-right: 1px solid #ddd;
+                text-align: right;
+                color: #999;
+                user-select: none;
+                
+                .line-number {
+                    display: block;
+                    font-family: monospace;
+                    font-size: 14px;
+                    line-height: 1.5;
+                }
+            }
+            
+            code.hljs {
+                padding: 0px 0 0 10px;
+                margin: 0;
+                line-height: 1.5;
+                font-size: 14px;
+                overflow-x: auto;
+            }
+        }
+
+        .codeType {
+            padding: 5px 10px;
+            background: #e8e8e8;
+            border-bottom: 1px solid #ddd;
+        }
+    }
 }
 </style>
