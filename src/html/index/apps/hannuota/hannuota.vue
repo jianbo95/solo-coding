@@ -7,7 +7,7 @@
       <button @click="initGame">{{ $t('hannuota.start') }}</button>
     </div>
     <div style="margin-left: 1rem;">
-      <label for="discs">{{ $t('hannuota.speed') }}</label>
+      <label for="discs">{{ $t('hannuota.aiStep') }}</label>
       <input type="number" id="discs" v-model="gameFast" min="1">
       <button @click="startAutoGame">{{ $t('hannuota.auto') }}</button>
     </div>
@@ -142,6 +142,7 @@ export default {
       title: '汉诺塔游戏',
       discs: '圆盘数量:',
       start: '开始游戏',
+      aiStep: 'AI秒/步',
       auto: '自动游戏',
       reset: '重新开始',
       elapsedTime: '耗时:',
@@ -167,6 +168,7 @@ export default {
       title: 'Tower of Hanoi',
       discs: 'Disc Count:',
       start: 'Start Game',
+      aiStep: 'AI Step',
       auto: 'Auto Game',
       reset: 'Reset Game',
       elapsedTime: 'Elapsed Time:',
