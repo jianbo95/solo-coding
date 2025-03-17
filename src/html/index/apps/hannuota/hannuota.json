@@ -1,5 +1,6 @@
 {
     "id": "hannuota",
     "name": "汉诺塔",
+    "name.en": "Tower of Hanoi",
     "icon": "hannuota.png"
 }

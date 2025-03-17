@@ -35,6 +35,7 @@ let vue = new Vue({
 window.vue = vue
 window.App = vue
 window.size = 'small'
+window.I18n = i18n;
 logTime();
 
 cmpt.log();

@@ -1,5 +1,5 @@
 export default {
-    save(page, discCount, elapsedTime, playerName = '匿名玩家') {
+    save(page, discCount, elapsedTime, playerName = 'Player') {
         const newRecord = {
             playerName,
             discCount,

@@ -1,15 +1,15 @@
 <template>
-  <div class="hannuota">
-    <h1>汉诺塔游戏</h1>
+  <div class="hannuota" v-if="init">
+    <h1>{{ $t('hannuota.title') }}</h1>
     <div>
-      <label for="discs">圆盘数量: </label>
+      <label for="discs">{{ $t('hannuota.discs') }}: </label>
       <input type="number" id="discs" v-model="discCount" min="1">
-      <button @click="initGame">开始游戏</button>
+      <button @click="initGame">{{ $t('hannuota.start') }}</button>
     </div>
     <div style="margin-left: 1rem;">
-      <label for="discs">AI秒/步 </label>
+      <label for="discs">{{ $t('hannuota.speed') }}</label>
       <input type="number" id="discs" v-model="gameFast" min="1">
-      <button @click="startAutoGame">自动游戏</button>
+      <button @click="startAutoGame">{{ $t('hannuota.auto') }}</button>
     </div>
 
     <div class="towers">
@@ -19,8 +19,8 @@
       </div>
     </div>
     <p v-if="message">{{ message }}</p>
-    <p v-if="elapsedTime">耗时: {{ elapsedTime }} 秒</p>
-    <button v-if="gameOver" @click="initGame">重新开始</button>
+    <p v-if="elapsedTime">{{ $t('hannuota.elapsedTime') }}: {{ elapsedTime }} {{ $t('hannuota.seconds') }}</p>
+    <button v-if="gameOver" @click="initGame">{{ $t('hannuota.reset') }}</button>
 
     <ranking-vue ref="ranking" />
   </div>
@@ -36,6 +36,7 @@ export default {
   },
   data() {
     return {
+      init: false,
       discCount: 3,
       gameFast: 0.1, // 游戏速度，数字表示时间，单位秒，每多少秒移动一个圆盘
       towers: [],
@@ -79,18 +80,30 @@ export default {
       if (this.selectedTower === null) {
         if (this.towers[index].length > 0) {
           this.selectedTower = index;
-          this.message = `你选择了第 ${index + 1} 个塔，请选择要移动到的目标塔。`;
+          if(LocaleType == 'en')
+            this.message = `You selected tower ${index + 1}. Please select the target tower.`;
+          else
+            this.message = `你选择了第 ${index + 1} 个塔，请选择要移动到的目标塔。`;
         } else {
-          this.message = '此塔没有圆盘，请选择有圆盘的塔。';
+          if(LocaleType == 'en')
+            this.message = 'This tower has no discs. Please select a tower with discs.';
+          else
+            this.message = '此塔没有圆盘，请选择有圆盘的塔。';
         }
       } else {
         if (this.moveDisc(this.selectedTower, index)) {
-          this.message = `成功将圆盘从第 ${this.selectedTower + 1} 个塔移动到第 ${index + 1} 个塔。`;
+          if(LocaleType == 'en')
+            this.message = `Successfully moved disc from tower ${this.selectedTower + 1} to tower ${index + 1}.`;
+          else  
+            this.message = `成功将圆盘从第 ${this.selectedTower + 1} 个塔移动到第 ${index + 1} 个塔。`;
           if (this.towers[2].length === this.discCount) {
             this.endGame();
           }
         } else {
-          this.message = '移动无效，请选择合适的目标塔。';
+          if(LocaleType == 'en')
+            this.message = 'Invalid move. Please select a valid target tower.';
+          else
+            this.message = '移动无效，请选择合适的目标塔。';
         }
         this.selectedTower = null;
       }
@@ -114,13 +127,67 @@ export default {
       console.log('this.isAutoGame', this.isAutoGame);
       const endTime = Date.now();
       this.elapsedTime = ((endTime - this.startTime) / 1000).toFixed(2);
-      this.message = `恭喜你，游戏通关！耗时: ${this.elapsedTime} 秒`;
+      if(LocaleType == 'en') {
+        this.message = `Congratulations! You won the game! Elapsed time: ${this.elapsedTime} seconds`;
+      } else {
+        this.message = `恭喜你，游戏通关！耗时: ${this.elapsedTime} 秒`;
+      }
       this.gameOver = true;
       this.$refs.ranking.saveRecord(this.discCount, this.elapsedTime, this.isAutoGame);
     },
     // 移除 clearRanking 方法
   },
   created() {
+    var hannuotaZh = {'hannuota': {
+      title: '汉诺塔游戏',
+      discs: '圆盘数量:',
+      start: '开始游戏',
+      auto: '自动游戏',
+      reset: '重新开始',
+      elapsedTime: '耗时:',
+      seconds: '秒',
+      ranking: '排行榜',
+      rankingNo: '排名',
+      player: '玩家',
+      timeSpent: '耗时 (秒)',
+      completedTime: '完成时间',
+      clearRanking: '清空排名榜',
+      rankingTitle: '排名榜',
+      recordTitle: '通关记录',
+      inputName: '请输入玩家姓名',
+      cancel: '取消',
+      confirm: '确定'
+    }};
+    var i18n = I18n;
+    i18n.setLocaleMessage('zh', {
+        ...i18n.getLocaleMessage('zh'),
+        ...hannuotaZh
+    });
+    var hannuotaEn = {'hannuota': {
+      title: 'Tower of Hanoi',
+      discs: 'Disc Count:',
+      start: 'Start Game',
+      auto: 'Auto Game',
+      reset: 'Reset Game',
+      elapsedTime: 'Elapsed Time:',
+      seconds: 'seconds',
+      ranking: 'Ranking',
+      rankingNo: 'No.',
+      player: 'Player',
+      timeSpent: 'Time (s)',
+      completedTime: 'Completed At',
+      clearRanking: 'Clear Ranking',
+      rankingTitle: 'Ranking Board',
+      recordTitle: 'Game Record',
+      inputName: 'Please enter your name',
+      cancel: 'Cancel',
+      confirm: 'Confirm'
+    }};
+    i18n.setLocaleMessage('en', {
+        ...i18n.getLocaleMessage('en'),
+        ...hannuotaEn
+    });
+    this.init = true;
     this.initGame();
   }
 };

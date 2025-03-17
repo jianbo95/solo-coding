@@ -1,32 +1,32 @@
 <template>
   <div>
-    <h2>排名榜</h2>
+    <h2>{{ $t('hannuota.rankingTitle') }}</h2>
     <el-dialog
-      title="通关记录"
+      :title="$t('hannuota.recordTitle')"
       :visible.sync="showNameDialog"
       width="30%">
       <el-input 
         v-model="playerName"
-        placeholder="请输入玩家姓名"
+        :placeholder="$t('hannuota.inputName')"
         maxlength="10"
         show-word-limit>
       </el-input>
       <span slot="footer">
-        <el-button @click="cancelSave">取消</el-button>
-        <el-button type="primary" @click="confirmSave">确定</el-button>
+        <el-button @click="cancelSave">{{ $t('hannuota.cancel') }}</el-button>
+        <el-button type="primary" @click="confirmSave">{{ $t('hannuota.confirm') }}</el-button>
       </span>
     </el-dialog>
 
     <el-tabs type="border-card" v-if="showRanking">
       <!-- 修改表格列 -->
-      <el-tab-pane v-for="discCount in sortedDiscCounts" :key="discCount" :label="`${discCount} 盘`">
+      <el-tab-pane v-for="discCount in sortedDiscCounts" :key="discCount" :label="`${discCount} Disc`">
         <table>
           <thead>
             <tr>
-              <th>排名</th>
-              <th>玩家</th>
-              <th>耗时 (秒)</th>
-              <th>完成时间</th>
+              <th>{{ $t('hannuota.rankingNo') }}</th>
+            <th>{{ $t('hannuota.player') }}</th>
+            <th>{{ $t('hannuota.timeSpent') }}</th>
+            <th>{{ $t('hannuota.completedTime') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -40,7 +40,7 @@
         </table>
       </el-tab-pane>
     </el-tabs>
-    <button @click="clearRanking" style="margin-top: 20px;">清空排名榜</button>
+    <button @click="clearRanking" style="margin-top: 20px;">{{ $t('hannuota.clearRanking') }}</button>
     <!-- <button @click="loadRanking" style="margin-top: 20px;">加载排名榜</button> -->
   </div>
 </template>

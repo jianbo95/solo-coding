@@ -47,7 +47,11 @@ export default function autoGame(vm) {
         // 执行移动
         vm.moveDisc(from, to);
         // 更新游戏提示信息
-        vm.message = `自动将圆盘从第 ${from + 1} 个塔移动到第 ${to + 1} 个塔。`;
+        if(LocaleType === 'en') {
+            vm.message = `Automatically move the disc from tower ${from + 1} to tower ${to + 1}.`;
+        } else {
+            vm.message = `自动将圆盘从第 ${from + 1} 个塔移动到第 ${to + 1} 个塔。`;
+        }
         // 设置定时器，按照游戏速度执行下一步
         setTimeout(() => {
             executeMoves(index + 1);
