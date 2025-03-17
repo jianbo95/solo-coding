@@ -18,6 +18,8 @@
     console.log(data);
     window.Conf = JSON.parse(data); 
     window.Version = '<%= version %>';
+    window.Site = location.origin
+    // console.log('location.hostname', location.origin);
     console.log('加载编译前系统配置参数完成，全局变量名为Conf')
   </script>
   

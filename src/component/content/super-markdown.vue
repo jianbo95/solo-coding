@@ -56,6 +56,9 @@ export default {
         renderMarkdown() {
             if (this.code) {
                 const md = window.markdownit({
+                    html: true,
+                    linkify: true,
+                    typographer: true,
                     highlight: function (str, lang) {
                         if (lang && window.hljs.getLanguage(lang)) {
                             try {
@@ -80,8 +83,9 @@ export default {
                     return `<${token.tag} id="${id}">`;
                 };
 
-                 // 解析目录
-                 // 渲染 markdown
+                // 解析目录
+                // 渲染 markdown
+                this.code =StringUtil.replaceAll(this.code, '\\(@', '(' + window.Site);
                 this.renderedContent = md.render(this.code);
 
                 // 解析目录
