@@ -3,15 +3,15 @@
         <el-menu :size="window.size" class="menu-list">
             <el-menu-item index="1">
                 <i class="el-icon-house"></i>
-                <span>首页</span>
+                <span>{{ $t('menu.home') }}</span>
             </el-menu-item>
             <el-menu-item index="2">
                 <i class="el-icon-document"></i>
-                <span>最新文章</span>
+                <span>{{ $t('menu.newest') }}</span>
             </el-menu-item>
             <el-menu-item index="3">
                 <i class="el-icon-star-on"></i>
-                <span>热门文章</span>
+                <span>{{ $t('menu.hotest') }}</span>
             </el-menu-item>
         </el-menu>
     </div>

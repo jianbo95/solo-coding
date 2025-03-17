@@ -1,6 +1,6 @@
 <template>
     <div class="widget color-tags">
-        <div class="widget-title">标签云</div>
+        <div class="widget-title">{{ $t('main.tag') }}</div>
         <div class="tags-container">
             <span 
                 v-for="(tag, index) in tagList" 

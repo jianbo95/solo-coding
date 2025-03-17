@@ -1,6 +1,6 @@
 <template>
     <div class="widget recent-articles">
-        <div class="widget-title">最近文章</div>
+        <div class="widget-title">{{ $t('main.recent') }}</div>
         <ul class="article-list">
             <li v-for="article in recentArticles" :key="article.id" @click="goToArticle(article.id)">
                 <span class="title">{{ article.name }}</span>

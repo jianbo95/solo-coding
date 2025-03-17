@@ -3,15 +3,20 @@
         <div class="header-content">
             <div class="logo">Solo Coding</div>
             <nav class="nav-menu">
-                <router-link to="/" :class="{ active: $route.path === '/' }">首页</router-link>
-                <router-link to="/game" :class="{ active: $route.path === '/game' }">游戏</router-link>
+                <router-link to="/" :class="{ active: $route.path === '/' }">{{ $t('menu.home') }}</router-link>
+                <router-link to="/game" :class="{ active: $route.path === '/game' }">{{ $t('menu.game') }}</router-link>
             </nav>
             <div class="search-box">
                 <el-input 
-                    placeholder="文章..." 
-                    :size="window.size"
+                    :placeholder="$t('main.search') + '...'" 
+                    :size="size"
                     prefix-icon="el-icon-search">
                 </el-input>
+
+                <el-select v-model="language" @change="handleLanguageChange" :size="size">
+                    <el-option :label="$t('language.zh')" value="zh"></el-option>
+                    <el-option :label="$t('language.en')" value="en"></el-option>
+                </el-select>
             </div>
         </div>
     </div>
@@ -20,7 +25,16 @@
 <script>
 export default {
     data() {
-        return {}
+        return {
+            language: localStorage.getItem('language') || 'zh',
+            size: window.size
+        }
+    },
+    methods: {
+        handleLanguageChange(val) {
+            localStorage.setItem('language', val);
+            window.location.reload();
+        }
     }
 }
 </script>
@@ -49,7 +63,19 @@ export default {
         
         .search-box {
             margin-left: auto;
-            width: 300px;
+            width: 420px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            
+            .el-input {
+                flex: 1;
+            }
+            
+            .el-select {
+                width: 100px;
+                flex-shrink: 0;
+            }
         }
         
         .nav-menu {

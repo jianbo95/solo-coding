@@ -1,6 +1,6 @@
 <template>
     <div class="clock-widget">
-        <div class="widget-title">当前时间</div>
+        <div class="widget-title">{{ $t('main.currentTime') }}</div>
         <canvas ref="clock" width="230" height="230"></canvas>
     </div>
 </template>

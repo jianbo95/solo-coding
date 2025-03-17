@@ -1,14 +1,14 @@
 <template>
     <div class="widget site-info">
-        <div class="widget-title">站点信息</div>
+        <div class="widget-title">{{ $t('main.siteInfo') }}</div>
         <ul class="info-list">
             <li>
                 <i class="el-icon-document"></i>
-                文章数：{{ articleCount }}
+                {{$t('other.articleCount')}} {{ articleCount }}
             </li>
             <li>
                 <i class="el-icon-view"></i>
-                访问量：{{ visitCount }}
+                {{$t('other.viewCount')}} {{ visitCount }}
             </li>
         </ul>
     </div>
@@ -19,8 +19,8 @@ export default {
     name: 'SiteInfo',
     data() {
         return {
-            articleCount: '开发中...',
-            visitCount: '开发中...'
+            articleCount: this.$t('other.development'), 
+            visitCount: this.$t('other.development')
         }
     }
 }
