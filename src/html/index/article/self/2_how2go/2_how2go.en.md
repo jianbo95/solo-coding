@@ -1,4 +1,3 @@
-```markdown:d:\www\solo-coding\src\html\index\article\self\2_how2go\2_how2go.en.md
 # How APIs are Implemented in a Static Website
 
 Achieve "dynamic" website functionality with minimal cost and maintenance.
@@ -71,4 +70,3 @@ for(var i in files) {
 
 ## Conclusion
 Overall, this implementation approach maintains the simplicity of a static website while providing sufficient flexibility, making it an excellent choice for individual developers and small teams.
-```
