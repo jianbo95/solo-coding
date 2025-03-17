@@ -1,4 +1,9 @@
 export default {
+    "tag": {
+        "self": "Self",
+        "game": "Game",
+        "web": "Web",
+    },
     "language": {
         "zh": "Chinese",
         "en": "English"

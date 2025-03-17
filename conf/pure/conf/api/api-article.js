@@ -9,22 +9,34 @@ module.exports = {
         var filesJson = JavaApi.files('@/src/html/index/article');
         var files = JSON.parse(filesJson);
         var data = [];
+        var getSummary = function(content) {
+            var summary;
+            if(content.length > 100) {
+                summary = content.substring(0, 100);
+            } else {
+                summary = content;
+            }
+            return summary;
+        };
+
         for(var i in files) {
             var file = files[i];
             if(file.indexOf('.json') + 5 == file.length) {
                 // .json 结尾
                 console.log('file' + file);
                 var articleFile = file.substring(0, file.length - 5) + '.md';
+                var articleEnFile = file.substring(0, file.length - 5) + '.en.md';
                 var content = JavaApi.read(articleFile);
-                var summary;
-                if(content.length > 100) {
-                    summary = content.substring(0, 100);
-                } else {
-                    summary = content;
-                }
+                var summary = getSummary(content);
+                
                 var item = JSON.parse(JavaApi.read(file));
                 item.summary = summary;
-                item.title = item.name;
+                try {
+                    item['summary.en'] = getSummary(JavaApi.read(articleEnFile));
+                } catch (e) {
+                    item['summary.en'] = 'not exist';
+                }
+                // item.title = item.name;
                 item.path = JavaApi.resourceToUrl(articleFile);
                 data.push(item);
             }

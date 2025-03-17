@@ -1,6 +1,6 @@
 <template>
     <div class="article-card" @click="goToDetail">
-        <h2 class="title">{{ article.title }}</h2>
+        <h2 class="title">{{ article.name }}</h2>
         <div class="meta">
             <span class="time">
                 <i class="el-icon-time"></i>
@@ -12,11 +12,11 @@
                     :size="window.size" 
                     v-for="tag in article.tags" 
                     :key="tag">
-                    {{ tag }}
+                    {{ $t('tag.' + tag) }}
                 </el-tag>
             </span>
         </div>
-        <p class="summary">{{ article.summary }}</p>
+        <p class="summary">{{ summary }}</p>
     </div>
 </template>
 
@@ -26,6 +26,14 @@ export default {
         article: {
             type: Object,
             required: true
+        }
+    },
+    computed: {
+        summary() {
+            if(window.LocaleType === 'en') {
+                return this.article['summary.en'];
+            }
+            return this.article.summary
         }
     },
     methods: {
@@ -79,7 +87,7 @@ export default {
             .el-tag {
                 margin-left: 5px;
             }
-        }
+        };
     }
     
     .summary {

@@ -5,6 +5,8 @@ import en from './locales/en.js';
 import zh from './locales/zh.js';
 var lang = localStorage.getItem('language') || 'zh';
 
+window.LocaleType = lang;
+
 Vue.use(VueI18n);
 const i18n = new VueI18n({
     locale: lang,

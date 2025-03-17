@@ -11,6 +11,7 @@
 </template>
 
 <script>
+import api from '../../util/api.js';
 export default {
     name: 'RecentArticles',
     data() {
@@ -24,14 +25,8 @@ export default {
     },
     methods: {
         loadArticle() {
-            // 指定返回的数据是json格式
-            $.ajax({
-                url: '/html/index/article/article-recently.json?version=' + window.Version,
-                method: 'GET',
-                dataType: 'json',
-                success: (res) => {
-                    this.recentArticles = res;
-                }
+            api.getRecentArticle((res) => {
+                this.recentArticles = res;
             });
         },
         goToArticle(id) {

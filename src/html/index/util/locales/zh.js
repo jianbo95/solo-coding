@@ -1,4 +1,9 @@
 export default {
+    "tag": {
+        "self": "个人",
+        "game": "游戏",
+        "web": "Web",
+    },
     "language": {
         "zh": "中文",
         "en": "英文"

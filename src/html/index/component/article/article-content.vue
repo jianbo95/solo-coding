@@ -1,6 +1,6 @@
 <template>
     <div class="article-content">
-        <h1 class="title">{{ title || '加载中...' }}</h1>
+        <h1 class="title">{{ title }}</h1>
         <div class="meta">
             <span class="time">
                 <i class="el-icon-time"></i>
@@ -12,7 +12,7 @@
                     :size="window.size" 
                     v-for="tag in tags" 
                     :key="tag">
-                    {{ tag }}
+                    {{ $t('tag.' + tag) }}
                 </el-tag>
             </span>
         </div>
@@ -67,7 +67,10 @@ export default {
                 time: articleInfo.time,
                 tags: articleInfo.tags
             };
-            const path = articleInfo.path;
+            var path = articleInfo.path;
+            if(window.LocaleType == 'en') {
+                path = path.replace('.md', '.en.md');
+            }
             http.getStr(path, (text) => {
                 text = text.substring(text.indexOf('\n') + 1);
                 articleData.content = text;
