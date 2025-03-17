@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeerJS 聊天工具</title>
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    <script src="Connect.js"></script>
+    <style>
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+        .info {
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f0f0f0;
+        }
+        .chat-box {
+            margin-top: 20px;
+        }
+        .input-group {
+            margin-top: 10px;
+        }
+        input[type="text"] {
+            width: 70%;
+            padding: 5px;
+        }
+        button {
+            padding: 5px 10px;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="info">
+            <div>我的 ID: <span id="myId">等待连接...</span></div>
+        </div>
+        <div class="connect-box">
+            <input type="text" id="targetId" placeholder="输入对方的 ID">
+            <button onclick="connectToPeer()">连接</button>
+        </div>
+        <div class="chat-box">
+            <div class="input-group">
+                <input type="text" id="messageInput" placeholder="输入消息">
+                <button onclick="sendMessage()">发送</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let peerConnect;
+
+        window.onload = function() {
+            peerConnect = new PeerConnect();
+            
+            // 等待获取 ID
+            const checkId = setInterval(() => {
+                const peerId = peerConnect.getPeerId();
+                if (peerId) {
+                    document.getElementById('myId').textContent = peerId;
+                    clearInterval(checkId);
+                }
+            }, 100);
+
+            // 注册消息处理回调
+            peerConnect.onMessage((message, fromId) => {
+                console.log(`来自 ${fromId} 的消息: ${message}`);
+            });
+        }
+
+        function connectToPeer() {
+            const targetId = document.getElementById('targetId').value;
+            if (targetId) {
+                peerConnect.connect(targetId);
+            }
+        }
+
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value;
+            if (message) {
+                peerConnect.sendMessage(message);
+                messageInput.value = '';
+            }
+        }
+    </script>
+</body>
+</html>
