@@ -43,7 +43,7 @@ export default {
     data() {
         return {
             renderedContent: '',
-            showMenu: true,
+            showMenu: false,
             menus: []
         }
     },
