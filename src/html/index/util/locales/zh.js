@@ -6,7 +6,7 @@ export default {
     },
     "language": {
         "zh": "中文",
-        "en": "英文"
+        "en": "English"
     },
     "main": {
         "search": "搜索",

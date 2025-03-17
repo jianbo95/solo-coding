@@ -5,7 +5,7 @@ export default {
         "web": "Web",
     },
     "language": {
-        "zh": "Chinese",
+        "zh": "中文",
         "en": "English"
     },
     "main": {
