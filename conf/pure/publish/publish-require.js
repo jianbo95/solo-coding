@@ -91,6 +91,7 @@ var compile = {
     },
     babel: function(content) {
         var output = Babel.transform(content, { presets: ['es2015'] }).code;
+        // Object.defineProperty called on non-object
         return output;
     },
 

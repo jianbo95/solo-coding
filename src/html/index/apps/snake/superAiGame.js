@@ -188,7 +188,7 @@ function SuperAIGame(controller) {
         
         // 检查四个方向
         for (const dir of Object.keys(DIRECTIONS)) {
-            const newHead = { ...head };
+            const newHead = Util.cloneMap( head );
             
             switch (dir) {
                 case 'up': newHead.y -= 1; break;
@@ -264,7 +264,7 @@ function SuperAIGame(controller) {
             const head = snake[0];
             // 计算当前距离
             const currentDistance = Math.abs(head.x - food.x) + Math.abs(head.y - food.y);
-            const newHead = {...head};
+            const newHead = Util.cloneMap(head);
             switch (traditionalDecision) {
                 case 'up': newHead.y -= 1; break;
                 case 'right': newHead.x += 1; break;
@@ -310,7 +310,7 @@ function SuperAIGame(controller) {
         // 检查每个方向是否可行
         for (let i = 0; i < 4; i++) {
             const dir = DIRECTIONS_MAP[i];
-            const newHead = {...head};
+            const newHead = Util.cloneMap(head);
             
             switch (dir) {
                 case 'up': newHead.y -= 1; break;
@@ -344,7 +344,7 @@ function SuperAIGame(controller) {
             const dirIndex = DIRECTIONS[dir];
             const modelScore = directionScores[i];
             
-            const newHead = {...head};
+            const newHead = Util.cloneMap(head);
             switch (dir) {
                 case 'up': newHead.y -= 1; break;
                 case 'right': newHead.x += 1; break;
@@ -371,7 +371,7 @@ function SuperAIGame(controller) {
         output[DIRECTIONS[bestDirection]] = 1;
         currentGameData.outputs.push(output);
         
-        const newHead = {...head};
+        const newHead = Util.cloneMap(head);
         switch (bestDirection) {
             case 'up': newHead.y -= 1; break;
             case 'right': newHead.x += 1; break;
@@ -414,7 +414,7 @@ function SuperAIGame(controller) {
         let minDistance = Infinity;
 
         directions.forEach(direction => {
-            const newHead = { ...head };
+            const newHead = Util.cloneMap( head );
             
             switch (direction) {
                 case 'up': newHead.y -= 1; break;

@@ -64,7 +64,7 @@ class SnakeController {
    */
   moveSnake(snake, food, direction) {
     const newSnake = [...snake];
-    const head = { ...newSnake[0] };
+    const head = Util.cloneMap(newSnake[0] );
     
     // 根据方向移动蛇头
     switch (direction) {

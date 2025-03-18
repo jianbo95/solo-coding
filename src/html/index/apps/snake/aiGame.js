@@ -21,7 +21,8 @@ function AIGame(controller) {
         // 遍历所有可能的移动方向
         directions.forEach(direction => {
             // 创建新的蛇头位置对象
-            const newHead = { ...head };
+            // const newHead = Util.cloneMap( head );
+            const newHead = Util.cloneMap( head );
   
             // 根据方向计算新的蛇头位置
             switch (direction) {
@@ -80,7 +81,7 @@ function AIGame(controller) {
         // 获取可能移动方向
         const directions = ['up', 'down', 'left', 'right'];
         for (const dir of directions) {
-            const nextHead = {...head};
+            const nextHead = Util.cloneMap(head);
             // 计算下一步位置
             switch(dir) {
                 case 'up': nextHead.y -= 1; break;

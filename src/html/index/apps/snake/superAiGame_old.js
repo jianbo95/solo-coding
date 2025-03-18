@@ -15,10 +15,9 @@ function SuperAIGame(controller) {
         const finalScore = score || (trainingData.length > 0 ? trainingData[trainingData.length - 1].score : 0);
         
         // 为所有训练数据添加最终得分
-        trainingData = trainingData.map(data => ({
-            ...data,
+        trainingData = trainingData.map(data => (Util.mergeMap(data, {
             finalScore: finalScore
-        }));
+        })));
         
         // 保存训练数据
         return saveTrainingData();
@@ -110,7 +109,7 @@ function SuperAIGame(controller) {
         const possibleDirections = [];
 
         directions.forEach((dir, index) => {
-            const newHead = { ...head };
+            const newHead = Util.cloneMap( head );
             switch (dir) {
                 case 'up': newHead.y -= 1; break;
                 case 'down': newHead.y += 1; break;

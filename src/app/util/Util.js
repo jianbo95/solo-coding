@@ -367,6 +367,13 @@
         clone: function(obj) {
             return JSON.parse( JSON.stringify(obj) );
         },
+        mergeMap: function(obj, map) {
+            var obj2 = this.cloneMap(obj);
+            for(var key in map) {
+                obj2[key] = map[key];
+            }
+            return obj2;
+        },
         cloneMap: function(obj) {
             var map = {};
             for(var key in obj) {

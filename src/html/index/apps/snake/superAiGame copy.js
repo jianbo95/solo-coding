@@ -151,7 +151,7 @@ function SuperAIGame(controller) {
         // 检查每个方向是否可行
         for (let i = 0; i < 4; i++) {
             const dir = DIRECTIONS_MAP[i];
-            const newHead = {...head};
+            const newHead = Util.cloneMap(head);
             
             switch (dir) {
                 case 'up': newHead.y -= 1; break;
@@ -208,7 +208,7 @@ function SuperAIGame(controller) {
         let minDistance = Infinity;
 
         directions.forEach(direction => {
-            const newHead = { ...head };
+            const newHead = Util.cloneMap( head );
             
             switch (direction) {
                 case 'up': newHead.y -= 1; break;

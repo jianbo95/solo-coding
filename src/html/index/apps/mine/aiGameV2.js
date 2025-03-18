@@ -56,11 +56,19 @@ export default class MinesweeperAIV2 {
 
         // 1. 首先寻找安全的格子
         const safeMove = this.findSafeMove();
-        if (safeMove) return { ...safeMove, action: 'reveal' };
+        if (safeMove) {
+            var safeMove2 = Util.cloneMap(safeMove);
+            safeMove.action = 'reveal';
+            return safeMove2;
+        }
 
         // 2. 标记确定是雷的格子
         const mineMove = this.findDefiniteMine();
-        if (mineMove) return { ...mineMove, action: 'flag' };
+        if (mineMove)  {
+            var mineMove2 = Util.cloneMap(mineMove);
+            mineMove.action = 'flag';
+            return mineMove2;
+        }
         
         // 3. 如果没有确定的选择，根据是否开启作弊模式选择下一步
         const next = cheatMode ? this.cheatFindMove() : this.findProbableMove();
