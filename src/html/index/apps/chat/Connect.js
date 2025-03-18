@@ -1,4 +1,4 @@
-class PeerConnect {
+export default class PeerConnect {
     constructor(selfId) {
         var option = {
             host: 'localhost',
@@ -61,8 +61,7 @@ class PeerConnect {
     handleConnection(conn) {
         conn.on('open', () => {
             // 存在主动模式和被动模式
-            console.log('已连接到: ' + conn.peer); 
-            console.log('连接对象: ', conn);
+            console.log('已连接到: ' + conn.peer + ' 连接对象', conn); 
             this.connections.set(conn.peer, conn);
         });
 
