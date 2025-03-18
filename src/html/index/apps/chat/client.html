@@ -40,13 +40,29 @@
             <div>我的 ID: <span id="myId">等待连接...</span></div>
         </div>
         <div class="connect-box">
+            <input type="text" id="selfId" placeholder="输入自定义ID">
+            <button onclick="confirm()">确定</button>
+        </div>
+        <div class="connect-box">
             <input type="text" id="targetId" placeholder="输入对方的 ID">
             <button onclick="connectToPeer()">连接</button>
         </div>
         <div class="chat-box">
             <div class="input-group">
                 <input type="text" id="messageInput" placeholder="输入消息">
-                <button onclick="sendMessage()">发送</button>
+                <button onclick="sendMessage()">广播消息</button>
+            </div>
+        </div>
+        <div class="chat-box">
+            <div class="input-group">
+                <input type="text" id="sendToId" placeholder="目标id">
+                <input type="text" id="singleMessageInput" placeholder="输入消息">
+                <button onclick="sendMessageTo()">发送给</button>
+            </div>
+        </div>
+        <div class="chat-box">
+            <div class="input-group">
+                <button onclick="listAll()">发现</button>
             </div>
         </div>
     </div>
@@ -55,7 +71,8 @@
         let peerConnect;
 
         window.onload = function() {
-            peerConnect = new PeerConnect();
+            var selfId = localStorage.getItem('id');
+            peerConnect = new PeerConnect(selfId);
             
             // 等待获取 ID
             const checkId = setInterval(() => {
@@ -72,11 +89,24 @@
             });
         }
 
+        function confirm() {
+            const selfId = document.getElementById('selfId').value;
+            localStorage.setItem('id', selfId);
+        }
+
         function connectToPeer() {
             const targetId = document.getElementById('targetId').value;
+            document.getElementById('sendToId').value = targetId;
+            
             if (targetId) {
                 peerConnect.connect(targetId);
             }
+        }
+
+        function sendMessageTo() {
+            const message = document.getElementById('singleMessageInput').value;
+            const sendToId = document.getElementById('sendToId').value;
+            peerConnect.sendMessage(message, sendToId);
         }
 
         function sendMessage() {
@@ -86,6 +116,16 @@
                 peerConnect.sendMessage(message);
                 messageInput.value = '';
             }
+        }
+
+        function listAll() {
+            // 获取所有其他用户的 ID
+            peerConnect.listAllPeers((peerIds) => {
+                console.log('All available peer IDs: ', peerIds);
+                // 过滤掉自己的 ID
+                const otherPeerIds = peerIds.filter((peerId) => peerId!== id);
+                console.log('Other peer IDs: ', otherPeerIds);
+            });
         }
     </script>
 </body>
