@@ -4,12 +4,15 @@
     <div class="user-list">
       <h3>在线用户</h3>
       <div class="user-item" 
-        v-for="user in users" 
-        :key="user.id"
-        :class="{ active: currentUser && currentUser.id === user.id }"
-        @click="selectUser(user)">
-        <span class="user-name">{{ user.name }}</span>
+      v-for="user in users" 
+      :key="user.id"
+      :class="{ active: currentUser && currentUser.id === user.id }"
+      @click="selectUser(user)">
+      <span class="user-name">{{ user.name }}</span>
+      <div class="user-right">
+        <span v-if="user.unreadCount" class="unread-count">{{ user.unreadCount }}</span>
         <span class="user-status" :class="{ online: user.online }"></span>
+      </div>
       </div>
     </div>
 
@@ -54,7 +57,8 @@ export default {
       currentUser: null,
       messages: [],
       newMessage: '',
-      connect: null
+      connect: null,
+      unreadMessages: {} // 新增：存储每个用户的未读消息
     }
   },
   methods: {
@@ -65,17 +69,23 @@ export default {
       this.setupMessageListener();
     },
     async loadUsers() {
-      var usersJson = localStorage.getItem('users');
-      if(usersJson != null) {
-        this.users = JSON.parse(usersJson);
-        console.log('从缓存加载用户列表');
-        return;
-      }
+      // var usersJson = localStorage.getItem('users');
+      // if(usersJson != null) {
+      //   this.users = JSON.parse(usersJson);
+      //   // 初始化未读消息数
+      //   this.users = this.users.map(user => ({
+      //     ...user,
+      //     unreadCount: 0
+      //   }));
+      //   console.log('从缓存加载用户列表');
+      //   return;
+      // }
       this.connect.listAllPeers(users => {
         this.users = users.map(user => ({
           id: user,
           name: user,
-          online: true // 这里可以根据实际状态设置
+          online: true,
+          unreadCount: 0 // 添加未读消息计数
         }));
         console.log('this.users', this.users);
         localStorage.setItem('users', JSON.stringify(this.users));
@@ -83,9 +93,12 @@ export default {
     },
     selectUser(user) {
       this.currentUser = user;
-      this.messages = []; // 清空消息列表
-      // TODO: 加载历史消息
-      // 与聊天对象建立连接
+      // 清除未读消息计数
+      const userIndex = this.users.findIndex(u => u.id === user.id);
+      if (userIndex !== -1) {
+        this.users[userIndex].unreadCount = 0;
+      }
+      // this.messages = []; // 清空消息列表
       this.connect.connect(this.currentUser.id);
     },
     async sendMessage() {
@@ -111,11 +124,21 @@ export default {
     },
     setupMessageListener() {
       this.connect.onMessage((message, fromId) => {
+        // 添加消息到消息列表
         this.messages.push({
-          content: message,  // message 直接是消息内容字符串
-          time: new Date(),  // 使用当前时间
+          content: message,
+          time: new Date(),
           fromSelf: false
         });
+        
+        // 如果消息不是来自当前聊天用户，增加未读计数
+        if (!this.currentUser || fromId !== this.currentUser.id) {
+          const userIndex = this.users.findIndex(u => u.id === fromId);
+          if (userIndex !== -1) {
+            this.users[userIndex].unreadCount = (this.users[userIndex].unreadCount || 0) + 1;
+          }
+        }
+        
         this.scrollToBottom();
       });
     },
@@ -147,6 +170,8 @@ export default {
 
 <style lang="less" scoped>
 .chat-container {
+  max-width: 800px;
+  min-height: 500px;
   display: flex;
   height: 100%;
   background: #fff;
@@ -204,9 +229,11 @@ export default {
     }
     
     .message-list {
-      flex: 1;
+      // flex: 1;
       padding: 20px;
       overflow-y: auto;
+      height: 400px;
+      background:#eee;
       
       .message {
         margin-bottom: 15px;

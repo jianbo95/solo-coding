@@ -1,12 +1,17 @@
 export default class PeerConnect {
     constructor(selfId) {
         var option = {
-            host: 'localhost',
-            port: 9000,
-            path: '/myapp',
+            // host: '10.20.88.85',
+            // port: 9000,
+            // path: '/myapp',
             allow_discovery: true,
             corsOptions: {
                 origin: '*' // 允许所有源访问
+            },
+            config: {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' }
+                ]
             }
         };
         if(selfId != null) {
