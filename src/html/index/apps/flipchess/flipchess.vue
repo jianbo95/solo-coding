@@ -178,6 +178,7 @@ export default {
     
     isValidMove(fromI, fromJ, toI, toJ) {
       const fromPiece = this.board[fromI][fromJ];
+      const toPiece = this.board[toI][toJ];
       
       // 炮的特殊移动规则
       if (fromPiece.name === '炮') {
@@ -185,8 +186,12 @@ export default {
         if (fromI !== toI && fromJ !== toJ) {
           return false;
         }
-        // 检查是否隔着一个子
-        return BetweenPiece.hasOnePieceBetween(this.board, fromI, fromJ, toI, toJ);
+        // 如果目标位置有棋子，需要隔着一个子
+        if (toPiece) {
+          return BetweenPiece.hasOnePieceBetween(this.board, fromI, fromJ, toI, toJ);
+        }
+        // 如果是空位置，允许移动一格
+        return Math.abs(fromI - toI) + Math.abs(fromJ - toJ) === 1;
       }
       
       // 其他棋子只能横竖移动一格
