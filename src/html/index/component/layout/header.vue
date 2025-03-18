@@ -7,7 +7,7 @@
                 <router-link to="/game" :class="{ active: $route.path === '/game' }">{{ $t('menu.game') }}</router-link>
             </nav>
             <div class="right-menu">
-                <el-input class="search-input"
+                <el-input 
                     :placeholder="$t('main.search') + '...'" 
                     :size="size"
                     prefix-icon="el-icon-search">
@@ -62,7 +62,7 @@ export default {
         }
         
         .right-menu {
-            margin-left: auto; // 靠右布局
+            margin-left: auto;
             width: 420px;
             display: flex;
             align-items: center;
@@ -114,24 +114,9 @@ export default {
 @media screen and (max-width: 768px) {
     .header-container {
         .header-content {
-            width: 100% !important; 
+            width: 100%;
             .logo {
                 display: none;
-            }
-            .right-menu {
-                width: 100px !important;
-                margin-left: auto !important; // 靠右布局
-                margin-right:10px;
-                .search-input {
-                    display: none;
-                }
-            }
-
-            .nav-menu {
-                gap: 0px !important;
-                a {
-                    padding: 0 0 0 10px !important;
-                }
             }
         }
     }
