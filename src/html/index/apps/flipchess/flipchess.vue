@@ -1,30 +1,64 @@
 <template>
   <div class="flipchess">
-    <div class="game-info">
-      <div class="player-info">
-        <div :class="['player', { active: currentPlayer === 'red' }]">
-          红方
-        </div>
-        <div :class="['player', { active: currentPlayer === 'black' }]">
-          黑方
+    <div class="game-container">
+      <!-- 红方吃掉的棋子 -->
+      <div class="eaten-pieces red-eaten">
+        <div v-for="(piece, index) in eatenRedPieces" 
+             :key="'red-' + index" 
+             class="piece red">
+          {{ piece.name }}
         </div>
       </div>
-      <el-button @click="startGame" v-if="!gameStarted">开始游戏</el-button>
-    </div>
 
-    <div class="board">
-      <div v-for="(row, i) in board" :key="i" class="row">
-        <div v-for="(cell, j) in row" 
-             :key="j" 
-             class="cell"
-             @click="handleCellClick(i, j)">
-          <div v-if="cell" 
-               :class="['piece', cell.color, { 'covered': !cell.revealed, 'selected': isSelected(i, j) }]">
-            {{ cell.revealed ? cell.name : '?' }}
+      <!-- 中间棋盘区域 -->
+      <div class="center-area">
+
+        <div class="game-info">
+          <div class="player-info">
+            <div :class="['player', { active: currentPlayer === 'red' }]">
+              红方 {{ isAIMode ? '(玩家)' : '' }}
+            </div>
+            <div class="start-button">
+              <el-button type="primary" @click="startGame" v-if="!gameStarted">开始游戏</el-button>
+              <el-switch
+                v-model="isAIMode"
+                active-text="人机对战"
+                inactive-text="双人对战"
+                :disabled="gameStarted"
+              />
+            </div>
+            <div :class="['player', { active: currentPlayer === 'black' }]">
+              黑方 {{ isAIMode ? '(AI)' : '' }}
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+
+        <div class="board">
+          <div v-for="(row, i) in board" :key="i" class="row">
+            <div v-for="(cell, j) in row" 
+                :key="j" 
+                class="cell"
+                @click="handleCellClick(i, j)">
+              <div v-if="cell" 
+                  :class="['piece', cell.color, { 'covered': !cell.revealed, 'selected': isSelected(i, j) }]">
+                {{ cell.revealed ? cell.name : '' }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div> <!-- center-area -->
+
+      <!-- 黑方吃掉的棋子 -->
+      <div class="eaten-pieces black-eaten">
+        <div v-for="(piece, index) in eatenBlackPieces" 
+              :key="'black-' + index" 
+              class="piece black">
+          {{ piece.name }}
+        </div>
+      </div><!-- end 黑方吃掉的棋子 -->
+
+    </div> <!-- game-container -->
   </div>
 </template>
 
@@ -32,6 +66,7 @@
 import RandomChess from './RandomChess.js';
 import EatRule from './EatRule.js';
 import BetweenPiece from './betweenPiece.js';
+import FlipchessAI from './flipchessAi.js';
 
 export default {
   data() {
@@ -41,7 +76,15 @@ export default {
       currentPlayer: null,
       selectedPiece: null,
       moveHistory: [], // 记录移动历史，用于检测追逐
+      eatenRedPieces: [],  // 被吃掉的红色棋子
+      eatenBlackPieces: [], // 被吃掉的黑色棋子
+      isAIMode: false,
+      ai: null,
     }
+  },
+  created() {
+    // 创建一个空棋盘
+    this.board = Array(4).fill().map(() => Array(8).fill(null));
   },
   methods: {
     startGame() {
@@ -50,6 +93,10 @@ export default {
       this.currentPlayer = null;
       this.selectedPiece = null;
       this.moveHistory = [];
+
+      if (this.isAIMode) {
+        this.ai = new FlipchessAI();
+      }
     },
     
     isSelected(i, j) {
@@ -58,8 +105,11 @@ export default {
              this.selectedPiece.j === j;
     },
     
-    handleCellClick(i, j) {
+    async handleCellClick(i, j) {
       if (!this.gameStarted) return;
+
+      // 如果是 AI 模式且当前是 AI 回合，不响应点击
+      if (this.isAIMode && this.currentPlayer === 'black') return;
       
       const piece = this.board[i][j];
       
@@ -70,13 +120,18 @@ export default {
           this.selectedPiece = null;
           return;
         }
-        this.tryMove(i, j);
+        await this.tryMove(i, j);
+        
+        // 在移动完成后，如果是 AI 模式且轮到 AI，则执行 AI 移动
+        if (this.isAIMode && this.currentPlayer === 'black') {
+          await this.makeAIMove();
+        }
         return;
       }
 
       if (!piece) return;
 
-      // 处理未翻开的棋子（仅在没有选中时）
+      // 处理未翻开的棋子
       if (!piece.revealed) {
         piece.revealed = true;
         if (!this.currentPlayer) {
@@ -84,8 +139,39 @@ export default {
         }
         console.log('翻开棋子:', piece.name);
         this.switchPlayer();
+        
+        // 在翻开棋子后，如果是 AI 模式且轮到 AI，则执行 AI 移动
+        if (this.isAIMode && this.currentPlayer === 'black') {
+          await this.makeAIMove();
+        }
       } else if (piece.color === this.currentPlayer) {
         this.selectedPiece = { i, j, piece };
+      }
+    },
+
+    async makeAIMove() {
+      // 添加延迟，使 AI 走子更自然
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      const aiDecision = this.ai.makeMove(this.board);
+      if (!aiDecision) return;
+
+      if (aiDecision.type === 'reveal') {
+        // 翻开棋子
+        const { i, j } = aiDecision.position;
+        const piece = this.board[i][j];
+        piece.revealed = true;
+        console.log('AI 翻开棋子:', piece.name);
+        this.switchPlayer();
+      } else if (aiDecision.type === 'move') {
+        // 移动棋子
+        const { from, to } = aiDecision.move;
+        this.selectedPiece = {
+          i: from.i,
+          j: from.j,
+          piece: this.board[from.i][from.j]
+        };
+        this.tryMove(to.i, to.j);
       }
     },
 
@@ -143,22 +229,38 @@ export default {
           return;
         }
         
-        // 执行吃子
+        // 执行吃子时，添加被吃的棋子到对应数组
         if (EatRule.isSamePiece(fromPiece, toPiece)) {
-          console.log('同归于尽:', fromPiece.name, '与', toPiece.name);
+           // 同归于尽
+           console.log(`${fromPiece.name} 与 ${toPiece.name} 同归于尽`);
+          // 同归于尽时两个棋子都要加入对应数组
+          if (fromPiece.color === 'red') {
+            this.eatenRedPieces.push(fromPiece);
+            this.eatenBlackPieces.push(toPiece);
+          } else {
+            this.eatenBlackPieces.push(fromPiece);
+            this.eatenRedPieces.push(toPiece);
+          }
           this.board[fromI][fromJ] = null;
           this.board[toI][toJ] = null;
         } else {
+          // 正常吃子
           if (!toPiece.revealed) {
-            // 炮吃未翻开的子时，翻开并显示信息
+            // 炮吃未翻开的子
             toPiece.revealed = true;
             if (fromPiece.color === toPiece.color) {
-              console.log('吃子:', fromPiece.name, '吃到了自己的', toPiece.name);
+              console.log(`${fromPiece.name} 吃到了自己的 ${toPiece.name}`);
             } else {
-              console.log('吃子:', fromPiece.name, '吃到了对方的', toPiece.name);
+              console.log(`${fromPiece.name} 吃掉了对方的 ${toPiece.name}`);
             }
           } else {
-            console.log('吃子:', fromPiece.name, '吃', toPiece.name);
+            console.log(`${fromPiece.name} 吃掉了 ${toPiece.name}`);
+          }
+
+          if (toPiece.color === 'red') {
+            this.eatenRedPieces.push(toPiece);
+          } else {
+            this.eatenBlackPieces.push(toPiece);
           }
           this.board[fromI][fromJ] = null;
           this.board[toI][toJ] = fromPiece;
@@ -249,57 +351,153 @@ export default {
 
 <style lang="less" scoped>
 .flipchess {
+  background-color: #fff;
   padding: 20px;
-  
-  .game-info {
-    margin-bottom: 20px;
-    
-    .player-info {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
-      
-      .player {
-        padding: 10px;
-        border-radius: 4px;
-        
-        &.active {
-          background: #e6f7ff;
-        }
-      }
-    }
+  width: calc(100% - 40px);
+  max-width: 1300px;
+  margin: 0 auto;
+  // src\html\index\apps\flipchess\image.png
+  background-image: url('/html/index/apps/flipchess/images/bg.png');
+  background-repeat: repeat;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+
+
+  .game-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
   }
-  
-  .board {
-    display: inline-block;
-    border: 2px solid #333;
-    
-    .row {
-      display: flex;
-    }
-    
-    .cell {
-      width: 60px;
-      height: 60px;
-      border: 1px solid #999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      
-      &:hover {
-        background: #f0f0f0;
-      }
-    }
-    
+
+  .eaten-pieces {
+    width: 10%;
+    min-height: 500px;
+    border: 0px solid #aaa;
+    padding: 10px;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    background-image: url('/html/index/apps/flipchess/images/bg2.png');
+    background-repeat: repeat;
+    background-size: cover;
+
     .piece {
+      background-color: #eee;
       width: 50px;
       height: 50px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 20px;
+      color: white;
+    }
+
+    .red {
+        background: #ff4d4f;
+      }
+      
+      .black {
+        background: #000;
+      }
+  }
+
+  .center-area {
+    border:0px solid red;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .game-info {
+    width: 100%;
+    margin-bottom: 20px;
+    
+    .player-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+
+      .start-button {
+        flex: 1;
+        text-align: center;
+        margin: 0 20px;
+      }
+      
+      .player {
+        padding: 10px;
+        border-radius: 4px;
+        min-width: 80px;
+        text-align: center;
+        transition: all 0.3s ease;
+        
+        &.active {
+          color: white;
+      
+          &:first-child {  // 红方
+            background: #ff4d4f;
+          }
+          
+          &:last-child {   // 黑方
+            background: #000;
+          }
+        }
+      }
+    }
+  }
+  
+  .board {
+    display: block;
+    border: 2px solid #333;
+    width: calc(100% - 4px);
+    margin:0 auto;
+    
+    .row {
+      display: flex;
+    }
+    
+    .cell {
+      width: calc(100% / 8); // 8列等分
+      aspect-ratio: 1; // 保持正方形
+      border: 1px solid #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      
+      // &:hover {
+      //   background: #000;
+      //   opacity: 0.2;
+      // }
+    }
+    
+    .piece {
+      width: 80%;
+      height: 80%;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-weight: bold;
+      
+      /* 小屏幕 */
+      @media (max-width: 600px) {
+          font-size: 25px;
+      }
+
+      /* 中等屏幕 */
+      @media (min-width: 601px) and (max-width: 1200px) {
+          font-size: 36px;
+      }
+
+      /* 大屏幕 */
+      @media (min-width: 1201px) {
+          font-size: 48px;
+      }
       
       &.red {
         background: #ff4d4f;
@@ -312,12 +510,18 @@ export default {
       }
       
       &.covered {
-        background: #8c8c8c;
-        color: white;
+        background-image: url('/html/index/apps/flipchess/images/image.png');
+        background-repeat: repeat;
+        background-size: cover;
+        border: 2px solid #666;
+        color: #333;
+        font-weight: bold;
+        text-shadow: 1px 1px 1px rgba(255,255,255,0.5);
       }
       
       &.selected {
-        box-shadow: 0 0 0 2px #1890ff;
+        box-shadow: 0 0 0 4px #fff; // 改为白色且加大宽度
+        border: 2px solid rgba(255, 255, 255, 0.8); // 添加实线边框
       }
     }
   }

@@ -59,6 +59,8 @@ export default {
 
 <style lang="less" scoped>
 .app-container {
+    width: calc(100% - 0px);
+    overflow: hidden;
     .main-content {
         margin: 80px auto 0;  /* 分别设置上、左右、下边距 */
         width: 100%;
