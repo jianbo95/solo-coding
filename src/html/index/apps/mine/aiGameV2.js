@@ -61,6 +61,8 @@ export default class MinesweeperAIV2 {
             safeMove.action = 'reveal';
             return safeMove2;
         }
+        
+        // if (safeMove) return { ...safeMove, action: 'reveal' };
 
         // 2. 标记确定是雷的格子
         const mineMove = this.findDefiniteMine();
@@ -69,6 +71,8 @@ export default class MinesweeperAIV2 {
             mineMove.action = 'flag';
             return mineMove2;
         }
+        
+        // if (mineMove) return { ...mineMove, action: 'flag' };
         
         // 3. 如果没有确定的选择，根据是否开启作弊模式选择下一步
         const next = cheatMode ? this.cheatFindMove() : this.findProbableMove();

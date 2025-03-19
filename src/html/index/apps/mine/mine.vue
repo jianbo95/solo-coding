@@ -41,12 +41,17 @@
                     @contextmenu.prevent="handleRightClick(rowIndex, colIndex)"
                 >
                     <template v-if="cell.revealed">
-                        <span v-if="cell.isMine">💣</span>
+                        <span v-if="cell.isMine">
+                            <!-- 💣 -->
+                            <img style="width: 100%; height: 100%; margin:0% 0 0 10%;" src="./html/index/apps/mine/bang.png" alt="" srcset="">
+                        </span>
                         <span v-else-if="cell.adjacentMines > 0" :class="`number-${cell.adjacentMines}`">
                             {{ cell.adjacentMines }}
                         </span>
                     </template>
-                    <span v-else-if="cell.flagged">🚩</span>
+                    <span v-else-if="cell.flagged">
+                        <img style="width: 70%; height: 70%; margin:20% 0 0 20%;" src="./html/index/apps/mine/flag.png" alt="" srcset="">
+                    </span>
                 </div>
             </div>
         </div>
@@ -71,9 +76,9 @@
 <script>
 import generateMines from './generateMines.js';
 import checkIfMapIsLuckBased from './checkIfMapIsLuckBased.js';
-import MinesweeperAI from './aiGame.js';
+// import MinesweeperAI from './aiGame.js';
 import MinesweeperAIV2 from './aiGameV2.js';
-import MinesweeperAIV3 from './aiGameV3.js';
+// import MinesweeperAIV3 from './aiGameV3.js';
 import MinesweeperAIV4 from './aiGameV4.js';
 import MineTab from './mine-tab.vue';
 

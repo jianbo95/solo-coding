@@ -20,6 +20,7 @@ export default class MinesweeperAIV4 {
             safeMove.action = 'reveal';
             return safeMove2;
         }
+        // if (safeMove) return { ...safeMove, action: 'reveal' };
 
         // 2. 标记确定是雷的格子
         const mineMove = this.findDefiniteMine();
@@ -28,6 +29,7 @@ export default class MinesweeperAIV4 {
             mineMove.action = 'flag';
             return mineMove2;
         }
+        // if (mineMove) return { ...mineMove, action: 'flag' };
 
         // 3. 如果没有确定的选择，找一个最可能安全的格子
         const next = this.findProbableMove();

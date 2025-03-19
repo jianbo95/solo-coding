@@ -92,6 +92,8 @@ var compile = {
     babel: function(content) {
         var output = Babel.transform(content, { presets: ['es2015'] }).code;
         // Object.defineProperty called on non-object
+        // output = output.replace('defineProperty', 'exports = exports || {};\nObject.defineProperty(exports');
+        // output = output.replace('defineProperty', 'compileByJianbo');
         return output;
     },
 
@@ -197,12 +199,29 @@ var compile = {
     
         // 执行中，这时又有很多发起的请求，是基于这个请求发起的
         // 实际上就是递归，闭包并传入基于哪个url发起的试试！
+        if(Babel.version.indexOf('7') == 0) {
+            // 7 这个版本，替换失败？
+            output = output.replace("exports.default = void 0;", '');
+            output = output.replace("var _default = exports.default = {", 'exports = {');
+            // output = output.replace("var _default = exports =", 'exports =');
+            output = output.replace("var _default = exports.default", 'exports');
+            
+            // output = tool.replaceAll(output, 'var _default = exports = {', 'exports = {',);
+            // output = '/*Fuck*/'+output;
+            // tool.writeFile(path + 'dist/' + relativePath, output);
+            // return true;
+        }
         output = tool.replaceAll(output, 'require\\(', 'require(parentUrl,');
         output = tool.replaceAll(output, 'exports.default', 'exports');
         output = tool.replaceEscapedChars(output, 
             'function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }', 
             'function _interopRequireDefault(obj) { return { default: obj}; }'
         );
+        output = tool.replaceEscapedChars(output, 
+            'function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }', 
+            'function _interopRequireDefault(obj) { return { default: obj}; }'
+        );
+        
         var flag = 'Flag("compileByJianbo");\n';
         flag += 'Flag("compileByPublish");\n'
         if(this.options.minifyJs == true) {

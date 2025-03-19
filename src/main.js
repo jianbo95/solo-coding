@@ -24,7 +24,7 @@ Vue.use(ElementUI, {locale}) // ui库
 
 
 let vue = new Vue({
-    i18n,
+    i18n: i18n,
     el: '#app',
     router: Router,
     components: {

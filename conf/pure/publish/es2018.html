@@ -1,0 +1,42 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Babel Standalone with ES2018</title>  
+    <script src="https://unpkg.com/@citycide/babel-standalone@7.3.1/dist/babel.min.js"></script>  
+</head>  
+<body>  
+    <h1>Babel Standalone ES2018 Example</h1>  
+    
+    <script id="source-code" type="text/plain">  
+        const safeMove = { x: 1, y: 2 };  
+
+        const reveal = () => {  
+            return {  
+                ...safeMove,  
+                action: 'reveal',  
+            };  
+        };  
+
+        console.log(reveal());  
+    </script>  
+
+    <script>  
+        // 获取源代码  
+        const content = document.getElementById('source-code').textContent;  
+
+        // 使用 Babel.transform 进行编译，包含插件支持  
+        const output = Babel.transform(content, {  
+            presets: ['es2018'], // 不加载任何预设  
+        }).code;  
+
+        // 输出编译后的代码到控制台  
+        console.log("Transpiled Code:");  
+        console.log(output);  
+
+        // 动态执行编译后的代码  
+        eval(output);  
+    </script>  
+</body>  
+</html>  

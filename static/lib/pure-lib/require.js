@@ -138,12 +138,12 @@ var require = function(parentUrl, url) {
     }
 
     var result;
-    result = eval(code); 
-    // try {
-    // } catch (e) {
-    //     console.error(e);
-    //     console.error('error from url = ' + url, code);
-    // }
+    try {
+        result = eval(code); 
+    } catch (e) {
+        console.error(e);
+        console.error('error from url = ' + url, code);
+    }
 
     requireUrls[url] = result;
     // console.log('require', url);
