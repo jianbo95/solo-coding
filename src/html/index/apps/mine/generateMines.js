@@ -1,7 +1,7 @@
 import MinesweeperAI from '@/html/index/apps/mine/aiGame.js'; 
 
 export default function generateMines(rows, cols, mineCount, firstRow, firstCol) {
-    const maxAttempts = 500; // 最大尝试次数
+    const maxAttempts = 50; // 最大尝试次数
     let bestGrid = null;
     let bestRevealedCount = 0;
 
