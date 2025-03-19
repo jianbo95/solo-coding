@@ -63,8 +63,10 @@ export default {
         text-align: center;
     }
 
-    .home-container{ 
-        width: 100%; background-color: #eee; padding-top:20px;
+    @media screen and (min-width: 768.0001px) {
+        .home-container{ 
+            width: 100%; background-color: #eee; padding-top:20px;
+        }
     }
     // 响应式布局：在移动端将横向排列改为纵向排列
     @media screen and (max-width: 768px) {
