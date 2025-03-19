@@ -67,7 +67,7 @@ export default {
             margin: 40px auto 0;
         }
         @media screen and (min-width: 768.00001px) {
-            margin: 40px auto 0;
+            margin: 60px auto 0;
         }
         width: 100%;
         padding: 0px;
