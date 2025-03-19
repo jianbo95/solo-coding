@@ -3,7 +3,7 @@ import { Vue } from '../../../app/NodeModule.js';
 // 引入语言包
 import en from './locales/en.js';
 import zh from './locales/zh.js';
-var lang = localStorage.getItem('language') || 'zh';
+var lang = localStorage.getItem('language') || 'en';
 
 window.LocaleType = lang;
 
