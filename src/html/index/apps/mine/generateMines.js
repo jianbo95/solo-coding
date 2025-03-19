@@ -1,4 +1,4 @@
-import MinesweeperAI from '@/html/app/apps/mine/aiGame.js'; 
+import MinesweeperAI from '@/html/index/apps/mine/aiGame.js'; 
 
 export default function generateMines(rows, cols, mineCount, firstRow, firstCol) {
     const maxAttempts = 500; // 最大尝试次数

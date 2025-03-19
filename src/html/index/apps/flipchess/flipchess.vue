@@ -1,8 +1,25 @@
 <template>
   <div class="flipchess">
+    <div class="game-menu">
+      <!-- 游戏模式选择 -->
+      <el-select v-model="gameMode" 
+                 :disabled="gameStarted"
+                 size="mini"
+                 placeholder="游戏模式">
+        <el-option label="双人对战" value="pvp"></el-option>
+        <el-option label="人机对战" value="pve"></el-option>
+      </el-select>
+
+      <!-- 新游戏按钮 -->
+      <el-button size="mini" 
+                 :type="gameStarted ? 'warning' : 'primary'"
+                 @click="startGame">
+        {{ gameStarted ? '重新开始' : '新游戏' }}
+      </el-button>
+    </div>
     <div class="game-container">
       <!-- 红方吃掉的棋子 -->
-      <div class="eaten-pieces red-eaten">
+      <div class="eaten-pieces left-eaten red-eaten">
         <div v-for="(piece, index) in eatenRedPieces" 
              :key="'red-' + index" 
              class="piece red">
@@ -17,15 +34,6 @@
           <div class="player-info">
             <div :class="['player', { active: currentPlayer === 'red' }]">
               红方 {{ isAIMode ? '(玩家)' : '' }}
-            </div>
-            <div class="start-button">
-              <el-button type="primary" @click="startGame" v-if="!gameStarted">开始游戏</el-button>
-              <el-switch
-                v-model="isAIMode"
-                active-text="人机对战"
-                inactive-text="双人对战"
-                :disabled="gameStarted"
-              />
             </div>
             <div :class="['player', { active: currentPlayer === 'black' }]">
               黑方 {{ isAIMode ? '(AI)' : '' }}
@@ -50,7 +58,7 @@
       </div> <!-- center-area -->
 
       <!-- 黑方吃掉的棋子 -->
-      <div class="eaten-pieces black-eaten">
+      <div class="eaten-pieces right-eaten black-eaten">
         <div v-for="(piece, index) in eatenBlackPieces" 
               :key="'black-' + index" 
               class="piece black">
@@ -59,6 +67,24 @@
       </div><!-- end 黑方吃掉的棋子 -->
 
     </div> <!-- game-container -->
+    <div class="down-eaten">
+      <!-- 红方吃掉的棋子 -->
+      <div class="eaten-pieces red-eaten">
+        <div v-for="(piece, index) in eatenRedPieces" 
+             :key="'red-' + index" 
+             class="piece red">
+          {{ piece.name }}
+        </div>
+      </div>
+      <!-- 黑方吃掉的棋子 -->
+      <div class="eaten-pieces black-eaten">
+        <div v-for="(piece, index) in eatenBlackPieces" 
+              :key="'black-' + index" 
+              class="piece black">
+          {{ piece.name }}
+        </div>
+      </div><!-- end 黑方吃掉的棋子 -->
+    </div>
   </div>
 </template>
 
@@ -71,6 +97,7 @@ import FlipchessAI from './flipchessAi.js';
 export default {
   data() {
     return {
+      gameMode: 'pvp', // 添加游戏模式数据
       board: [], // 8x4 的棋盘
       gameStarted: false,
       currentPlayer: null,
@@ -87,15 +114,27 @@ export default {
     this.board = Array(4).fill().map(() => Array(8).fill(null));
   },
   methods: {
+    handleGameMode(command) {
+      this.isAIMode = command === 'pve';
+      this.startGame();
+    },
     startGame() {
       this.board = RandomChess.initBoard();
       this.gameStarted = true;
       this.currentPlayer = null;
       this.selectedPiece = null;
       this.moveHistory = [];
+      this.eatenRedPieces = [];
+      this.eatenBlackPieces = [];
 
       if (this.isAIMode) {
         this.ai = new FlipchessAI();
+      }
+    },
+
+    restartGame() {
+      if (confirm('确定要重新开始游戏吗？')) {
+        this.startGame();
       }
     },
     
@@ -352,8 +391,7 @@ export default {
 <style lang="less" scoped>
 .flipchess {
   background-color: #fff;
-  padding: 20px;
-  width: calc(100% - 40px);
+  width: 100%;
   max-width: 1300px;
   margin: 0 auto;
   // src\html\index\apps\flipchess\image.png
@@ -362,11 +400,56 @@ export default {
   border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 
+  .game-menu {
+    margin-bottom: 20px;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 4px;
+  }
 
   .game-container {
     display: flex;
     justify-content: space-between;
     gap: 20px;
+  }
+
+  .left-eaten {
+    @media screen and (max-width: 768px) {
+      display: none !important;
+    }
+  }
+  .right-eaten {
+    @media screen and (max-width: 768px) {
+      display: none !important;
+    }
+  }
+  .down-eaten {
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+    
+    .eaten-pieces {
+      width: calc(50% - 5px);  // 各占50%宽度，减去gap的一半
+      min-height: 100px;        // 移除最小高度限制
+      padding: 5px;           // 减小内边距
+
+      .piece {
+        width: 25px;  // 原来是50px，减小50%
+        height: 25px; // 原来是50px，减小50%
+        font-size: 14px; // 原来是20px，相应减小字体
+      }
+    }
+
+    @media screen and (max-width: 768px) {
+      display: flex !important;
+    }
+    // 非移动设备时隐藏down-eaten
+    @media screen and (min-width: 768.00001px) {
+      display: none!important;
+    }
   }
 
   .eaten-pieces {
@@ -393,6 +476,12 @@ export default {
       justify-content: center;
       font-size: 20px;
       color: white;
+
+      @media screen and (max-width: 768px) {
+        width: 30px;
+        height: 30px;
+        font-size: 16px;
+      }
     }
 
     .red {
@@ -418,7 +507,7 @@ export default {
     
     .player-info {
       display: flex;
-      justify-content: space-between;
+      justify-content: space-around;
       align-items: center;
       margin-bottom: 10px;
 

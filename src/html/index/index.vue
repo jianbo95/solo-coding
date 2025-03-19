@@ -62,7 +62,13 @@ export default {
     width: calc(100% - 0px);
     overflow: hidden;
     .main-content {
-        margin: 80px auto 0;  /* 分别设置上、左右、下边距 */
+        
+        @media screen and (max-width: 768px) {
+            margin: 40px auto 0;
+        }
+        @media screen and (min-width: 768.00001px) {
+            margin: 40px auto 0;
+        }
         width: 100%;
         padding: 0px;
     }

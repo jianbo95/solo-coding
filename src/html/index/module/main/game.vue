@@ -1,5 +1,5 @@
 <template>
-  <div class="game-container" style="width: 1300px; margin:0 auto;">
+  <div class="game-container">
     <div class="game-list">
       <div v-for="game in games" 
            :key="game.id" 
@@ -10,7 +10,7 @@
               <img :src="`/html/index/apps/${game.id}/${game.icon}`" :alt="game.name">
             </template>
             <template v-else>
-              <span style="font-size:80px; color:cadetblue;">{{game.icon}}</span>
+              <span style="font-size:30px; color:cadetblue;">{{game.icon}}</span>
             </template>
         </div>
         <div class="game-name">{{ game.name }}</div>
@@ -49,11 +49,24 @@ export default {
 <style lang="less" scoped>
 .game-container {
   padding: 20px;
+  width: 1300px; 
+  margin:0 auto;
+
+  // 增加移动设备宽度100%
+  @media screen and (max-width: 768px) {
+    padding: 10px !important;
+    width: calc(100% - 20px) !important;
+  }
   
   .game-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     gap: 20px;
+    
+    @media screen and (max-width: 768px) {
+      grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+      gap: 10px;
+    }
   }
   
   .game-item {
@@ -71,8 +84,8 @@ export default {
     }
     
     .game-icon {
-      width: 100px;
-      height: 100px;
+      width: 30px;
+      height: 30px;
       margin: 0 auto 10px;
       
       img {

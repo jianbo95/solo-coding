@@ -84,7 +84,13 @@ export default {
             
             a {
                 padding: 0 20px;
-                line-height: 60px;
+
+                @media screen and (max-width: 768px) {
+                    line-height: 40px;
+                }
+                @media screen and (min-width: 768.00001px) {
+                    line-height: 60px;
+                }
                 color: #333;
                 text-decoration: none;
                 position: relative;
