@@ -55,6 +55,11 @@ export default {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    @media screen and (max-width: 768px) {
+        gap: 10px;
+    }
+    @media screen and (min-width: 768.0001px) {
+        gap: 10px;
+    }
 }
 </style>

@@ -49,9 +49,15 @@ export default {
 
 <style lang="less" scoped>
 .article-card {
+    
+    @media screen and (max-width: 768px) {
+        padding: 10px;
+    }
+    @media screen and (min-width: 768.0001px) {
+        padding: 20px;
+    }
     background: #fff;
     border-radius: 4px;
-    padding: 20px;
     box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
     cursor: pointer;
     transition: all 0.3s;
@@ -68,7 +74,13 @@ export default {
     
     .meta {
         display: flex;
-        gap: 20px;
+        @media screen and (max-width: 768px) {
+            gap: 10px;
+        }
+        @media screen and (min-width: 768.0001px) {
+            gap: 10px;
+        }
+        
         margin-bottom: 15px;
         color: #666;
         align-items: center;  /* 添加垂直居中对齐 */

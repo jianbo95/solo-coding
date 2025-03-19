@@ -79,8 +79,8 @@ export default {
 
         .home-main {
             flex-direction: column;
-            width: calc(100% - 20px) !important;
-            padding: 0 10px;
+            width: calc(100% - 10px) !important;
+            padding: 0 5px;
 
             .side-menu {
                 display: none;

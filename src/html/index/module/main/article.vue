@@ -27,7 +27,13 @@ export default {
 <style lang="less" scoped>
 .article-page {
     display: flex;
-    gap: 20px;
+    
+    @media screen and (min-width: 768.0001px) {
+        gap: 20px;
+    }
+    @media screen and (max-width: 768px) {
+        gap: 10px;
+    }
     width: 1300px; margin:0 auto;
     
     .article-container {
@@ -35,19 +41,29 @@ export default {
         background: #fff;
         border-radius: 4px;
         box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
-        padding: 20px;
+        @media screen and (min-width: 768.0001px) {
+            padding: 20px;
+        }
+        @media screen and (max-width: 768px) {
+            padding: 0 10px;
+        }
     }
 }
 
 @media screen and (max-width: 768px) {
     .article-page {
         flex-direction: column;
-        width: calc(100% - 20px) !important;
-        padding: 0 10px;
+        width: calc(100% - 10px) !important;
+        padding: 0 5px;
         margin: 0;
 
         .article-container {
-            margin-bottom: 20px;
+            @media screen and (min-width: 768.0001px) {
+                margin-bottom: 20px;
+            }
+            @media screen and (max-width: 768px) {
+                margin-bottom: 10px;
+            }
         }
 
         .right-panel {

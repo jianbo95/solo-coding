@@ -42,8 +42,15 @@ export default {
     .widgets-container {
         width: 100%; // 改为100%以充满父容器
         
-        > * {
-            margin-bottom: 20px;
+        @media screen and (max-width: 768px) {
+            > * {
+                margin-bottom: 10px;
+            }
+        }
+        @media screen and (min-width: 768.0001px) {
+            > * {
+                margin-bottom: 20px;
+            }
         }
     }
 }
