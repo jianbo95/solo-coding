@@ -74,13 +74,14 @@
 </template>
 
 <script>
-import generateMines from './generateMines.js';
-import checkIfMapIsLuckBased from './checkIfMapIsLuckBased.js';
-// import MinesweeperAI from './aiGame.js';
-import MinesweeperAIV2 from './aiGameV2.js';
-// import MinesweeperAIV3 from './aiGameV3.js';
-import MinesweeperAIV4 from './aiGameV4.js';
-import MineTab from './mine-tab.vue';
+// import generateMines from './mine-app/generateMines.js';
+import generateMines from './mine-app/generateMinesBySeed.js';
+import checkIfMapIsLuckBased from './mine-app/checkIfMapIsLuckBased.js';
+// import MinesweeperAI from './mine-ai/aiGame.js';
+// import MinesweeperAIV3 from './mine-ai/aiGameV3.js';
+import MinesweeperAIV2 from './mine-ai/aiGameV2.js';
+import MinesweeperAIV4 from './mine-ai/aiGameV4.js';
+import MineTab from './mine-cmpt/mine-tab.vue';
 
 export default {
     name: 'Minesweeper',
