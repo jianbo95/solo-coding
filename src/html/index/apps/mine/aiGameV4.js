@@ -4,6 +4,50 @@ export default class MinesweeperAIV4 {
         console.log('MinesweeperAIV4');
     }
 
+    // 模拟AI玩游戏
+    play(grid, rows, cols, totalMines) {
+        this.grid = JSON.parse(JSON.stringify(grid)); grid = this.grid;
+        this.rows = JSON.parse(JSON.stringify(rows)); rows = this.rows;
+        this.cols = JSON.parse(JSON.stringify(cols)); cols = this.cols;
+        this.guessCount = 0;
+        
+        let revealedCount = 0;
+        const totalCells = rows * cols;
+        let firstMove = true;
+
+        while (true) {
+            const move = this.getNextMove(grid, rows, cols, firstMove);
+            if (!move) return 'failure';
+
+            firstMove = false;
+
+            if (move.action === 'reveal') {
+                const cell = grid[move.row][move.col];
+                if (cell.isMine) {
+                    return 'failure';
+                }
+                
+                if (!cell.revealed) {
+                    cell.revealed = true;
+                    revealedCount++;
+                }
+
+                // 检查是否获胜（已经揭开所有非雷格子）
+                if (revealedCount === totalCells - totalMines) {
+                    // 计算成功率
+                    const successRate = (this.successRateList.reduce((a, b) => a + b, 0) / this.successRateList.length).toFixed(2);
+                    console.log('this.successRateList', this.successRateList);
+                    console.log('successRate', successRate);
+                    return 'success';
+                }
+            } else if (move.action === 'flag') {
+                grid[move.row][move.col].flagged = true;
+            }
+            // 死循环了啊
+            console.log('while');
+        }
+    }
+
     getGuessCount() {
         return this.guessCount;
     }
