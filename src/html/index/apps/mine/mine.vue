@@ -1,5 +1,5 @@
 <template>
-    <div class="minesweeper-container">
+    <div class="minesweeper-container" v-if="init">
         <div class="game-header">
             <mine-tab ref="mineTab"
                 :rows="rows"
@@ -7,9 +7,9 @@
                 :mineCount="mineCount"
                 :useTime="useTime"
                 :gameInstance="this"
-                @new-game="resetGame"
+                @new-game="newGame"
                 @ai-play="startAIGame"
-                @hint="getHint"
+                @hint="showHint"
                 @update-options="updateOptions"
                 @load-endgame="loadEndgame"
             ></mine-tab>
@@ -83,6 +83,7 @@ import MinesweeperAIV2 from './mine-ai/aiGameV2.js';
 import MinesweeperAIV4 from './mine-ai/aiGameV4.js';
 import MineTab from './mine-cmpt/mine-tab.vue';
 
+
 export default {
     name: 'Minesweeper',
     components: {
@@ -90,6 +91,7 @@ export default {
     },
     data() {
         return {
+            init: false,
             size: window.size,
             rows: 10,
             cols: 10,
@@ -138,8 +140,9 @@ export default {
             this.resetGame();
         }
     },
-    mounted() {
-        this.initGame();
+    created() {
+        this.initGame(true);
+        this.init = true;
         Core.waitRef(this.$refs, 'mineTab', () => {
             this.$refs.mineTab.setGameInstance(this);
         });
@@ -158,7 +161,7 @@ export default {
             this.useTime = options.useTime;
             this.resetGame();
         },
-        initGame() {
+        initGame(generateMap) {
             this.gameStarted = false;
             this.gameOver = false;
             this.gameWon = false;
@@ -181,16 +184,23 @@ export default {
             );
 
             // 在初始化游戏时就生成地图
-            // this.generateMapWithSafeClick();
+            if(generateMap == true) {
+                this.generateMapWithSafeClick();
+            }
         },
-        
+        newGame() {
+            console.log('newGame');
+            this.stopAIGame();
+            this.initGame(true);
+        },
         resetGame() {
             this.stopAIGame();
-            this.initGame();
+            this.initGame(true);
         },
 
         // 新增方法：生成带有安全点击的地图
         generateMapWithSafeClick() {
+            console.log('generateMapWithSafeClick');
             // 随机选择一个安全的第一次点击位置
             const safeRow = Math.floor(Math.random() * this.rows);
             const safeCol = Math.floor(Math.random() * this.cols);
@@ -205,10 +215,11 @@ export default {
             // 标记安全点击位置
             this.grid[safeRow][safeCol].safeFirstClick = true;
             
-            if(guessCount > 0) {
+            // if(guessCount > 0) {
                 // 检查地图是否需要靠运气才能完成
-                this.checkIfMapIsLuckBased();
-            }
+                // this.checkIfMapIsLuckBased();
+            // }
+            // this.checkIfMapIsLuckBased();
         },
 
         // 添加加载残局方法
@@ -428,7 +439,7 @@ export default {
                 this.luckBasedMap = true;
                 
                 // 看看AI赢了没
-                const ai = new MinesweeperAIV2();
+                const ai = new MinesweeperAIV4();
                 const winResult = ai.play(this.grid, this.rows, this.cols, this.mineCount);
                 
                 // 更新游戏消息，显示胜率
@@ -436,7 +447,38 @@ export default {
                 this.gameMessageType = "warning";
             }
         },
-        
+        async showHint() {
+            const ai = new SelectMineAi();
+            
+            const move = ai.getNextMove(this.grid, this.rows, this.cols, false);
+            
+            // 打印未处理的格子数量
+            let unhandledCells = 0;
+            for (let r = 0; r < this.rows; r++) {
+                for (let c = 0; c < this.cols; c++) {
+                    const cell = this.grid[r][c];
+                    if (!cell.revealed && !cell.flagged) {
+                        unhandledCells++;
+                    }
+                }
+            }
+            console.log(`当前还有 ${unhandledCells} 个格子需要处理`);
+            
+            if (move) {
+                const cell = this.grid[move.row][move.col];
+                const cellStatus = cell.revealed ? '已揭开' : (cell.flagged ? '已标记' : '未揭开');
+                const cellContent = cell.revealed ? 
+                    (cell.isMine ? '地雷' : (cell.adjacentMines > 0 ? `数字${cell.adjacentMines}` : '空白格')) : 
+                    (cell.flagged ? '旗子' : `周围有${this.countAdjacentMines(move.row, move.col)}个地雷`);
+                const action = move.action === 'reveal' ? '揭开' : '标记为旗子';
+                const position = `第 ${move.row + 1} 行，第 ${move.col + 1} 列`;
+                this.gameMessage = `提示：建议${action}${position}的方块（当前状态：${cellStatus}，显示内容：${cellContent}）`;
+                this.gameMessageType = 'info';
+            } else {
+                this.gameMessage = '当前无法给出有效提示';
+                this.gameMessageType = 'warning';
+            }
+        },
         async getHint() {
             if (this.gameOver) return;
             
@@ -459,16 +501,18 @@ export default {
                 }
             }
             
-            const ai = new MinesweeperAIV4();
+            const ai = new SelectMineAi();
+            
             const move = ai.getNextMove(this.grid, this.rows, this.cols, false);
+            console.log('nextMove', move); // {row: 5, col: 1}
             this.guessCount = ai.getGuessCount();
             
             if (!move) return;
             
             if (move.action === 'reveal') {
-                this.handleCellClick(move.row, move.col);
+                this.handleCellClick(move.row, move.col); // 左键，揭开
             } else {
-                this.handleRightClick(move.row, move.col);
+                this.handleRightClick(move.row, move.col); // 标记，旗子
             }
         },
 

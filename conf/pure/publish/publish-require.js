@@ -72,7 +72,7 @@ for(var i in files) {
 
 var compile = {
     options: {
-        mergeJs: true,
+        mergeJs: false,
         minifyJs: false,
         compileJs: true,
     },
@@ -89,11 +89,28 @@ var compile = {
             tool.writeFileBuffer(apiFile, code);
         }
     },
+
+    babelFlag: 0,
     babel: function(content) {
-        var output = Babel.transform(content, { presets: ['es2015'] }).code;
-        // Object.defineProperty called on non-object
-        // output = output.replace('defineProperty', 'exports = exports || {};\nObject.defineProperty(exports');
-        // output = output.replace('defineProperty', 'compileByJianbo');
+        var result;
+        if(Babel.version.indexOf('7') == 0) {
+            result = Babel.transform(content, { 
+                presets: ["env"], 
+                compact: false 
+            });
+        } else {
+            result = Babel.transform(content, { 
+                presets: ["es2015"], 
+                compact: false 
+            });
+        }
+        var output = result.code;
+        if(this.babelFlag == 0) {
+            // result.code = '';
+            // console.log('result', result);
+            // const { execSync } = require('child_process');
+            // execSync(`sleep 2000`);
+        }
         return output;
     },
 
@@ -153,6 +170,10 @@ var compile = {
             projectConfig.entry = requireConfig.requireEntry;
             projectConfig.runMode = 'prd';
 
+            if(this.options.mergeJs == false) {
+                projectConfig.runMode = 'dev';
+            }
+
             var purePath = path + 'static/lib/pure/tpl/require-js.html';
             var pureCode = tool.readFile(purePath);
             // 获取 root 
@@ -202,9 +223,15 @@ var compile = {
         if(Babel.version.indexOf('7') == 0) {
             // 7 这个版本，替换失败？
             output = output.replace("exports.default = void 0;", '');
-            output = output.replace("var _default = exports.default = {", 'exports = {');
+            output = output.replace('exports["default"] = void 0;', '');
+            output = output.replace("var _default = exports.default = {", 'exports.default = {');
             // output = output.replace("var _default = exports =", 'exports =');
-            output = output.replace("var _default = exports.default", 'exports');
+            output = output.replace("var _default = exports.default", 'exports.default');
+            // output = tool.replaceEscapedChars(output, 
+            //     'function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }', 
+            //     'function _interopRequireDefault(obj) { return { default: obj}; }'
+            // );
+            // output = output.replace('exports["default"]', 'exports');
             
             // output = tool.replaceAll(output, 'var _default = exports = {', 'exports = {',);
             // output = '/*Fuck*/'+output;
@@ -218,9 +245,10 @@ var compile = {
             'function _interopRequireDefault(obj) { return { default: obj}; }'
         );
         output = tool.replaceEscapedChars(output, 
-            'function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }', 
+            'function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }', 
             'function _interopRequireDefault(obj) { return { default: obj}; }'
         );
+        
         
         var flag = 'Flag("compileByJianbo");\n';
         flag += 'Flag("compileByPublish");\n'
@@ -230,7 +258,13 @@ var compile = {
         output = '(function(parentUrl) {\n' 
         + flag
         + output
-        + '\n})(\''+url+'\'); exports; ';
+        + '\n})(\''+url+'\'); ';
+
+        if(Babel.version.indexOf('7') == 0) {
+            output += 'exports["default"];';
+        } else {
+            output += 'exports;';
+        }
     
         if(this.options.minifyJs == true) {
             output = Uglify.minify(output).code;

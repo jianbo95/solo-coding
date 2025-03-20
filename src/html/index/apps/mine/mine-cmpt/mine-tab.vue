@@ -311,7 +311,7 @@ export default {
         loadEndgame(endgame) {
             this.$emit('load-endgame', endgame);
             this.loadEndgameVisible = false;
-            this.$message.success('残局加载成功');
+            UI.success('残局加载成功');
         },
         
         // 删除保存的残局
