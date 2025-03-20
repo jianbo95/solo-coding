@@ -180,7 +180,7 @@ export default {
             );
 
             // 在初始化游戏时就生成地图
-            this.generateMapWithSafeClick();
+            // this.generateMapWithSafeClick();
         },
         
         resetGame() {

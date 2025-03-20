@@ -26,7 +26,7 @@
 export default {
     data() {
         return {
-            language: localStorage.getItem('language') || 'zh',
+            language: window.LocaleType,
             size: window.size
         }
     },
