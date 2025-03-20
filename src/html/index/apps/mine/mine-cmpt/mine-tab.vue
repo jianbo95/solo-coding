@@ -41,7 +41,7 @@
                 </div>
                 <div class="option-item">
                     <span>人机步时(毫秒):</span>
-                    <el-input-number :size="size" v-model="options.useTime" :min="100" :max="2000" :step="100"></el-input-number>
+                    <el-input-number :size="size" v-model="options.useTime" :min="10" :max="2000" :step="100"></el-input-number>
                 </div>
             </div>
             <span slot="footer" class="dialog-footer">
@@ -134,10 +134,10 @@ export default {
     },
     mounted() {
         // 组件挂载时，如果有保存的设置，通知父组件更新
-        const savedOptions = this.getSavedOptions();
-        if (savedOptions) {
-            this.$emit('update-options', { ...savedOptions });
-        }
+        // const savedOptions = this.getSavedOptions();
+        // if (savedOptions) {
+        //     this.$emit('update-options', { ...savedOptions });
+        // }
         // 加载保存的残局
         this.loadSavedEndgames();
     },

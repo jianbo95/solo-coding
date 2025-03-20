@@ -3,13 +3,12 @@ import MinesweeperAI from '@/html/index/apps/mine/mine-ai/aiGame.js';
 // 基于种子的随机数生成器
 class SeededRandom {
     constructor(seed) {
-        this.seed = seed;
+        this.random = new Math.seedrandom(seed);
     }
 
     // 生成 0-1 之间的随机数
     random() {
-        const x = Math.sin(this.seed++) * 10000;
-        return x - Math.floor(x);
+        return this.random();
     }
 
     // 生成指定范围内的整数
@@ -18,8 +17,102 @@ class SeededRandom {
     }
 }
 
-export default function generateMinesBySeed(rows, cols, mineCount, firstRow, firstCol, seed = Date.now()) {
-    const rng = new SeededRandom(seed);
+// 在文件顶部添加工具函数
+function encodeSeedString(rows, cols, mineCount, firstRow, firstCol, baseSeed) {
+    const padNumber = (num, length) => String(num).padStart(length, '0');
+    return padNumber(rows, 3) + 
+           padNumber(cols, 3) + 
+           padNumber(mineCount, 4) + 
+           padNumber(firstRow, 2) + 
+           padNumber(firstCol, 2) + 
+           baseSeed;
+}
+
+function buildRandSeed(rows/*2-100*/, cols/*2-100*/, mineCount/*2-9999*/, firstRow/*0-99*/, firstCol/*0-99*/) {
+    // 参数格式：
+    // rows: 3位 (001-100)
+    // cols: 3位 (001-100)
+    // mineCount: 4位 (0001-9999)
+    // firstRow: 2位 (00-99)
+    // firstCol: 2位 (00-99)
+    // baseSeed: 剩余位数
+    
+    const timestamp = Date.now();
+    const offset = Math.floor(Math.random() * 1000000);
+    const baseSeed = timestamp + offset;
+    
+    // 补零函数
+    const padNumber = (num, length) => String(num).padStart(length, '0');
+    
+    return padNumber(rows, 3) + 
+           padNumber(cols, 3) + 
+           padNumber(mineCount, 4) + 
+           padNumber(firstRow, 2) + 
+           padNumber(firstCol, 2) + 
+           baseSeed;
+}
+
+// 从种子字符串中解析参数
+function parseSeed(seedString) {
+    // 从前向后解析固定长度的字段
+    const rows = parseInt(seedString.slice(0, 3));
+    const cols = parseInt(seedString.slice(3, 6));
+    const mineCount = parseInt(seedString.slice(6, 10));
+    const firstRow = parseInt(seedString.slice(10, 12));
+    const firstCol = parseInt(seedString.slice(12, 14));
+    const baseSeed = parseInt(seedString.slice(14)); // baseSeed 在最后
+    
+    return {
+        baseSeed,
+        rows,
+        cols,
+        mineCount,
+        firstRow,
+        firstCol
+    };
+}
+
+export default function generateMinesBySeed(rows, cols, mineCount, seed) {
+
+    let safeRow, safeCol, buildSeed, params;
+    
+    if(seed == null) {
+        // 随机选择一个安全的第一次点击位置
+        safeRow = Math.floor(Math.random() * rows);
+        safeCol = Math.floor(Math.random() * cols);
+        seed = buildRandSeed(rows, cols, mineCount, safeRow, safeCol);
+        params = parseSeed(seed);
+        buildSeed = true;
+    } else {
+        buildSeed = false;
+        // 从种子中解析参数，包括第一次点击位置
+        // 使用解析出的参数
+        params = parseSeed(seed);
+        rows = params.rows;
+        cols = params.cols;
+        mineCount = params.mineCount;
+        safeRow = params.firstRow;
+        safeCol = params.firstCol;
+    }
+    // console.log('参数', {rows, cols, mineCount, firstRow: safeRow, firstCol: safeCol});
+
+    // 如果是使用已有种子，直接生成一次地图并返回
+    if (!buildSeed) {
+        const rng = new SeededRandom(params.baseSeed);
+        const grid = generateSingleGrid(rng);
+        console.log('使用已有种子，直接生成一次地图并返回', seed);
+        return {
+            grid: grid,
+            guessCount: 0,  // 这里不需要计算猜测次数
+            seed: seed,
+            rows,
+            cols,
+            mineCount,
+            safeRow: safeRow,
+            safeCol: safeCol
+        };
+    }
+
     const maxAttempts = 50;
     let bestGrid = null;
     let bestRevealedCount = 0;
@@ -55,10 +148,10 @@ export default function generateMinesBySeed(rows, cols, mineCount, firstRow, fir
 
     function evaluateGrid(grid) {
         const testGrid = JSON.parse(JSON.stringify(grid));
-        return simulateReveal(testGrid, firstRow, firstCol);
+        return simulateReveal(testGrid, safeRow, safeCol);
     }
 
-    function generateSingleGrid() {
+    function generateSingleGrid(rng) {
         const minePositions = new Set();
         const grid = Array(rows).fill().map(() => 
             Array(cols).fill().map(() => ({
@@ -71,23 +164,28 @@ export default function generateMinesBySeed(rows, cols, mineCount, firstRow, fir
         
         // 确保第一次点击的位置及其周围不是雷
         const safePositions = new Set();
-        for (let r = Math.max(0, firstRow - 1); r <= Math.min(rows - 1, firstRow + 1); r++) {
-            for (let c = Math.max(0, firstCol - 1); c <= Math.min(cols - 1, firstCol + 1); c++) {
+        for (let r = Math.max(0, safeRow - 1); r <= Math.min(rows - 1, safeRow + 1); r++) {
+            for (let c = Math.max(0, safeCol - 1); c <= Math.min(cols - 1, safeCol + 1); c++) {
                 safePositions.add(`${r},${c}`);
             }
         }
         
-        // 使用基于种子的随机数生成器放置地雷
-        while (minePositions.size < mineCount) {
-            const row = rng.randInt(0, rows - 1);
-            const col = rng.randInt(0, cols - 1);
-            const pos = `${row},${col}`;
+        // TODO 使用 seedrandom 放置地雷
+        // 放置地雷
+        let placedMines = 0;
+        while (placedMines < mineCount) {
+            const row = Math.floor(rng.random() * rows);
+            const col = Math.floor(rng.random() * cols);
+            const posKey = `${row},${col}`;
             
-            if (!safePositions.has(pos) && !minePositions.has(pos)) {
-                minePositions.add(pos);
+            // 如果这个位置没有雷，且不在安全区域内
+            if (!minePositions.has(posKey) && !safePositions.has(posKey)) {
+                minePositions.add(posKey);
                 grid[row][col].isMine = true;
+                placedMines++;
             }
         }
+
         
         // 计算每个格子周围的雷数
         for (let r = 0; r < rows; r++) {
@@ -105,12 +203,17 @@ export default function generateMinesBySeed(rows, cols, mineCount, firstRow, fir
     var buildSize = 0;
     var gridList = [];
     var bestScore = -100;
+    
     for (let i = 0; i < maxAttempts; i++) {
         // 每次尝试使用不同的种子偏移
-        const currentSeed = seed + i;
-        rng.seed = currentSeed;
+        const currentBaseSeed = params.baseSeed + i;
+        const currentSeed = encodeSeedString(rows, cols, mineCount, safeRow, safeCol, currentBaseSeed);
         
-        const grid = generateSingleGrid();
+        // 最终打印的种子必须是 currentSeed
+        const currentRng = new SeededRandom(currentBaseSeed);
+        
+        const grid = generateSingleGrid(currentRng);
+        // 这里 currentSeed 是当前的种子，对应的 grid 是唯一的吗？这里要保证生成的地图唯一 currentSeed 每次生成的地图是一样的
         const revealedCount = evaluateGrid(grid);
         buildSize++;
         
@@ -130,14 +233,93 @@ export default function generateMinesBySeed(rows, cols, mineCount, firstRow, fir
         }
     }
 
-    // ... 其余代码与原文件相同 ...
+    let bestGuessCount = 10000;
+    let finalGrid = null;
+    
+    // console.log('gridList.size', gridList.length);
+    // 通过 aiGame.js 模拟玩游戏，从 gridList 中找出最好的地图
+    let playCount = 0;
+    for (const item of gridList) {
+        playCount ++;
+        const testGrid = JSON.parse(JSON.stringify(item.grid));
+        
+        // 先模拟第一次点击
+        simulateReveal(testGrid, safeRow, safeCol);
+        
+        const ai = new MinesweeperAI();
+        let guessCount = 0;
+        let isComplete = false;
+        let maxMoves = rows * cols * 2; // 防止无限循环
+        let moveCount = 0;
 
-    console.log('使用种子:', seed, '尝试生成地图' + buildSize + '次，好地图' + gridList.length + '个，AI玩次数' + playCount + '，最少需要猜测' + bestGuessCount + '次');
+        // 模拟AI玩游戏
+        // console.log('while start ' + playCount)
+        while (!isComplete && moveCount < maxMoves) {
+            moveCount++;
+            const move = ai.getNextMove(testGrid, rows, cols);
+            
+            if (!move) {
+                break;
+            }
 
+            if (move.isGuess) {
+                guessCount++;
+            }
+
+            // 模拟移动
+            if (move.action === 'reveal') {
+                if (testGrid[move.row][move.col].isMine) {
+                    // 踩雷了，这个地图不是最优解
+                    guessCount = Infinity;
+                    break;
+                }
+                simulateReveal(testGrid, move.row, move.col);
+            } else {
+                testGrid[move.row][move.col].flagged = true;
+            }
+
+            // 检查是否完成
+            isComplete = checkGridCompletion(testGrid);
+        }
+        // console.log('while end ' + playCount + ' guessCount:' + guessCount)
+
+        // 在更新最佳地图时
+        if (guessCount < bestGuessCount) {
+            bestGuessCount = guessCount;
+            finalGrid = item.grid;
+            seed = encodeSeedString(rows, cols, mineCount, safeRow, safeCol, params.baseSeed);
+            
+            if (guessCount === 0) {
+                console.log('无需猜测，直接使用');
+                break;
+            }
+        }
+    }
+
+    console.log('生成种子:', seed, '尝试生成地图' + buildSize + '次，好地图' + gridList.length + '个，AI玩次数' + playCount + '，最少需要猜测' + bestGuessCount + '次');
+
+    // 修改返回的种子格式
     return { 
         grid: finalGrid || bestGrid, 
         guessCount: bestGuessCount,
-        seed: seed // 返回使用的种子
+        seed: `${seed}`, // 返回完整的种子字符串
+        rows,
+        cols,
+        mineCount,
+        safeRow: safeRow,
+        safeCol: safeCol
     };
 }
 
+// 检查地图是否完成
+function checkGridCompletion(grid) {
+    for (let row = 0; row < grid.length; row++) {
+        for (let col = 0; col < grid[0].length; col++) {
+            const cell = grid[row][col];
+            if (!cell.isMine && !cell.revealed) {
+                return false;
+            }
+        }
+    }
+    return true;
+}

@@ -18,6 +18,7 @@ var isString = function(obj) {
 
 var ModuleDefine = {
     module: {
+        'seedrandom': 'https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js',
         'BaseUtil': './static/lib/lowcode/base-util.js',
         'VueTemplateUtil': './static/lib/lowcode/vue-template-util.js',
         'VueUtil': './static/lib/lowcode/vue-util.js',

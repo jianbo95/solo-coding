@@ -43,14 +43,14 @@
                     <template v-if="cell.revealed">
                         <span v-if="cell.isMine">
                             <!-- 💣 -->
-                            <img style="width: 100%; height: 100%; margin:0% 0 0 10%;" src="./html/index/apps/mine/bang.png" alt="" srcset="">
+                            <img style="width: 100%; height: 100%; margin:0% 0 0 10%;" src="./html/index/apps/mine/image/bang.png" alt="" srcset="">
                         </span>
                         <span v-else-if="cell.adjacentMines > 0" :class="`number-${cell.adjacentMines}`">
                             {{ cell.adjacentMines }}
                         </span>
                     </template>
                     <span v-else-if="cell.flagged">
-                        <img style="width: 70%; height: 70%; margin:20% 0 0 20%;" src="./html/index/apps/mine/flag.png" alt="" srcset="">
+                        <img style="width: 70%; height: 70%; margin:20% 0 0 20%;" src="./html/index/apps/mine/image/flag.png" alt="" srcset="">
                     </span>
                 </div>
             </div>
@@ -79,10 +79,12 @@ import generateMines from './mine-app/generateMinesBySeed.js';
 import checkIfMapIsLuckBased from './mine-app/checkIfMapIsLuckBased.js';
 // import MinesweeperAI from './mine-ai/aiGame.js';
 // import MinesweeperAIV3 from './mine-ai/aiGameV3.js';
-import MinesweeperAIV2 from './mine-ai/aiGameV2.js';
-import MinesweeperAIV4 from './mine-ai/aiGameV4.js';
-import MineTab from './mine-cmpt/mine-tab.vue';
+// import MinesweeperAIV2 from './mine-ai/aiGameV2.js';
+// import MinesweeperAIV4 from './mine-ai/aiGameV4.js';
 
+import MineGameAi from './mine-ai/mine-game-ai.js';
+import MineTab from './mine-cmpt/mine-tab.vue';
+var SelectMineAi = MineGameAi;
 
 export default {
     name: 'Minesweeper',
@@ -134,17 +136,23 @@ export default {
             this.flagsLeft = this.mineCount;
         },
         rows() {
-            this.resetGame();
+            this.resetGame('watch.rows');
         },
         cols() {
-            this.resetGame();
+            this.resetGame('watch.cols');
         }
     },
     created() {
-        this.initGame(true);
-        this.init = true;
-        Core.waitRef(this.$refs, 'mineTab', () => {
-            this.$refs.mineTab.setGameInstance(this);
+        var modeuls = [
+            'seedrandom',
+        ];
+        ModuleDefine.load(modeuls, () => {
+            console.log('load finish');
+            this.init = true;
+            Core.waitRef(this.$refs, 'mineTab', () => {
+                this.$refs.mineTab.setGameInstance(this);
+                this.initGame(true);
+            });
         });
     },
     beforeDestroy() {
@@ -155,13 +163,15 @@ export default {
     methods: {
         // 添加新方法处理选项更新
         updateOptions(options) {
+            console.log('updateOptions', options);
             this.rows = options.rows;
             this.cols = options.cols;
             this.mineCount = options.mineCount;
             this.useTime = options.useTime;
-            this.resetGame();
+            this.resetGame('updateOptions');
         },
         initGame(generateMap) {
+            console.log('initGame(generateMap)');
             this.gameStarted = false;
             this.gameOver = false;
             this.gameWon = false;
@@ -193,20 +203,21 @@ export default {
             this.stopAIGame();
             this.initGame(true);
         },
-        resetGame() {
+        resetGame(reason) {
+            console.log('resetGame ' + reason);
             this.stopAIGame();
             this.initGame(true);
         },
 
-        // 新增方法：生成带有安全点击的地图
+        // 生成带有安全点击的地图
         generateMapWithSafeClick() {
             console.log('generateMapWithSafeClick');
-            // 随机选择一个安全的第一次点击位置
-            const safeRow = Math.floor(Math.random() * this.rows);
-            const safeCol = Math.floor(Math.random() * this.cols);
             
             // 生成地图，确保安全位置没有雷
-            const { grid, guessCount } = generateMines(this.rows, this.cols, this.mineCount, safeRow, safeCol);
+            var seed = null;
+            seed = '010010001500011742489586194';
+            const { grid, guessCount, safeRow, safeCol } = generateMines(this.rows, this.cols, this.mineCount, seed);
+            console.log('grid', grid);
             this.grid = grid;
 
             // 保存当前地图布局
@@ -450,7 +461,8 @@ export default {
         async showHint() {
             const ai = new SelectMineAi();
             
-            const move = ai.getNextMove(this.grid, this.rows, this.cols, false);
+            console.log('this.mineCount', this.mineCount);
+            const move = ai.getNextMove(this.grid, this.rows, this.cols, false, this.mineCount);
             
             // 打印未处理的格子数量
             let unhandledCells = 0;
@@ -503,7 +515,7 @@ export default {
             
             const ai = new SelectMineAi();
             
-            const move = ai.getNextMove(this.grid, this.rows, this.cols, false);
+            const move = ai.getNextMove(this.grid, this.rows, this.cols, false, this.mineCount);
             console.log('nextMove', move); // {row: 5, col: 1}
             this.guessCount = ai.getGuessCount();
             

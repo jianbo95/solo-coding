@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minesweeper Map</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+
+        td {
+            width: 20px;
+            height: 20px;
+            border: 1px solid black;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <input type="number" id="seedInput" placeholder="Enter seed">
+    <button onclick="generateMap()">Generate Map</button>
+    <div id="mapContainer"></div>
+
+    <script>
+        function generateMap() {
+            const rows = 8;
+            const cols = 8;
+            const mines = 10;
+            const seed = parseInt(document.getElementById('seedInput').value);
+            const map = generateMinesweeperMap(rows, cols, mines, seed);
+            displayMap(map);
+        }
+
+        function generateMinesweeperMap(rows, cols, mines, seed) {
+            // 使用种子初始化随机数生成器
+            const random = new Math.seedrandom(seed);
+            const map = Array.from({ length: rows }, () => Array(cols).fill(0));
+            let mineCount = 0;
+
+            while (mineCount < mines) {
+                const row = Math.floor(random() * rows);
+                const col = Math.floor(random() * cols);
+                if (map[row][col]!== -1) {
+                    map[row][col] = -1;
+                    mineCount++;
+                }
+            }
+
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    if (map[i][j]!== -1) {
+                        for (let x = Math.max(0, i - 1); x < Math.min(rows, i + 2); x++) {
+                            for (let y = Math.max(0, j - 1); y < Math.min(cols, j + 2); y++) {
+                                if (map[x][y] === -1) {
+                                    map[i][j]++;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return map;
+        }
+
+        function displayMap(map) {
+            const container = document.getElementById('mapContainer');
+            container.innerHTML = '';
+            const table = document.createElement('table');
+            for (let i = 0; i < map.length; i++) {
+                const row = document.createElement('tr');
+                for (let j = 0; j < map[i].length; j++) {
+                    const cell = document.createElement('td');
+                    if (map[i][j] === -1) {
+                        cell.textContent = '*';
+                    } else {
+                        cell.textContent = map[i][j];
+                    }
+                    row.appendChild(cell);
+                }
+                table.appendChild(row);
+            }
+            container.appendChild(table);
+        }
+
+        // 引入 seedrandom 库
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js';
+        document.head.appendChild(script);
+
+    </script>
+</body>
+
+</html>    
