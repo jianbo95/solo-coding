@@ -21,7 +21,7 @@ var UI = {
         vue.$message({
             message: msg,
             type: type,
-            duration: 2500,
+            duration: 1000,
             showClose: true
         });
     },

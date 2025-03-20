@@ -452,6 +452,18 @@ export default {
             
             const move = ai.getNextMove(this.grid, this.rows, this.cols, false);
             
+            // 打印未处理的格子数量
+            let unhandledCells = 0;
+            for (let r = 0; r < this.rows; r++) {
+                for (let c = 0; c < this.cols; c++) {
+                    const cell = this.grid[r][c];
+                    if (!cell.revealed && !cell.flagged) {
+                        unhandledCells++;
+                    }
+                }
+            }
+            console.log(`当前还有 ${unhandledCells} 个格子需要处理`);
+            
             if (move) {
                 const cell = this.grid[move.row][move.col];
                 const cellStatus = cell.revealed ? '已揭开' : (cell.flagged ? '已标记' : '未揭开');
