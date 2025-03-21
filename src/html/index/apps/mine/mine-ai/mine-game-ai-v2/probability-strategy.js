@@ -16,7 +16,7 @@ export default class ProbabilityStrategy {
         
         for (const cell of unrevealedCells) {
             const risk = this.calculateRisk(grid, rows, cols, cell.row, cell.col, remainingMines);
-            cellRisks.push({ ...cell, risk });
+            cellRisks.push(Util.mergeMap(cell, { risk }));
         }
         
         // 按风险值排序
