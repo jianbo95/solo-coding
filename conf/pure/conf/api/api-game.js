@@ -17,7 +17,9 @@ module.exports = {
             if(file.indexOf('.json') + 5 == file.length) {
                 // .json 结尾
                 var gameData = JSON.parse(JavaApi.read(file));
-                data[gameData.id] = gameData;
+                if(gameData.name != null) {
+                    data[gameData.id] = gameData;
+                }
             }
         }
         console.log('putData game.json' + data);

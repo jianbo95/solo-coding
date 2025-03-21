@@ -16,14 +16,21 @@
         </div>
         
         <div class="game-status">
-            <div class="mines-left">剩余雷数: {{ flagsLeft }}</div>
-            <div class="game-time">用时: {{ gameTime }}秒</div>
+            <div class="mines-left">
+                <led-display :value="flagsLeft" :digits="3" />
+            </div>
+            
             <div v-if="aiPlaying" class="guess-count">AI猜测: {{ guessCount }}</div>
+
+            <div class="game-time">
+                <led-display :value="gameTime" :digits="3" />
+            </div>
         </div>
         
-        <div class="game-message" v-if="gameMessage">
-            <el-alert :title="gameMessage" :type="gameMessageType" :closable="false">
-            </el-alert>
+        <div class="ai-controls">
+            <el-button size="small" type="primary" @click="aiStep" :disabled="gameOver">
+                AI单步
+            </el-button>
         </div>
         
         <div class="minesweeper-grid" :style="gridStyle">
@@ -49,11 +56,16 @@
                             {{ cell.adjacentMines }}
                         </span>
                     </template>
-                    <span v-else-if="cell.flagged">
+                    <span v-else-if="cell.flagged || cell.tempFlag">
                         <img style="width: 70%; height: 70%; margin:20% 0 0 20%;" src="./html/index/apps/mine/image/flag.png" alt="" srcset="">
                     </span>
                 </div>
             </div>
+        </div>
+
+        <div class="game-message" v-if="gameMessage">
+            <el-alert :title="gameMessage" :type="gameMessageType" :closable="false">
+            </el-alert>
         </div>
 
         <template v-if="gameOver">
@@ -74,22 +86,18 @@
 </template>
 
 <script>
-// import generateMines from './mine-app/generateMines.js';
 import generateMines from './mine-app/generateMinesBySeed.js';
 import checkIfMapIsLuckBased from './mine-app/checkIfMapIsLuckBased.js';
-// import MinesweeperAI from './mine-ai/aiGame.js';
-// import MinesweeperAIV3 from './mine-ai/aiGameV3.js';
-// import MinesweeperAIV2 from './mine-ai/aiGameV2.js';
-// import MinesweeperAIV4 from './mine-ai/aiGameV4.js';
-
-import MineGameAi from './mine-ai/mine-game-ai.js';
+import MineGameAi from './mine-ai/mine-game-ai-v2.js';
 import MineTab from './mine-cmpt/mine-tab.vue';
+import LedDisplay from './mine-cmpt/led-display.vue';
 var SelectMineAi = MineGameAi;
 
 export default {
     name: 'Minesweeper',
     components: {
-        MineTab
+        MineTab,
+        LedDisplay
     },
     data() {
         return {
@@ -215,7 +223,7 @@ export default {
             
             // 生成地图，确保安全位置没有雷
             var seed = null;
-            seed = '010010001500011742489586194';
+            // seed = '010010001500011742489586194';
             const { grid, guessCount, safeRow, safeCol } = generateMines(this.rows, this.cols, this.mineCount, seed);
             console.log('grid', grid);
             this.grid = grid;
@@ -331,6 +339,9 @@ export default {
         handleCellClick(row, col) {
             if (this.gameOver || this.grid[row][col].flagged) return;
             
+            // 新增操作日志
+            console.log(`用户点击 [揭開] 位置: 行 ${row + 1}, 列 ${col + 1}`);
+            
             // 保存当前状态
             this.moveHistory.push({
                 grid: JSON.parse(JSON.stringify(this.grid)),
@@ -439,9 +450,11 @@ export default {
             return {
                 'revealed': cell.revealed,
                 'mine': cell.revealed && cell.isMine,
-                'mine-exploded': cell.isExploded,  // 添加这一行
+                'mine-exploded': cell.isExploded,
                 'flagged': cell.flagged && !cell.revealed,
-                'safe-first-click': cell.safeFirstClick && !cell.revealed && !cell.flagged
+                'safe-first-click': cell.safeFirstClick && !cell.revealed && !cell.flagged,
+                'temp-flagged': cell.tempFlagged && !cell.revealed && !cell.flagged,
+                'temp-safe': cell.tempSafe && !cell.revealed && !cell.flagged
             };
         },
         
@@ -486,11 +499,79 @@ export default {
                 const position = `第 ${move.row + 1} 行，第 ${move.col + 1} 列`;
                 this.gameMessage = `提示：建议${action}${position}的方块（当前状态：${cellStatus}，显示内容：${cellContent}）`;
                 this.gameMessageType = 'info';
+                
+                // 保存当前状态，以便恢复
+                const originalState = {
+                    flagged: cell.flagged,
+                    tempFlagged: cell.tempFlagged,
+                    tempSafe: cell.tempSafe
+                };
+                
+                // 添加临时标记
+                if (move.action === 'flag') {
+                    // 如果是标记操作，显示实际的旗子
+                    cell.tempFlagged = true;
+                    cell.tempFlag = true; // 新增属性，用于显示临时旗子图标
+                } else {
+                    // 如果是揭开操作，添加临时安全标记
+                    cell.tempSafe = true;
+                }
+                
+                // 1秒后移除临时标记
+                setTimeout(() => {
+                    if (this.grid[move.row] && this.grid[move.row][move.col]) {
+                        // 恢复原始状态
+                        cell.tempFlagged = originalState.tempFlagged;
+                        cell.tempSafe = originalState.tempSafe;
+                        cell.tempFlag = false; // 移除临时旗子图标
+                    }
+                }, 1000);
             } else {
                 this.gameMessage = '当前无法给出有效提示';
                 this.gameMessageType = 'warning';
             }
         },
+        async aiStep() {
+            if (this.gameOver) return;
+            
+            // 如果是第一次点击，先点击安全位置
+            if (this.firstClick) {
+                let safePosition = null;
+                for (let r = 0; r < this.rows; r++) {
+                    for (let c = 0; c < this.cols; c++) {
+                        if (this.grid[r][c].safeFirstClick) {
+                            safePosition = { row: r, col: c };
+                            break;
+                        }
+                    }
+                    if (safePosition) break;
+                }
+                
+                if (safePosition) {
+                    this.handleCellClick(safePosition.row, safePosition.col);
+                    return;
+                }
+            }
+            
+            const ai = new SelectMineAi();
+            
+            const move = ai.getNextMove(this.grid, this.rows, this.cols, false, this.mineCount);
+            console.log('nextMove', move);
+            this.guessCount = ai.getGuessCount();
+            
+            if (!move) {
+                this.gameMessage = 'AI无法确定下一步操作';
+                this.gameMessageType = 'warning';
+                return;
+            }
+            
+            if (move.action === 'reveal') {
+                this.handleCellClick(move.row, move.col); // 左键，揭开
+            } else {
+                this.handleRightClick(move.row, move.col); // 标记，旗子
+            }
+        },
+        
         async getHint() {
             if (this.gameOver) return;
             
@@ -603,14 +684,23 @@ export default {
 .game-status {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     width: 100%;
     max-width: 400px;
     margin-bottom: 15px;
-    font-size: 16px;
-    font-weight: bold;
+    padding: 8px;
+    background-color: #c0c0c0;
+    border: 3px solid;
+    border-color: #ffffff #808080 #808080 #ffffff;
+}
+
+.mines-left, .game-time {
+    display: flex;
+    align-items: center;
 }
 
 .game-message {
+    margin-top: 20px;
     margin-bottom: 15px;
     width: 100%;
     max-width: 400px;
@@ -674,10 +764,37 @@ export default {
     background-color: #ff0000;  /* 鲜红色背景 */
 }
 
+.grid-cell.temp-flagged {
+    background-color: #99ff99;
+    animation: pulse-flag 1s;
+}
+
+.grid-cell.temp-safe {
+    background-color: #99ccff;
+    animation: pulse-safe 1s;
+}
+
+@keyframes pulse-flag {
+    0% { background-color: #ccc; }
+    50% { background-color: #99ff99; }
+    100% { background-color: #ccc; }
+}
+
+@keyframes pulse-safe {
+    0% { background-color: #ccc; }
+    50% { background-color: #99ccff; }
+    100% { background-color: #ccc; }
+}
+
 .game-buttons {
     margin-top: 10px;
     display: flex;
     justify-content: center;
     gap: 10px;
+}
+.ai-controls {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
 }
 </style>

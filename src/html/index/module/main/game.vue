@@ -1,12 +1,13 @@
 <template>
   <div class="game-container">
+    Game
     <div class="game-list">
       <div v-for="game in games" 
            :key="game.id" 
            class="game-item"
            @click="enterGame(game.id)">
         <div class="game-icon">
-            <template v-if="game.icon.indexOf('.png') != -1">
+            <template v-if="game.icon != null && game.icon.indexOf('.png') != -1">
               <img :src="`/html/index/apps/${game.id}/${game.icon}`" :alt="game.name">
             </template>
             <template v-else>
@@ -35,6 +36,7 @@ export default {
   methods: {
     loadGames() {
       api.getGameData(res => {
+        console.log('game data', res);
         this.games = res;
       })
     },
