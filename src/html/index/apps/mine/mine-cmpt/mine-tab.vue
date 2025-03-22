@@ -2,10 +2,24 @@
     <div class="mine-tabs">
         <div class="tabs-container">
             <div class="menu-items">
-                <div class="menu-item" @click="$emit('new-game')">新游戏</div>
-                <div class="menu-item" @click="$emit('ai-play')">AI游戏</div>
+                <div class="menu-item dropdown">
+                    游戏
+                    <div class="dropdown-content">
+                        <div @click="$emit('new-game')">新游戏</div>
+                        <hr>
+                        <div @click="$emit('new-game')">初级</div>
+                        <div @click="$emit('new-game')">中级</div>
+                        <div @click="$emit('new-game')">高级</div>
+                        <div @click="optionsVisible = true">自定义</div>
+                        <hr>
+                        <div @click="$emit('ai-play')">AI玩游戏</div>
+                        <div @click="loadSeedVisible = true">加载种子</div>
+                    </div>
+                    <input type="file" ref="fileInput" style="display: none" @change="uploadEndgame" accept=".json">
+                </div>
+                
+                <div class="menu-item" @click="$emit('ai-step')">AI单步</div>
                 <div class="menu-item" @click="$emit('hint')">提示</div>
-                <div class="menu-item" @click="optionsVisible = true">选项</div>
                 <div class="menu-item dropdown">
                     残局
                     <div class="dropdown-content">
@@ -18,6 +32,25 @@
                 </div>
             </div>
         </div>
+
+        <el-dialog
+            title="加载种子"
+            :visible.sync="loadSeedVisible"
+            width="400px"
+            :size="size">
+            <div style="padding: 1rem">
+                <el-input
+                    v-model="seedInput"
+                    placeholder="请输入游戏种子"
+                    clearable
+                    @keyup.enter.native="loadSeed">
+                </el-input>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button :size="size" @click="loadSeedVisible = false">取消</el-button>
+                <el-button :size="size" type="primary" @click="loadSeed">确定</el-button>
+            </span>
+        </el-dialog>
 
         <!-- 选项弹框 -->
         <el-dialog
@@ -65,20 +98,31 @@
                     v-for="(endgame, index) in savedEndgames" 
                     :key="index"
                     class="endgame-item"
-                    @click="loadEndgame(endgame)"
                 >
                     <div class="endgame-info">
                         <div class="endgame-time">{{ formatDate(endgame.timestamp) }}</div>
                         <div class="endgame-details">
                             {{ endgame.rows }}x{{ endgame.cols }} | 雷数: {{ endgame.mineCount }} | 用时: {{ endgame.gameTime }}秒
+                            <div v-if="endgame.seed" style="font-size:12px;color:#888;margin-top:3px;">
+                                种子: {{ endgame.seed }}
+                            </div>
                         </div>
                     </div>
-                    <el-button 
-                        type="danger" 
-                        size="mini" 
-                        icon="el-icon-delete" 
-                        @click.stop="deleteEndgame(index)"
-                    ></el-button>
+                    <div class="endgame-actions">
+                        <el-button 
+                            type="primary"
+                            size="mini"
+                            icon="el-icon-video-play"
+                            @click="loadEndgame(endgame)"
+                            >
+                        </el-button>
+                        <el-button 
+                            type="danger" 
+                            size="mini" 
+                            icon="el-icon-delete" 
+                            @click.stop="deleteEndgame(index)">
+                        </el-button>
+                    </div>
                 </div>
             </div>
         </el-dialog>
@@ -89,22 +133,7 @@
 export default {
     name: 'MineTab',
     props: {
-        rows: {
-            type: Number,
-            default: 10
-        },
-        cols: {
-            type: Number,
-            default: 10
-        },
-        mineCount: {
-            type: Number,
-            default: 15
-        },
-        useTime: {
-            type: Number,
-            default: 300
-        }
+        
     },
     data() {
         // 从localStorage获取保存的设置，如果没有则使用默认值
@@ -116,7 +145,9 @@ export default {
             loadEndgameVisible: false,
             options: savedOptions,
             gameInstance: null,
-            savedEndgames: []
+            savedEndgames: [],
+            loadSeedVisible: false,
+            seedInput: ''
         };
     },
     computed: {
@@ -134,21 +165,33 @@ export default {
     },
     mounted() {
         // 组件挂载时，如果有保存的设置，通知父组件更新
-        // const savedOptions = this.getSavedOptions();
-        // if (savedOptions) {
-        //     this.$emit('update-options', { ...savedOptions });
-        // }
+        const savedOptions = this.getSavedOptions();
+        if (savedOptions) {
+            this.$emit('update-options', { ...savedOptions });
+        } else {
+            this.$emit('update-options');
+        }
         // 加载保存的残局
         this.loadSavedEndgames();
     },
     methods: {
+        loadSeed() {
+            if (!this.seedInput) {
+                this.$message.warning('请输入有效的种子');
+                return;
+            }
+            
+            this.loadSeedVisible = false;
+            this.$emit('load-seed', this.seedInput.trim());
+            this.seedInput = '';
+        },
         setGameInstance(gameInstance) {
             this.gameInstance = gameInstance;
         },
         // 获取保存的设置
         getSavedOptions() {
             try {
-                const savedOptions = localStorage.getItem('minesweeper-options');
+                const savedOptions = localStorage.getItem('game.mine.options');
                 if (savedOptions) {
                     return JSON.parse(savedOptions);
                 }
@@ -158,17 +201,17 @@ export default {
             
             // 如果没有保存的设置或解析失败，返回默认值
             return {
-                rows: this.rows,
-                cols: this.cols,
-                mineCount: this.mineCount,
-                useTime: this.useTime
+                rows: 10,
+                cols: 10,
+                mineCount: 15,
+                useTime: 300
             };
         },
         
         // 保存设置到localStorage
         saveOptionsToStorage() {
             try {
-                localStorage.setItem('minesweeper-options', JSON.stringify(this.options));
+                localStorage.setItem('game.mine.options', JSON.stringify(this.options));
             } catch (e) {
                 console.error('保存设置失败', e);
             }
@@ -263,6 +306,7 @@ export default {
                 gameOver: this.gameInstance.gameOver,
                 gameWon: this.gameInstance.gameWon,
                 firstClick: this.gameInstance.firstClick,
+                seed: this.gameInstance.currentSeed,
                 timestamp: new Date().getTime()
             };
             
@@ -340,7 +384,7 @@ export default {
 .mine-tabs {
     width: 100%;
     margin-bottom: 20px;
-}
+
 
 .tabs-container {
     width: 100%;
@@ -402,7 +446,7 @@ export default {
 }
 
 .dropdown-content div {
-    padding: 10px 15px;
+    padding: 5px 15px;
     color: #606266;
     transition: all 0.3s;
 }
@@ -428,7 +472,6 @@ export default {
     align-items: center;
     padding: 10px 15px;
     border-bottom: 1px solid #ebeef5;
-    cursor: pointer;
     transition: background-color 0.3s;
 }
 
@@ -467,4 +510,6 @@ export default {
     justify-content: space-between;
     align-items: center;
 }
+}
+
 </style>

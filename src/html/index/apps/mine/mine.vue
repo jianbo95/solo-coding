@@ -2,17 +2,18 @@
     <div class="minesweeper-container" v-if="init">
         <div class="game-header">
             <mine-tab ref="mineTab"
-                :rows="rows"
-                :cols="cols"
-                :mineCount="mineCount"
-                :useTime="useTime"
-                :gameInstance="this"
+                @ai-step="aiStep"
                 @new-game="newGame"
                 @ai-play="startAIGame"
                 @hint="showHint"
-                @update-options="updateOptions"
+                @update-options="loadOptions"
                 @load-endgame="loadEndgame"
+                @load-seed="loadSeed"
             ></mine-tab>
+        </div>
+
+        <div class="seed-display">
+            种子: {{ currentSeed }}
         </div>
         
         <div class="game-status">
@@ -25,12 +26,6 @@
             <div class="game-time">
                 <led-display :value="gameTime" :digits="3" />
             </div>
-        </div>
-        
-        <div class="ai-controls">
-            <el-button size="small" type="primary" @click="aiStep" :disabled="gameOver">
-                AI单步
-            </el-button>
         </div>
         
         <div class="minesweeper-grid" :style="gridStyle">
@@ -103,11 +98,12 @@ export default {
         return {
             init: false,
             size: window.size,
-            rows: 10,
+            rows: 15,
             cols: 10,
             mineCount: 15,
             useTime: 300,
             grid: [],
+            gameInit: false,
             gameStarted: false,
             gameOver: false,
             gameWon: false,
@@ -123,6 +119,7 @@ export default {
             guessCount: 0,
             currentMapLayout: null,
             moveHistory: [],
+            currentSeed: null, // 新增种子存储字段
         };
     },
     computed: {
@@ -136,20 +133,6 @@ export default {
             };
         }
     },
-    watch: {
-        mineCount(newVal) {
-            if (newVal > this.maxMines) {
-                this.mineCount = this.maxMines;
-            }
-            this.flagsLeft = this.mineCount;
-        },
-        rows() {
-            this.resetGame('watch.rows');
-        },
-        cols() {
-            this.resetGame('watch.cols');
-        }
-    },
     created() {
         var modeuls = [
             'seedrandom',
@@ -159,7 +142,7 @@ export default {
             this.init = true;
             Core.waitRef(this.$refs, 'mineTab', () => {
                 this.$refs.mineTab.setGameInstance(this);
-                this.initGame(true);
+                // this.initGame(true);
             });
         });
     },
@@ -169,16 +152,32 @@ export default {
     },
 
     methods: {
-        // 添加新方法处理选项更新
-        updateOptions(options) {
-            console.log('updateOptions', options);
-            this.rows = options.rows;
-            this.cols = options.cols;
-            this.mineCount = options.mineCount;
-            this.useTime = options.useTime;
-            this.resetGame('updateOptions');
+        loadNewOptions(options) {
+            if(options != null) {
+                this.rows = options.rows;
+                this.cols = options.cols;
+                this.mineCount = options.mineCount;
+                this.useTime = options.useTime;
+            }
         },
-        initGame(generateMap) {
+        /**
+         * 如果游戏未初始化，则开启新游戏
+         * 如果游戏已经初始化，则设置不影响游戏对局的参数
+         * @param {Object} options 
+         */
+        loadOptions(options) {
+            console.log('loadOptions', options);
+            // 加载新的选项
+            this.loadNewOptions(options); 
+            // 如果游戏未开始才开新游戏
+            this.newGame();
+        },
+        newGame(seed) {
+            this.stopAIGame();
+            this.initGame(true, seed);
+            this.gameInit = true;
+        },
+        initGame(generateMap, seed) {
             console.log('initGame(generateMap)');
             this.gameStarted = false;
             this.gameOver = false;
@@ -203,29 +202,23 @@ export default {
 
             // 在初始化游戏时就生成地图
             if(generateMap == true) {
-                this.generateMapWithSafeClick();
+                this.generateMapWithSafeClick(seed);
             }
         },
-        newGame() {
-            console.log('newGame');
-            this.stopAIGame();
-            this.initGame(true);
-        },
-        resetGame(reason) {
-            console.log('resetGame ' + reason);
-            this.stopAIGame();
-            this.initGame(true);
+
+        loadSeed(seed) {
+            this.generateMapWithSafeClick(seed);
         },
 
         // 生成带有安全点击的地图
-        generateMapWithSafeClick() {
+        generateMapWithSafeClick(seed) {
             console.log('generateMapWithSafeClick');
             
             // 生成地图，确保安全位置没有雷
-            var seed = null;
-            // seed = '010010001500011742489586194';
-            const { grid, guessCount, safeRow, safeCol } = generateMines(this.rows, this.cols, this.mineCount, seed);
-            console.log('grid', grid);
+            const { grid, guessCount, safeRow, safeCol, seed: genSeed } = generateMines(this.rows, this.cols, this.mineCount, seed);
+            seed = genSeed;
+            this.currentSeed = seed; // 存储生成的种子
+            console.log('seed', seed);
             this.grid = grid;
 
             // 保存当前地图布局
@@ -259,10 +252,10 @@ export default {
             this.gameOver = endgameData.gameOver;
             this.gameWon = endgameData.gameWon;
             this.firstClick = endgameData.firstClick;
+            this.currentSeed = endgameData.seed;
             
             // 加载网格数据
             this.grid = JSON.parse(JSON.stringify(endgameData.grid));
-            
             // 保存当前地图布局
             this.currentMapLayout = JSON.parse(JSON.stringify(endgameData.grid));
             
@@ -281,23 +274,35 @@ export default {
         
         // 添加重玩本局方法
         replayCurrentGame() {
-            if (!this.currentMapLayout) return;
+            this.newGame(this.currentSeed);
+            // if (!this.currentMapLayout) return;
             
-            this.stopAIGame();
-            this.stopTimer();
+            // this.stopAIGame();
+            // this.stopTimer();
             
-            // 重置游戏状态
-            this.gameStarted = false;
-            this.gameOver = false;
-            this.gameWon = false;
-            this.firstClick = true;
-            this.flagsLeft = this.mineCount;
-            this.gameTime = 0;
-            this.gameMessage = '';
-            this.luckBasedMap = false;
+            // // 重置游戏状态
+            // this.gameStarted = false;
+            // this.gameOver = false;
+            // this.gameWon = false;
+            // this.firstClick = true;
+            // this.flagsLeft = this.mineCount;
+            // this.gameTime = 0;
+            // this.gameMessage = '';
+            // this.luckBasedMap = false;
             
-            // 恢复保存的地图布局
-            this.grid = JSON.parse(JSON.stringify(this.currentMapLayout));
+            // // 恢复保存的地图布局
+            // this.grid = JSON.parse(JSON.stringify(this.currentMapLayout));
+            
+            // // 新增：重新标记安全点击位置
+            // let foundSafeCell = false;
+            // for (let r = 0; r < this.rows && !foundSafeCell; r++) {
+            //     for (let c = 0; c < this.cols && !foundSafeCell; c++) {
+            //         if (!this.grid[r][c].revealed && !this.grid[r][c].flagged) {
+            //             this.grid[r][c].safeFirstClick = true;
+            //             foundSafeCell = true;
+            //         }
+            //     }
+            // }
         },
         
         startTimer() {
@@ -652,6 +657,7 @@ export default {
 
 <style scoped>
 .minesweeper-container {
+    background-color: #eee;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -663,7 +669,9 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 0px;
+    border:0px solid #000;
+    height: 40px;
     width: 100%;
 }
 
@@ -712,6 +720,11 @@ export default {
     background-color: #999;
     padding: 1px;
     border: 2px solid #666;
+    width: fit-content;  /* 添加这行 */
+}
+
+.grid-row {
+    display: contents;  /* 添加这行 */
 }
 
 .grid-cell {
@@ -796,5 +809,8 @@ export default {
     margin-bottom: 15px;
     display: flex;
     justify-content: center;
+}
+.seed-display {
+    color: #aaa;
 }
 </style>
