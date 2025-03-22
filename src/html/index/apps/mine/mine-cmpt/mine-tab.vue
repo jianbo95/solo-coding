@@ -7,9 +7,9 @@
                     <div class="dropdown-content">
                         <div @click="$emit('new-game')">新游戏</div>
                         <hr>
-                        <div @click="$emit('new-game')">初级</div>
-                        <div @click="$emit('new-game')">中级</div>
-                        <div @click="$emit('new-game')">高级</div>
+                        <div @click="setDifficulty('beginner')">初级</div>
+                        <div @click="setDifficulty('intermediate')">中级</div>
+                        <div @click="setDifficulty('expert')">高级</div>
                         <div @click="optionsVisible = true">自定义</div>
                         <hr>
                         <div @click="$emit('ai-play')">AI玩游戏</div>
@@ -62,11 +62,11 @@
             <div class="options-container" style="padding: 1rem">
                 <div class="option-item">
                     <span>行数:</span>
-                    <el-input-number :size="size" v-model="options.rows" :min="5" :max="20"></el-input-number>
+                    <el-input-number :size="size" v-model="options.rows" :min="5" :max="99"></el-input-number>
                 </div>
                 <div class="option-item">
                     <span>列数:</span>
-                    <el-input-number :size="size" v-model="options.cols" :min="5" :max="20"></el-input-number>
+                    <el-input-number :size="size" v-model="options.cols" :min="5" :max="99"></el-input-number>
                 </div>
                 <div class="option-item">
                     <span>雷数:</span>
@@ -375,6 +375,21 @@ export default {
         formatDate(timestamp) {
             const date = new Date(timestamp);
             return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+        },
+        setDifficulty(level) {
+            const difficulties = {
+                beginner: { rows: 9, cols: 9, mineCount: 10 },
+                intermediate: { rows: 16, cols: 16, mineCount: 40 },
+                expert: { rows: 16, cols: 30, mineCount: 99 }
+            };
+            
+            const config = difficulties[level];
+            this.options = { ...this.options, ...config };
+            
+            // 保存到localStorage
+            this.saveOptionsToStorage();
+            // 通知父组件更新并开始新游戏
+            this.$emit('update-options', { ...this.options });
         }
     }
 };

@@ -44,15 +44,24 @@
                 >
                     <template v-if="cell.revealed">
                         <span v-if="cell.isMine">
-                            <!-- 💣 -->
-                            <img style="width: 100%; height: 100%; margin:0% 0 0 10%;" src="./html/index/apps/mine/image/bang.png" alt="" srcset="">
+                            <template v-if="useFont">
+                                💣
+                            </template>
+                            <template v-else>
+                                <img style="width: 100%; height: 100%; margin:0% 0 0 10%;" src="./html/index/apps/mine/image/bang.png" alt="" srcset="">
+                            </template>
                         </span>
                         <span v-else-if="cell.adjacentMines > 0" :class="`number-${cell.adjacentMines}`">
                             {{ cell.adjacentMines }}
                         </span>
                     </template>
                     <span v-else-if="cell.flagged || cell.tempFlag">
-                        <img style="width: 70%; height: 70%; margin:20% 0 0 20%;" src="./html/index/apps/mine/image/flag.png" alt="" srcset="">
+                        <template v-if="useFont">
+                            🚩
+                        </template>
+                        <temlate v-else>
+                            <img style="width: 70%; height: 70%; margin:20% 0 0 20%;" src="./html/index/apps/mine/image/flag.png" alt="" srcset="">
+                        </temlate>
                     </span>
                 </div>
             </div>
@@ -97,6 +106,7 @@ export default {
     data() {
         return {
             init: false,
+            useFont: true,
             size: window.size,
             rows: 15,
             cols: 10,
@@ -658,6 +668,7 @@ export default {
 <style scoped>
 .minesweeper-container {
     background-color: #eee;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;

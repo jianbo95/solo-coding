@@ -1,7 +1,7 @@
 <template>
     <div class="app-container" v-if="init">
         <cc-header></cc-header>
-        <div style="width:100%;">
+        <div style="width:100%;height:100%;">
             <div class="main-content">
                 <keep-alive exclude="article">
                     <router-view></router-view>
@@ -59,9 +59,11 @@ export default {
 
 <style lang="less" scoped>
 .app-container {
+    height: 100%;
     width: calc(100% - 0px);
     overflow: hidden;
     .main-content {
+        height: 100%;
         
         @media screen and (max-width: 768px) {
             margin: 40px auto 0;

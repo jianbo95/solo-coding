@@ -1,6 +1,6 @@
 import MinesweeperAI from '@/html/index/apps/mine/mine-ai/aiGame.js';
 
-// 基于种子的随机数生成器
+// 创建基于种子的随机数生成器
 function SeededRandom(seed) {
     const rng = new Math.seedrandom(seed);
     
@@ -25,6 +25,7 @@ function encodeSeedString(rows, cols, mineCount, firstRow, firstCol, baseSeed) {
            baseSeed;
 }
 
+// 生成包含游戏参数的随机种子
 function buildRandSeed(rows/*2-100*/, cols/*2-100*/, mineCount/*2-9999*/, firstRow/*0-99*/, firstCol/*0-99*/) {
     // 参数格式：
     // rows: 3位 (001-100)
@@ -49,7 +50,7 @@ function buildRandSeed(rows/*2-100*/, cols/*2-100*/, mineCount/*2-9999*/, firstR
            baseSeed;
 }
 
-// 从种子字符串中解析参数
+// 从种子字符串中解析游戏参数
 function parseSeed(seedString) {
     // 从前向后解析固定长度的字段
     const rows = parseInt(seedString.slice(0, 3));
@@ -110,7 +111,7 @@ function generateMinesBySeed(rows, cols, mineCount, seed) {
         };
     }
 
-    const maxAttempts = 50;
+    const maxAttempts = 500;
     let bestGrid = null;
     let bestRevealedCount = 0;
 
@@ -210,8 +211,8 @@ function generateMinesBySeed(rows, cols, mineCount, seed) {
         const currentRng = new SeededRandom(currentBaseSeed);
         
         const grid = generateSingleGrid(currentRng);
-        // 这里 currentSeed 是当前的种子，对应的 grid 是唯一的吗？这里要保证生成的地图唯一 currentSeed 每次生成的地图是一样的
-        const revealedCount = evaluateGrid(grid);
+        
+        const revealedCount = evaluateGrid(grid); // 去掉这个逻辑，所有地图都让ai玩一遍
         buildSize++;
         
         if (revealedCount > bestRevealedCount) {
@@ -225,6 +226,12 @@ function generateMinesBySeed(rows, cols, mineCount, seed) {
             gridList.push({
                 grid: grid,
                 score: score,
+                seed: currentSeed
+            });
+        } else {
+            gridList.push({
+                grid: grid,
+                score: 0,
                 seed: currentSeed
             });
         }
