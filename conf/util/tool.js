@@ -73,6 +73,14 @@ module.exports = {
             fs.rmdirSync(dirPath);
         }
     },
+    isFile(path) {
+        try {
+            fs.accessSync(path, fs.constants.F_OK);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    },
     writeFile(path, data) {
         var dir = path.substring(0, path.lastIndexOf('/'));
         this.mkdirpSync(dir);

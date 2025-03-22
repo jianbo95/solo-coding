@@ -54,11 +54,16 @@ for(var i in files) {
         var gameData = JSON.parse(json);
         data[gameData.id] = gameData;
 
-        var router = file.substring(0, file.indexOf('.json')) + '.vue';
+        var routerFile = file.substring(0, file.indexOf('.json')) + '.vue';
+        // 自动路由
+        // 判断 routerFile 是否存在
+        if(tool.isFile(routerFile) == false) {
+            continue;
+        }
 
         var path = tool.getRootPath();
         var src = path + 'src/';
-        var relativePath = router.replace(src, '');
+        var relativePath = routerFile.replace(src, '');
         var id = gameData.id;
         var lineCode = 'import ' + id + ' from \'@/' + relativePath + '\';\n'
             + "pushRoute('/game/"+ id +"', "+ id +");\n\n";
