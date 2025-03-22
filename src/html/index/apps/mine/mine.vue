@@ -260,7 +260,20 @@ export default {
         },
 
         loadSeed(seed) {
+            // 先重置游戏状态
+            this.initGame(false);
+            // 然后生成新地图
             this.generateMapWithSafeClick(seed);
+            // 重置游戏相关状态
+            this.gameStarted = false;
+            this.gameOver = false;
+            this.gameWon = false;
+            this.firstClick = true;
+            this.flagsLeft = this.mineCount;
+            this.gameTime = 0;
+            this.gameMessage = '';
+            this.stopTimer();
+            this.moveHistory = [];
         },
 
         // 生成带有安全点击的地图
@@ -306,11 +319,11 @@ export default {
             this.gameOver = gameInfoData.gameOver;
             this.gameWon = gameInfoData.gameWon;
             this.firstClick = gameInfoData.firstClick;
-            
-            // 使用种子生成地图
+
+            // 先使用种子生成地图，这里不能改
             this.generateMapWithSafeClick(gameInfoData.seed);
-            
-            // 还原用户操作状态
+
+            // 先还原用户操作状态
             for (let r = 0; r < this.rows; r++) {
                 for (let c = 0; c < this.cols; c++) {
                     const state = userState[r][c];

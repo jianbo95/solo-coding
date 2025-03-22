@@ -16,7 +16,6 @@
                         <div @click="$emit('ai-play')">AI玩游戏</div>
                         <div @click="loadSeedVisible = true">加载种子</div>
                     </div>
-                    <input type="file" ref="fileInput" style="display: none" @change="uploadEndgame" accept=".json">
                 </div>
                 
                 <div class="menu-item" @click="$emit('ai-step')">AI单步</div>
@@ -286,23 +285,51 @@ export default {
         uploadEndgame(event) {
             const file = event.target.files[0];
             if (!file) return;
-            
+
             const reader = new FileReader();
             reader.onload = (e) => {
                 try {
-                    const endgameData = JSON.parse(e.target.result);
-                    this.$emit('load-endgame', endgameData);
+                    const data = JSON.parse(e.target.result);
+                    
+                    // 验证数据格式
+                    if (!Array.isArray(data) || data.length < 2) {
+                        throw new Error('无效的残局文件格式');
+                    }
+
+                    const gameInfo = data[0][0];
+                    const userState = data[1];
+                    
+                    // 验证必要的游戏信息
+                    if (!gameInfo.rows || !gameInfo.cols || !gameInfo.mineCount) {
+                        throw new Error('残局文件缺少必要的游戏信息');
+                    }
+
+                    // 验证用户状态数组
+                    if (!Array.isArray(userState) || userState.length !== gameInfo.rows) {
+                        throw new Error('残局状态数据无效');
+                    }
+
+                    // 构造残局数据
+                    const endgame = {
+                        ...gameInfo,
+                        timestamp: Date.now(),
+                        data: data
+                    };
+
+                    // 加载残局
+                    this.$emit('load-endgame', endgame);
                     this.$message.success('残局加载成功');
+
                 } catch (error) {
-                    console.error('解析残局文件失败', error);
-                    this.$message.error('残局文件格式错误');
+                    console.error('解析残局文件失败:', error);
+                    this.$message.error('无效的残局文件格式');
                 }
-                
-                // 重置文件输入，以便可以重复上传同一个文件
-                this.$refs.fileInput.value = '';
             };
             
             reader.readAsText(file);
+            
+            // 清空文件输入框，允许重复选择同一文件
+            event.target.value = '';
         },
         
         createEndgameData(gameInstance) {

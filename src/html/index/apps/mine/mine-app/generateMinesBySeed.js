@@ -70,22 +70,22 @@ function parseSeed(seedString) {
     };
 }
 
-function generateMinesBySeed(rows, cols, mineCount, seed) {
+function generateMinesBySeed(rows, cols, mineCount, finalSeed) {
 
     let safeRow, safeCol, buildSeed, params;
     
-    if(seed == null) {
+    if(finalSeed == null) {
         // 随机选择一个安全的第一次点击位置
         safeRow = Math.floor(Math.random() * rows);
         safeCol = Math.floor(Math.random() * cols);
-        seed = buildRandSeed(rows, cols, mineCount, safeRow, safeCol);
-        params = parseSeed(seed);
+        var notFinalSeed = buildRandSeed(rows, cols, mineCount, safeRow, safeCol);
+        params = parseSeed(notFinalSeed);
         buildSeed = true;
     } else {
         buildSeed = false;
         // 从种子中解析参数，包括第一次点击位置
         // 使用解析出的参数
-        params = parseSeed(seed);
+        params = parseSeed(finalSeed);
         rows = params.rows;
         cols = params.cols;
         mineCount = params.mineCount;
@@ -95,14 +95,14 @@ function generateMinesBySeed(rows, cols, mineCount, seed) {
     // console.log('参数', {rows, cols, mineCount, firstRow: safeRow, firstCol: safeCol});
 
     // 如果是使用已有种子，直接生成一次地图并返回
-    if (!buildSeed) {
-        const rng = new SeededRandom(params.baseSeed);
+    if (buildSeed == false) {
+        const rng = new SeededRandom(finalSeed);
         const grid = generateSingleGrid(rng);
-        console.log('使用已有种子，直接生成一次地图并返回', seed);
+        console.log('使用已有种子，直接生成一次地图并返回', finalSeed);
         return {
             grid: grid,
             guessCount: 0,  // 这里不需要计算猜测次数
-            seed: seed,
+            seed: finalSeed,
             rows,
             cols,
             mineCount,
@@ -112,7 +112,6 @@ function generateMinesBySeed(rows, cols, mineCount, seed) {
     }
 
     const maxAttempts = 500;
-    let bestGrid = null;
     let bestRevealedCount = 0;
 
     function countAdjacentMines(grid, rows, cols, row, col) {
@@ -203,12 +202,11 @@ function generateMinesBySeed(rows, cols, mineCount, seed) {
     var bestScore = -100;
     
     for (let i = 0; i < maxAttempts; i++) {
-        // 每次尝试使用不同的种子偏移
-        const currentBaseSeed = params.baseSeed + i;
-        const currentSeed = encodeSeedString(rows, cols, mineCount, safeRow, safeCol, currentBaseSeed);
         
-        // 最终打印的种子必须是 currentSeed
-        const currentRng = new SeededRandom(currentBaseSeed);
+        // 最终种子
+        const finalSeed = encodeSeedString(rows, cols, mineCount, safeRow, safeCol, params.baseSeed + i);
+        
+        const currentRng = new SeededRandom(finalSeed);
         
         const grid = generateSingleGrid(currentRng);
         
@@ -221,24 +219,23 @@ function generateMinesBySeed(rows, cols, mineCount, seed) {
             const score = totalNonMines - totalNonMines * 0.7;
             if(score > bestScore) {
                 bestScore = score;
-                bestGrid = grid;
             }
             gridList.push({
                 grid: grid,
                 score: score,
-                seed: currentSeed
+                seed: finalSeed
             });
         } else {
             gridList.push({
                 grid: grid,
                 score: 0,
-                seed: currentSeed
+                seed: finalSeed
             });
         }
     }
 
     let bestGuessCount = 10000;
-    let finalGrid = null;
+    let finalItem = null;
     
     // console.log('gridList.size', gridList.length);
     // 通过 aiGame.js 模拟玩游戏，从 gridList 中找出最好的地图
@@ -299,8 +296,8 @@ function generateMinesBySeed(rows, cols, mineCount, seed) {
         // 在更新最佳地图时
         if (guessCount < bestGuessCount) {
             bestGuessCount = guessCount;
-            finalGrid = item.grid;
-            seed = encodeSeedString(rows, cols, mineCount, safeRow, safeCol, params.baseSeed);
+            finalItem = item;
+            finalSeed = encodeSeedString(rows, cols, mineCount, safeRow, safeCol, params.baseSeed);
             
             if (guessCount === 0) {
                 console.log('无需猜测，直接使用');
@@ -309,13 +306,13 @@ function generateMinesBySeed(rows, cols, mineCount, seed) {
         }
     }
 
-    console.log('生成种子:', seed, '尝试生成地图' + buildSize + '次，好地图' + gridList.length + '个，AI玩次数' + playCount + '，最少需要猜测' + bestGuessCount + '次');
+    console.log('生成种子:', finalSeed, '尝试生成地图' + buildSize + '次，好地图' + gridList.length + '个，AI玩次数' + playCount + '，最少需要猜测' + bestGuessCount + '次');
 
     // 修改返回的种子格式
     return { 
-        grid: finalGrid || bestGrid, 
+        grid: finalItem.grid, 
         guessCount: bestGuessCount,
-        seed: `${seed}`, // 返回完整的种子字符串
+        seed: `${finalItem.seed}`, // 返回完整的种子字符串
         rows,
         cols,
         mineCount,
