@@ -77,7 +77,7 @@ for(var i in files) {
 
 var compile = {
     options: {
-        mergeJs: false,
+        mergeJs: true,
         minifyJs: false,
         compileJs: true,
     },
