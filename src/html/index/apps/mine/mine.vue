@@ -7,6 +7,7 @@
                 @ai-play="startAIGame"
                 @hint="showHint"
                 @update-options="loadOptions"
+                @init-options="initOptions"
                 @load-endgame="loadEndgame"
                 @load-seed="loadSeed"
             ></mine-tab>
@@ -27,45 +28,68 @@
                 <led-display :value="gameTime" :digits="3" />
             </div>
         </div>
-        
-        <div class="minesweeper-grid" :style="gridStyle">
-            <div 
-                v-for="(row, rowIndex) in grid" 
-                :key="rowIndex" 
-                class="grid-row"
-            >
-                <div 
-                    v-for="(cell, colIndex) in row" 
-                    :key="`${rowIndex}-${colIndex}`" 
-                    class="grid-cell"
-                    :class="getCellClass(cell)"
-                    @click="handleCellClick(rowIndex, colIndex)"
-                    @contextmenu.prevent="handleRightClick(rowIndex, colIndex)"
-                >
-                    <template v-if="cell.revealed">
-                        <span v-if="cell.isMine">
-                            <template v-if="useFont">
-                                💣
+
+        <!-- 添加坐标容器 -->
+        <div class="grid-container" :style="gridContainerStyle">
+            <!-- 列坐标 -->
+            <div v-if="showCoordinates" class="col-coordinates">
+                <div class="coordinate-spacer"></div>
+                <div v-for="colIndex in cols" :key="'col-'+colIndex" class="coordinate">
+                    {{colIndex}}
+                </div>
+            </div>
+            
+            <div class="grid-wrapper">
+                <!-- 行坐标 -->
+                <div v-if="showCoordinates" class="row-coordinates">
+                    <div v-for="rowIndex in rows" :key="'row-'+rowIndex" class="coordinate">
+                        {{rowIndex}}
+                    </div>
+                </div>
+                
+                <!-- 扫雷网格 -->
+                <div class="minesweeper-grid" :style="gridStyle">
+                    <div 
+                        v-for="(row, rowIndex) in grid" 
+                        :key="rowIndex" 
+                        class="grid-row"
+                    >
+                        <div 
+                            v-for="(cell, colIndex) in row" 
+                            :key="`${rowIndex}-${colIndex}`" 
+                            class="grid-cell"
+                            :class="getCellClass(cell)"
+                            @click="handleCellClick(rowIndex, colIndex)"
+                            @contextmenu.prevent="handleRightClick(rowIndex, colIndex)"
+                        >
+                            <template v-if="cell.revealed">
+                                <span v-if="cell.isMine">
+                                    <template v-if="useFont">
+                                        💣
+                                    </template>
+                                    <template v-else>
+                                        <img style="width: 100%; height: 100%; margin:0% 0 0 10%;" src="./html/index/apps/mine/image/bang.png" alt="" srcset="">
+                                    </template>
+                                </span>
+                                <span v-else-if="cell.adjacentMines > 0" :class="`number-${cell.adjacentMines}`">
+                                    {{ cell.adjacentMines }}
+                                </span>
                             </template>
-                            <template v-else>
-                                <img style="width: 100%; height: 100%; margin:0% 0 0 10%;" src="./html/index/apps/mine/image/bang.png" alt="" srcset="">
-                            </template>
-                        </span>
-                        <span v-else-if="cell.adjacentMines > 0" :class="`number-${cell.adjacentMines}`">
-                            {{ cell.adjacentMines }}
-                        </span>
-                    </template>
-                    <span v-else-if="cell.flagged || cell.tempFlag">
-                        <template v-if="useFont">
-                            🚩
-                        </template>
-                        <temlate v-else>
-                            <img style="width: 70%; height: 70%; margin:20% 0 0 20%;" src="./html/index/apps/mine/image/flag.png" alt="" srcset="">
-                        </temlate>
-                    </span>
+                            <span v-else-if="cell.flagged || cell.tempFlag">
+                                <template v-if="useFont">
+                                    🚩
+                                </template>
+                                <temlate v-else>
+                                    <img style="width: 70%; height: 70%; margin:20% 0 0 20%;" src="./html/index/apps/mine/image/flag.png" alt="" srcset="">
+                                </temlate>
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
+        
 
         <div class="game-message" v-if="gameMessage">
             <el-alert :title="gameMessage" :type="gameMessageType" :closable="false">
@@ -112,6 +136,7 @@ export default {
             cols: 10,
             mineCount: 15,
             useTime: 300,
+            showCoordinates: false,
             grid: [],
             gameInit: false,
             gameStarted: false,
@@ -141,6 +166,11 @@ export default {
                 gridTemplateColumns: `repeat(${this.cols}, 30px)`,
                 gridTemplateRows: `repeat(${this.rows}, 30px)`
             };
+        },
+        gridContainerStyle() {
+            return {
+                width: 'fit-content'
+            };
         }
     },
     created() {
@@ -152,7 +182,7 @@ export default {
             this.init = true;
             Core.waitRef(this.$refs, 'mineTab', () => {
                 this.$refs.mineTab.setGameInstance(this);
-                // this.initGame(true);
+                // 由 loadOptions 触发初始化游戏
             });
         });
     },
@@ -168,6 +198,7 @@ export default {
                 this.cols = options.cols;
                 this.mineCount = options.mineCount;
                 this.useTime = options.useTime;
+                this.showCoordinates = options.showCoordinates;
             }
         },
         /**
@@ -179,7 +210,19 @@ export default {
             console.log('loadOptions', options);
             // 加载新的选项
             this.loadNewOptions(options); 
-            // 如果游戏未开始才开新游戏
+
+            // 地图没有改变，不需要自动开始新游戏
+            if(options.notChangeGameMap == true) {
+                return;
+            }
+            // 开新游戏
+            this.newGame();
+        },
+        initOptions(options) {
+            console.log('initOptions', options);
+            // 加载新的选项
+            this.loadNewOptions(options); 
+            // 开新游戏
             this.newGame();
         },
         newGame(seed) {
@@ -244,42 +287,47 @@ export default {
             // this.checkIfMapIsLuckBased();
         },
 
-        // 添加加载残局方法
+        // 格式： {"rows":9,"cols":9,"mineCount":10,"flagsLeft":10,"gameTime":2,"gameStarted":true,"gameOver":false,"gameWon":false,"firstClick":false,"seed":"009009001005051742637537891","timestamp":1742637495030,"data":[[{"rows":9,"cols":9,"mineCount":10,"flagsLeft":10,"gameTime":2,"gameStarted":true,"gameOver":false,"gameWon":false,"firstClick":false,"seed":"009009001005051742637537891"}],[["_","_","_","_","_","_","_","_","_"],["_","_","_","_","_","_","_","_","_"],["_","_","_","_","_","_","_","_","_"],["_","o","o","o","_","_","_","_","_"],["_","o","o","o","o","o","o","_","_"],["o","o","o","o","o","o","o","o","_"],["o","o","o","o","o","o","o","o","_"],["o","o","o","o","o","o","o","o","_"],["o","o","o","o","_","_","_","_","_"]]]}
         loadEndgame(endgameData) {
-            // 停止当前游戏相关活动
-            this.stopAIGame();
-            this.stopTimer();
+            // 初始化游戏状态
+            this.initGame(false);
             
-            // 设置游戏参数
-            this.rows = endgameData.rows;
-            this.cols = endgameData.cols;
-            this.mineCount = endgameData.mineCount;
-            this.flagsLeft = endgameData.flagsLeft;
-            this.gameTime = endgameData.gameTime;
+            // 从数据中获取游戏信息
+            const [gameInfo, userState] = endgameData.data;
+            const gameInfoData = gameInfo[0];
             
-            // 设置游戏状态
-            this.gameStarted = endgameData.gameStarted;
-            this.gameOver = endgameData.gameOver;
-            this.gameWon = endgameData.gameWon;
-            this.firstClick = endgameData.firstClick;
-            this.currentSeed = endgameData.seed;
+            // 设置基本游戏参数
+            this.rows = gameInfoData.rows;
+            this.cols = gameInfoData.cols;
+            this.mineCount = gameInfoData.mineCount;
+            this.gameTime = gameInfoData.gameTime || 0;
+            this.flagsLeft = gameInfoData.flagsLeft;
+            this.gameStarted = gameInfoData.gameStarted;
+            this.gameOver = gameInfoData.gameOver;
+            this.gameWon = gameInfoData.gameWon;
+            this.firstClick = gameInfoData.firstClick;
             
-            // 加载网格数据
-            this.grid = JSON.parse(JSON.stringify(endgameData.grid));
-            // 保存当前地图布局
-            this.currentMapLayout = JSON.parse(JSON.stringify(endgameData.grid));
+            // 使用种子生成地图
+            this.generateMapWithSafeClick(gameInfoData.seed);
             
-            // 如果游戏正在进行中，重新启动计时器
+            // 还原用户操作状态
+            for (let r = 0; r < this.rows; r++) {
+                for (let c = 0; c < this.cols; c++) {
+                    const state = userState[r][c];
+                    if (state === 'o') {
+                        // 揭开的格子
+                        this.grid[r][c].revealed = true;
+                    } else if (state === 'f') {
+                        // 标记的格子
+                        this.grid[r][c].flagged = true;
+                    }
+                }
+            }
+
+            // 如果游戏已经开始且未结束，启动计时器
             if (this.gameStarted && !this.gameOver) {
                 this.startTimer();
             }
-            
-            // 清空游戏消息
-            this.gameMessage = '';
-            this.gameMessageType = 'info';
-            
-            // 重置移动历史
-            this.moveHistory = [];
         },
         
         // 添加重玩本局方法
@@ -823,5 +871,53 @@ export default {
 }
 .seed-display {
     color: #aaa;
+}
+
+.grid-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.grid-wrapper {
+    display: flex;
+}
+
+.col-coordinates {
+    display: flex;
+    height: 20px;
+    margin-bottom: 4px;
+    margin-left: 4px;
+}
+
+.row-coordinates {
+    display: flex;
+    flex-direction: column;
+    width: 20px;
+    margin-top: 2px;
+    margin-right: 4px;
+}
+
+.coordinate {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    color: #666;
+}
+
+.coordinate-spacer {
+    width: 20px;
+}
+
+.col-coordinates .coordinate {
+    width: 31px;
+    height: 20px;
+    font-size: 12px;
+}
+
+.row-coordinates .coordinate {
+    height: 31px;
+    width: 20px;
+    font-size: 12px;
 }
 </style>

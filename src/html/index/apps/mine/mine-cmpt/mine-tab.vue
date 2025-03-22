@@ -12,6 +12,7 @@
                         <div @click="setDifficulty('expert')">高级</div>
                         <div @click="optionsVisible = true">自定义</div>
                         <hr>
+                        <div @click="settingVisible = true">设置</div>
                         <div @click="$emit('ai-play')">AI玩游戏</div>
                         <div @click="loadSeedVisible = true">加载种子</div>
                     </div>
@@ -54,7 +55,7 @@
 
         <!-- 选项弹框 -->
         <el-dialog
-            title="游戏选项"
+            title="自定义模式"
             :visible.sync="optionsVisible"
             width="400px"
             :size="size"
@@ -72,14 +73,33 @@
                     <span>雷数:</span>
                     <el-input-number :size="size" v-model="options.mineCount" :min="1" :max="maxMines"></el-input-number>
                 </div>
-                <div class="option-item">
-                    <span>人机步时(毫秒):</span>
-                    <el-input-number :size="size" v-model="options.useTime" :min="10" :max="2000" :step="100"></el-input-number>
-                </div>
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button :size="size" @click="optionsVisible = false">取消</el-button>
                 <el-button :size="size" type="primary" @click="saveOptions">确定</el-button>
+            </span>
+        </el-dialog>
+
+        <!-- 设置弹框 -->
+        <el-dialog
+            title="设置"
+            :visible.sync="settingVisible"
+            width="400px"
+            :size="size"
+        >
+            <div class="options-container" style="padding: 1rem">
+                <div class="option-item">
+                    <span>人机步时(毫秒):</span>
+                    <el-input-number :size="size" v-model="options.useTime" :min="10" :max="2000" :step="100"></el-input-number>
+                </div>
+                <div class="option-item">
+                    <span>显示坐标:</span>
+                    <el-switch v-model="options.showCoordinates"></el-switch>
+                </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button :size="size" @click="settingVisible = false">取消</el-button>
+                <el-button :size="size" type="primary" @click="saveSettings">确定</el-button>
             </span>
         </el-dialog>
 
@@ -142,6 +162,7 @@ export default {
         return {
             size: window.size,
             optionsVisible: false,
+            settingVisible: false,
             loadEndgameVisible: false,
             options: savedOptions,
             gameInstance: null,
@@ -166,10 +187,12 @@ export default {
     mounted() {
         // 组件挂载时，如果有保存的设置，通知父组件更新
         const savedOptions = this.getSavedOptions();
+
         if (savedOptions) {
-            this.$emit('update-options', { ...savedOptions });
+            var newOptions = Object.assign({}, savedOptions);
+            this.$emit('init-options', newOptions);
         } else {
-            this.$emit('update-options');
+            this.$emit('init-options');
         }
         // 加载保存的残局
         this.loadSavedEndgames();
@@ -204,7 +227,8 @@ export default {
                 rows: 10,
                 cols: 10,
                 mineCount: 15,
-                useTime: 300
+                useTime: 300,
+                showCoordinates: false
             };
         },
         
@@ -219,45 +243,38 @@ export default {
         
         saveOptions() {
             this.optionsVisible = false;
+            
+            // 获取上一次保存的设置
+            const lastSettings = this.getSavedOptions();
+            
+            // 保存到localStorage
+            this.saveOptionsToStorage();
+
+            // 判断地图参数是否改变
+            var isChangeGameMap = 
+                lastSettings.rows !== this.options.rows || 
+                lastSettings.cols !== this.options.cols || 
+                lastSettings.mineCount !== this.options.mineCount;
+            var notChangeGameMap = (isChangeGameMap == false);
+            var newOptions = Object.assign({}, this.options);
+            newOptions.notChangeGameMap = notChangeGameMap;
+            // 通知父组件更新
+            this.$emit('update-options', newOptions);
+        },
+        saveSettings() {
+            this.settingVisible = false;
             // 保存到localStorage
             this.saveOptionsToStorage();
             // 通知父组件更新
-            this.$emit('update-options', { ...this.options });
+            var newOptions = Object.assign({}, this.options);
+            newOptions.notChangeGameMap = true;
+            this.$emit('update-options', newOptions);
         },
         validateMineCount() {
             const maxMines = Math.floor(this.options.rows * this.options.cols * 0.3);
             if (this.options.mineCount > maxMines) {
                 this.options.mineCount = maxMines;
             }
-        },
-        
-        // 新增方法 - 下载残局
-        downloadEndgame() {
-            if (!this.gameInstance) return;
-            
-            const endgameData = {
-                grid: this.gameInstance.grid,
-                rows: this.gameInstance.rows,
-                cols: this.gameInstance.cols,
-                mineCount: this.gameInstance.mineCount,
-                gameTime: this.gameInstance.gameTime,
-                flagsLeft: this.gameInstance.flagsLeft,
-                gameStarted: this.gameInstance.gameStarted,
-                gameOver: this.gameInstance.gameOver,
-                gameWon: this.gameInstance.gameWon,
-                firstClick: this.gameInstance.firstClick,
-                timestamp: new Date().getTime()
-            };
-            
-            const dataStr = JSON.stringify(endgameData, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            
-            const exportFileName = `minesweeper_endgame_${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileName);
-            linkElement.click();
         },
         
         // 触发文件上传
@@ -288,60 +305,104 @@ export default {
             reader.readAsText(file);
         },
         
-        // 保存残局到浏览器
-        saveEndgame() {
-            if (!this.gameInstance || !this.gameInstance.gameStarted) {
-                this.$message.warning('没有可保存的游戏');
-                return;
-            }
-            
-            const endgameData = {
-                grid: this.gameInstance.grid,
-                rows: this.gameInstance.rows,
-                cols: this.gameInstance.cols,
-                mineCount: this.gameInstance.mineCount,
-                gameTime: this.gameInstance.gameTime,
-                flagsLeft: this.gameInstance.flagsLeft,
-                gameStarted: this.gameInstance.gameStarted,
-                gameOver: this.gameInstance.gameOver,
-                gameWon: this.gameInstance.gameWon,
-                firstClick: this.gameInstance.firstClick,
-                seed: this.gameInstance.currentSeed,
-                timestamp: new Date().getTime()
+        createEndgameData(gameInstance) {
+            if (!gameInstance) return null;
+
+            // 创建游戏信息数组
+            const gameInfo = {
+                rows: gameInstance.rows,
+                cols: gameInstance.cols,
+                mineCount: gameInstance.mineCount,
+                flagsLeft: gameInstance.flagsLeft,
+                gameTime: gameInstance.gameTime,
+                gameStarted: gameInstance.gameStarted,
+                gameOver: gameInstance.gameOver,
+                gameWon: gameInstance.gameWon,
+                firstClick: gameInstance.firstClick,
+                seed: gameInstance.currentSeed
             };
-            
-            try {
-                // 获取已保存的残局
-                let savedEndgames = [];
-                const savedData = localStorage.getItem('minesweeper-endgames');
-                if (savedData) {
-                    savedEndgames = JSON.parse(savedData);
+
+            // 创建用户操作状态数组
+            const userState = Array(gameInstance.rows).fill().map(() => 
+                Array(gameInstance.cols).fill('_')
+            );
+
+            // 填充状态数组
+            for (let r = 0; r < gameInstance.rows; r++) {
+                for (let c = 0; c < gameInstance.cols; c++) {
+                    const cell = gameInstance.grid[r][c];
+                    if (cell.revealed) {
+                        userState[r][c] = 'o';
+                    } else if (cell.flagged) {
+                        userState[r][c] = 'f';
+                    }
                 }
-                
-                // 添加新残局
-                savedEndgames.push(endgameData);
-                
-                // 限制保存数量，最多保存10个
-                if (savedEndgames.length > 10) {
-                    savedEndgames = savedEndgames.slice(-10);
-                }
-                
-                // 保存到localStorage
-                localStorage.setItem('minesweeper-endgames', JSON.stringify(savedEndgames));
-                this.$message.success('残局保存成功');
-                
-                // 更新本地残局列表
-                this.savedEndgames = savedEndgames;
-            } catch (e) {
-                console.error('保存残局失败', e);
-                this.$message.error('保存残局失败');
             }
+
+            return [
+                [gameInfo],
+                userState
+            ];
+        },
+
+        downloadEndgame() {
+            const endgameData = this.createEndgameData(this.gameInstance);
+            if (!endgameData) return;
+            
+            // 格式化数组为棋盘样式
+            const formattedData = [
+                endgameData[0],  // 保持游戏信息数组不变
+                ...endgameData.slice(1).map(array => 
+                    JSON.stringify(array)
+                        .replace(/],\[/g, '],\n    [')  // 每行数据换行
+                        .replace(/^\[/, '[\n    [')     // 开头换行
+                        .replace(/\]$/, '\n]')          // 结尾换行
+                )
+            ];
+            
+            const dataStr = `[\n${JSON.stringify(formattedData[0], null, 4)},\n${formattedData.slice(1).join(',\n')}\n]`;
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            const exportFileName = `minesweeper_endgame_${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileName);
+            linkElement.click();
+        },
+
+        // 修改保存残局方法
+        saveEndgame() {
+            const endgameData = this.createEndgameData(this.gameInstance);
+            if (!endgameData) return;
+
+            // 保存到本地存储
+            const savedEndgames = JSON.parse(localStorage.getItem('game.mine.endGames') || '[]');
+            savedEndgames.push({
+                ...endgameData[0][0],
+                timestamp: Date.now(),
+                data: endgameData
+            });
+            localStorage.setItem('game.mine.endGames', JSON.stringify(savedEndgames));
+
+            // 立即重新加载残局列表
+            this.loadSavedEndgames();
+            this.$message.success('残局保存成功');
+        },
+
+        // 加载残局
+        loadEndgame(endgame) {
+            // 发送加载事件，包含种子和用户状态信息
+            console.log('endgame', JSON.stringify(endgame));
+            this.$emit('load-endgame', endgame);
+
+            this.loadEndgameVisible = false;
+            this.$message.success('残局加载成功');
         },
         
         // 加载保存的残局列表
         loadSavedEndgames() {
             try {
-                const savedData = localStorage.getItem('minesweeper-endgames');
+                const savedData = localStorage.getItem('game.mine.endGames');
                 if (savedData) {
                     this.savedEndgames = JSON.parse(savedData);
                 }
@@ -351,19 +412,12 @@ export default {
             }
         },
         
-        // 加载指定残局
-        loadEndgame(endgame) {
-            this.$emit('load-endgame', endgame);
-            this.loadEndgameVisible = false;
-            UI.success('残局加载成功');
-        },
-        
-        // 删除保存的残局
+        // 修改删除保存的残局方法
         deleteEndgame(index) {
             this.savedEndgames.splice(index, 1);
             
             try {
-                localStorage.setItem('minesweeper-endgames', JSON.stringify(this.savedEndgames));
+                localStorage.setItem('game.mine.endGames', JSON.stringify(this.savedEndgames));
                 this.$message.success('残局删除成功');
             } catch (e) {
                 console.error('删除残局失败', e);
@@ -384,12 +438,10 @@ export default {
             };
             
             const config = difficulties[level];
-            this.options = { ...this.options, ...config };
+            this.options = Object.assign({}, this.options, config);
             
-            // 保存到localStorage
-            this.saveOptionsToStorage();
-            // 通知父组件更新并开始新游戏
-            this.$emit('update-options', { ...this.options });
+            // 使用 saveOptions 来保存和更新设置
+            this.saveOptions();
         }
     }
 };

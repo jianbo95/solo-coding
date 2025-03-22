@@ -1,0 +1,16 @@
+[   [{
+    "rows": null,
+    "cols": null,
+    "mineCount": null,
+    "flagsLeft": null,
+    "gameTime": null,
+    "gameStarted": null,
+    "gameOver": null,
+    "gameWon": null,
+    "firstClick": null,
+    "seed": null
+}],
+    [["_","_","_"]],
+    [["o","o","o"]],
+    [["f","f","f"]]
+]
