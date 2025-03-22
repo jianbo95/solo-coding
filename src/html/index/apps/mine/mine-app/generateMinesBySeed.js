@@ -273,8 +273,17 @@ function generateMinesBySeed(rows, cols, mineCount, seed) {
             // 模拟移动
             if (move.action === 'reveal') {
                 if (testGrid[move.row][move.col].isMine) {
-                    // 踩雷了，这个地图不是最优解
-                    guessCount = Infinity;
+                    // 计算当前已经揭开的格子数量
+                    let revealedCount = 0;
+                    for (let r = 0; r < rows; r++) {
+                        for (let c = 0; c < cols; c++) {
+                            if (testGrid[r][c].revealed) {
+                                revealedCount++;
+                            }
+                        }
+                    }
+                    // 剩余待处理的格子数量作为猜测次数
+                    guessCount = rows * cols - revealedCount - mineCount;
                     break;
                 }
                 simulateReveal(testGrid, move.row, move.col);
