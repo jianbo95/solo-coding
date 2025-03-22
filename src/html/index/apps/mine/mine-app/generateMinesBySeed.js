@@ -1,20 +1,17 @@
 import MinesweeperAI from '@/html/index/apps/mine/mine-ai/aiGame.js';
 
 // 基于种子的随机数生成器
-class SeededRandom {
-    constructor(seed) {
-        this.random = new Math.seedrandom(seed);
-    }
-
-    // 生成 0-1 之间的随机数
-    random() {
-        return this.random();
-    }
-
-    // 生成指定范围内的整数
-    randInt(min, max) {
-        return Math.floor(this.random() * (max - min + 1)) + min;
-    }
+function SeededRandom(seed) {
+    const rng = new Math.seedrandom(seed);
+    
+    return {
+        random: function() {
+            return rng();
+        },
+        randInt: function(min, max) {
+            return Math.floor(rng() * (max - min + 1)) + min;
+        }
+    };
 }
 
 // 在文件顶部添加工具函数
@@ -72,7 +69,7 @@ function parseSeed(seedString) {
     };
 }
 
-export default function generateMinesBySeed(rows, cols, mineCount, seed) {
+function generateMinesBySeed(rows, cols, mineCount, seed) {
 
     let safeRow, safeCol, buildSeed, params;
     
@@ -323,3 +320,5 @@ function checkGridCompletion(grid) {
     }
     return true;
 }
+
+export default generateMinesBySeed;
