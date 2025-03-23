@@ -24,7 +24,7 @@
                     残局
                     <div class="dropdown-content">
                         <div @click="downloadEndgame">下载残局</div>
-                        <div @click="downloadFullEndgame">下载完整残局</div>
+                        <!-- <div @click="downloadFullEndgame">下载完整残局</div> -->
                         <div @click="triggerUpload">上传残局</div>
                         <div @click="saveEndgame">保存残局</div>
                         <div @click="loadEndgameVisible = true">加载残局</div>
@@ -32,7 +32,7 @@
                     <input type="file" ref="fileInput" style="display: none" @change="uploadEndgame" accept=".json">
                 </div>
 
-                <div class="menu-item" @click="$emit('unit-test')">单元测试</div>
+                <!-- <div class="menu-item" @click="$emit('unit-test')">单元测试</div> -->
             </div>
         </div>
 
