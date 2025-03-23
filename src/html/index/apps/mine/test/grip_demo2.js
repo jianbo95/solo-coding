@@ -16,11 +16,11 @@
  */
 var easyMap = [
     ['0', '1', 'f', '-', '-',],
-    ['0', '0', '2', '-', '-',],
-    ['0', '0', '1', '+', '-',],
-    ['0', '0', '2', '-', '-',],
-    ['0', '0', '1', '+', '-',],
+    ['1', '2', '3', '-', '-',],
+    ['1', 'f', '2', '+', '-',],
+    ['1', '1', '2', '-', '-',],
     ['0', '0', '1', '-', '-',],
+    ['0', '0', '1', '+', '-',],
 ];
 
 // 数字1判断出右边两个格子只有一个雷
@@ -45,18 +45,20 @@ function grid_demo1() {
     let mineCount = 0;
     let unrevealedCount = 0;
 
-    // 根据 easyMap 设置格子状态
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
             const value = easyMap[r][c];
-            if (value === '+') {
+            if (value === '+' || value === 'f') {  // 同时处理+和f为雷
                 grid[r][c].isMine = true;
                 mineCount++;
                 unrevealedCount++;
+                
+                // 如果是f则标记为已插旗
+                if (value === 'f') {
+                    grid[r][c].flagged = true;
+                }
             } else if (value === '-') {
                 unrevealedCount++;
-            } else if (value === 'f') {
-                grid[r][c].flagged = true;  // 标记旗子
             } else {
                 grid[r][c].revealed = true;
                 grid[r][c].adjacentMines = parseInt(value);

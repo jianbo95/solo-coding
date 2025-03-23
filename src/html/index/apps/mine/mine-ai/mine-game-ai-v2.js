@@ -21,6 +21,7 @@ export default class MineGameAiV2 {
         this.probabilityStrategy = new ProbabilityStrategy();
         this.utils = new Utils();
         this.gridPatternStrategy = new GridPatternStrategy();
+        // this.constraintStrategy = new ConstraintStrategy(); // 添加约束策略
         this.connectedBlockStrategy = new ConnectedBlockStrategy();
         // this.patternStrategy = new PatternStrategy();
     }
@@ -59,6 +60,15 @@ export default class MineGameAiV2 {
             return basicMove;
         }
 
+        // 2. 约束推理分析
+        if(this.constraintStrategy != null) {
+            const constraintMove = this.constraintStrategy.analyze(grid, rows, cols, revealedCells);
+            if (constraintMove) {
+                this.log(`约束推理找到移动: ${constraintMove.action} at (${constraintMove.row}, ${constraintMove.col})`);
+                return constraintMove;
+            }
+        }
+
         // 1.5 定式分析（在基础逻辑之后）
         // const patternMove = this.patternStrategy.analyze(grid, rows, cols, revealedCells);
         // if (patternMove) {
@@ -66,7 +76,7 @@ export default class MineGameAiV2 {
         //     return patternMove;
         // }
 
-        // 2. 剩余雷数和区域分析
+        // 3. 剩余雷数和区域分析
         const regionMove = this.regionStrategy.analyze(
             grid, rows, cols, mineCount, unrevealedCells, flaggedCount
         );
@@ -80,6 +90,10 @@ export default class MineGameAiV2 {
         if (tankChainMove) {
             this.log(`坦克链分析找到移动: ${tankChainMove.action} at (${tankChainMove.row}, ${tankChainMove.col})`);
             return tankChainMove;
+        } else {
+            // 添加调试信息
+            this.log('坦克链分析未找到移动');
+            console.log('当前已知数字:', revealedCells);
         }
 
         // 3.5 联通块分析（在坦克链分析之后，概率分析之前）

@@ -56,27 +56,27 @@ export default class TankChainStrategy {
                 }
                 
                 // 如果数字2已经有一个雷，且还有两个未知格子
-                if (twoFlags === 1 && twoUnknowns.length === 2) {
-                    // 检查这两个未知格子中是否有一个与数字1共享
-                    const sharedUnknown = twoUnknowns.find(n1 => 
-                        oneUnknowns.some(n2 => n2.row === n1.row && n2.col === n1.col)
-                    );
+                // if (twoFlags === 1 && twoUnknowns.length === 2) {
+                //     // 检查这两个未知格子中是否有一个与数字1共享
+                //     const sharedUnknown = twoUnknowns.find(n1 => 
+                //         oneUnknowns.some(n2 => n2.row === n1.row && n2.col === n1.col)
+                //     );
                     
-                    if (sharedUnknown) {
-                        // 非共享的格子一定是安全的
-                        const safeSquare = twoUnknowns.find(n1 => 
-                            n1.row !== sharedUnknown.row || n1.col !== sharedUnknown.col
-                        );
+                //     if (sharedUnknown) {
+                //         // 非共享的格子一定是安全的
+                //         const safeSquare = twoUnknowns.find(n1 => 
+                //             n1.row !== sharedUnknown.row || n1.col !== sharedUnknown.col
+                //         );
                         
-                        this.log('找到1-2定式（数字2已有雷，非共享格子安全）');
-                        return {
-                            row: safeSquare.row,
-                            col: safeSquare.col,
-                            action: 'reveal',
-                            isGuess: false
-                        };
-                    }
-                }
+                //         this.log('找到1-2定式（数字2已有雷，非共享格子安全）');
+                //         return {
+                //             row: safeSquare.row,
+                //             col: safeSquare.col,
+                //             action: 'reveal',
+                //             isGuess: false
+                //         };
+                //     }
+                // }
             }
         }
         return null;
@@ -155,7 +155,6 @@ export default class TankChainStrategy {
         // 打印当前网格状态
         // GridPrinter.printGrid(grid, rows, cols);
 
-        // 
 
         return null;
     }
