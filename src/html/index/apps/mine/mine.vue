@@ -120,7 +120,7 @@ import checkIfMapIsLuckBased from './mine-app/checkIfMapIsLuckBased.js';
 import MineGameAi from './mine-ai/mine-game-ai-v2.js';
 import MineTab from './mine-cmpt/mine-tab.vue';
 import LedDisplay from './mine-cmpt/led-display.vue';
-import grid_demo from './test/grip_demo1.1.js';
+import grid_demo from './test/grip_demo1_1.js';
 var SelectMineAi = MineGameAi;
 
 export default {
