@@ -65,6 +65,7 @@ export default {
             var disqus_config = function () {
                 this.page.url = 'https://www.solo-coding.org/#/article?id=' + id; 
                 this.page.identifier = id; // 替换为当前页面的唯一标识符
+                console.log('disqus_config config success', id);
             };
             window.disqus_config = disqus_config;
             Core.waitDomById('disqus_thread', () => {
