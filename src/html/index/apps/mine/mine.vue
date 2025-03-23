@@ -10,6 +10,7 @@
                 @init-options="initOptions"
                 @load-endgame="loadEndgame"
                 @load-seed="loadSeed"
+                @unit-test="unitTest"
             ></mine-tab>
         </div>
 
@@ -119,6 +120,7 @@ import checkIfMapIsLuckBased from './mine-app/checkIfMapIsLuckBased.js';
 import MineGameAi from './mine-ai/mine-game-ai-v2.js';
 import MineTab from './mine-cmpt/mine-tab.vue';
 import LedDisplay from './mine-cmpt/led-display.vue';
+import grid_demo1 from './test/grip_demo1.js';
 var SelectMineAi = MineGameAi;
 
 export default {
@@ -276,15 +278,15 @@ export default {
             this.moveHistory = [];
         },
 
-        // 生成带有安全点击的地图
         generateMapWithSafeClick(seed) {
             console.log('generateMapWithSafeClick');
             
-            // 生成地图，确保安全位置没有雷
-            const { grid, guessCount, safeRow, safeCol, seed: genSeed } = generateMines(this.rows, this.cols, this.mineCount, seed);
-            seed = genSeed;
-            this.currentSeed = seed; // 存储生成的种子
-            console.log('seed', seed);
+            // 修改：直接传入正确的参数顺序
+            const result = generateMines(this.rows, this.cols, this.mineCount, seed);
+            const { grid, guessCount, seed: genSeed, safeRow, safeCol } = result;
+            
+            this.currentSeed = genSeed; // 存储生成的种子
+            console.log('seed', genSeed);
             this.grid = grid;
 
             // 保存当前地图布局
@@ -293,11 +295,9 @@ export default {
             // 标记安全点击位置
             this.grid[safeRow][safeCol].safeFirstClick = true;
             
-            // if(guessCount > 0) {
-                // 检查地图是否需要靠运气才能完成
-                // this.checkIfMapIsLuckBased();
-            // }
-            // this.checkIfMapIsLuckBased();
+            // 重置 AI 相关状态
+            this.aiPlaying = false;
+            this.guessCount = 0;
         },
 
         // 格式： {"rows":9,"cols":9,"mineCount":10,"flagsLeft":10,"gameTime":2,"gameStarted":true,"gameOver":false,"gameWon":false,"firstClick":false,"seed":"009009001005051742637537891","timestamp":1742637495030,"data":[[{"rows":9,"cols":9,"mineCount":10,"flagsLeft":10,"gameTime":2,"gameStarted":true,"gameOver":false,"gameWon":false,"firstClick":false,"seed":"009009001005051742637537891"}],[["_","_","_","_","_","_","_","_","_"],["_","_","_","_","_","_","_","_","_"],["_","_","_","_","_","_","_","_","_"],["_","o","o","o","_","_","_","_","_"],["_","o","o","o","o","o","o","_","_"],["o","o","o","o","o","o","o","o","_"],["o","o","o","o","o","o","o","o","_"],["o","o","o","o","o","o","o","o","_"],["o","o","o","o","_","_","_","_","_"]]]}
@@ -346,34 +346,6 @@ export default {
         // 添加重玩本局方法
         replayCurrentGame() {
             this.newGame(this.currentSeed);
-            // if (!this.currentMapLayout) return;
-            
-            // this.stopAIGame();
-            // this.stopTimer();
-            
-            // // 重置游戏状态
-            // this.gameStarted = false;
-            // this.gameOver = false;
-            // this.gameWon = false;
-            // this.firstClick = true;
-            // this.flagsLeft = this.mineCount;
-            // this.gameTime = 0;
-            // this.gameMessage = '';
-            // this.luckBasedMap = false;
-            
-            // // 恢复保存的地图布局
-            // this.grid = JSON.parse(JSON.stringify(this.currentMapLayout));
-            
-            // // 新增：重新标记安全点击位置
-            // let foundSafeCell = false;
-            // for (let r = 0; r < this.rows && !foundSafeCell; r++) {
-            //     for (let c = 0; c < this.cols && !foundSafeCell; c++) {
-            //         if (!this.grid[r][c].revealed && !this.grid[r][c].flagged) {
-            //             this.grid[r][c].safeFirstClick = true;
-            //             foundSafeCell = true;
-            //         }
-            //     }
-            // }
         },
         
         startTimer() {
@@ -449,6 +421,9 @@ export default {
         
         handleRightClick(row, col) {
             if (this.gameOver || this.grid[row][col].revealed) return;
+            
+            // 新增操作日志
+            console.log(`用户点击 [标记] 位置: 行 ${row + 1}, 列 ${col + 1}`);
             
             // 保存当前状态
             this.moveHistory.push({
@@ -546,6 +521,22 @@ export default {
                 this.gameMessage = `警告：当前地图可能需要靠运气才能完成，AI结果为${winResult}`;
                 this.gameMessageType = "warning";
             }
+        },
+        unitTest() {
+            const { grid, rows, cols, mineCount } = grid_demo1();
+            // 更新当前游戏状态
+            this.rows = rows;
+            this.cols = cols;
+            this.grid = grid;
+            this.gameStarted = true;
+            this.firstClick = false;
+            
+            // 直接使用返回的地雷数
+            this.mineCount = mineCount;
+            this.flagsLeft = mineCount;
+            
+            // 开始计时
+            this.startTimer();
         },
         async showHint() {
             const ai = new SelectMineAi();
@@ -689,29 +680,30 @@ export default {
             if (this.aiPlaying) return;
             this.aiPlaying = true;
             
-            const playNextMove = async () => {
-                if (this.gameOver || !this.aiPlaying) {
-                    this.stopAIGame();
-                    return;
+            let loopCount = 0;
+            const maxLoops = 10000;
+            
+            while (!this.gameOver && this.aiPlaying) {
+                if (loopCount >= maxLoops) {
+                    this.gameMessage = 'AI执行超时，可能陷入死循环';
+                    this.gameMessageType = 'error';
+                    break;
                 }
-
-                await this.getHint();
                 
-                // 添加延迟使移动可见
+                await this.aiStep();
                 await new Promise(resolve => setTimeout(resolve, this.useTime));
-                
-                if (!this.gameOver) {
-                    playNextMove();
-                }
-            };
-
-            playNextMove();
+                loopCount++;
+            }
+            
+            // 游戏结束时重置 AI 状态
+            this.stopAIGame();
         },
 
         stopAIGame() {
             this.aiPlaying = false;
         },
         undoLastMove() {
+            console.log('this.aiPlaying', this.aiPlaying)
             if (this.moveHistory.length === 0) return;
             
             const lastState = this.moveHistory.pop();

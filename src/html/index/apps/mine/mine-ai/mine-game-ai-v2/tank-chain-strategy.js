@@ -1,14 +1,60 @@
 import Utils from './utils.js';
+import GridPrinter from './grid-printer.js';
 
 export default class TankChainStrategy {
     constructor() {
         this.utils = new Utils();
+        this.debug = true;  // 添加调试开关
     }
 
-    /**
-     * 坦克链分析
-     */
+    analyzeOneTwoPattern(grid, rows, cols, revealedCells) {
+        for (const cell of revealedCells) {
+            if (grid[cell.row][cell.col].adjacentMines !== 1) continue;
+            
+            const neighbors = this.utils.getSurroundingCells(grid, rows, cols, cell.row, cell.col);
+            const twoNeighbors = neighbors.filter(n => 
+                n.cell.revealed && !n.cell.isMine && 
+                grid[n.row][n.col].adjacentMines === 2
+            );
+            
+            for (const twoCell of twoNeighbors) {
+                // 获取重叠区域
+                const overlap = this.utils.getSurroundingCells(grid, rows, cols, cell.row, cell.col)
+                    .filter(n1 => 
+                        this.utils.getSurroundingCells(grid, rows, cols, twoCell.row, twoCell.col)
+                            .some(n2 => n2.row === n1.row && n2.col === n1.col)
+                    );
+                
+                // 检查重叠区域是否已有一个雷
+                const overlapFlags = overlap.filter(n => n.cell.flagged).length;
+                if (overlapFlags === 1) {
+                    // 获取非重叠区域
+                    const uniqueToOne = neighbors.filter(n1 => 
+                        !overlap.some(n2 => n2.row === n1.row && n2.col === n1.col) &&
+                        !n1.cell.revealed && !n1.cell.flagged
+                    );
+                    
+                    // 数字1的非重叠区域应该安全
+                    if (uniqueToOne.length > 0) {
+                        this.log('找到1-2定式');
+                        return {
+                            row: uniqueToOne[0].row,
+                            col: uniqueToOne[0].col,
+                            action: 'reveal',
+                            isGuess: false
+                        };
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     analyze(grid, rows, cols, revealedCells) {
+        // 先检查1-2定式
+        const oneTwoMove = this.analyzeOneTwoPattern(grid, rows, cols, revealedCells);
+        if (oneTwoMove) return oneTwoMove;
+        
         // 寻找数字1-2-1模式 (坦克链)
         for (const cell of revealedCells) {
             if (grid[cell.row][cell.col].adjacentMines !== 1) continue;
@@ -22,23 +68,47 @@ export default class TankChainStrategy {
                 const neighborOfNeighbor = this.utils.getSurroundingCells(grid, rows, cols, neighbor.row, neighbor.col);
                 const revealedNeighborOfNeighbor = neighborOfNeighbor.filter(n => 
                     n.cell.revealed && !n.cell.isMine && 
-                    n.row !== cell.row && n.col !== cell.col &&
+                    !(n.row === cell.row && n.col === cell.col) &&
                     grid[n.row][n.col].adjacentMines === 1
                 );
-                
+        
                 if (revealedNeighborOfNeighbor.length > 0) {
-                    // 找到1-2-1模式，检查是否有可以标记或揭开的格子
-                    const middleUnrevealed = neighborOfNeighbor.filter(n => 
-                        !n.cell.revealed && !n.cell.flagged
+                    // 验证是否形成真正的1-2-1模式
+                    const isValidPattern = this.validateTankChainPattern(
+                        grid, rows, cols,
+                        cell,                           // 第一个1
+                        neighbor,                       // 中间的2
+                        revealedNeighborOfNeighbor[0]  // 第二个1
                     );
+
+                    if (!isValidPattern) continue;
+
+                    // 检查是否已经有标记的雷
+                    const flaggedCount = neighborOfNeighbor.filter(n => n.cell.flagged).length;
+                    const unrevealed = neighborOfNeighbor.filter(n => !n.cell.revealed && !n.cell.flagged);
                     
-                    if (middleUnrevealed.length === 1) {
+                    // 如果已经标记了一个雷，且剩下一个未知格子，那么这个格子一定安全
+                    if (flaggedCount === 1 && unrevealed.length === 1) {
+                        this.log('找到1-2-1坦克链（已有一个雷，剩余格子安全）');
                         return {
-                            row: middleUnrevealed[0].row,
-                            col: middleUnrevealed[0].col,
-                            action: 'flag',
+                            row: unrevealed[0].row,
+                            col: unrevealed[0].col,
+                            action: 'reveal',
                             isGuess: false
                         };
+                    }
+                    // 如果还没有标记雷，且只有两个未知格子，其中一个一定是雷
+                    else if (flaggedCount === 0 && unrevealed.length === 2) {
+                        // 检查这两个未知格子是否在正确的位置上
+                        if (this.areCellsInValidPosition(grid, rows, cols, unrevealed, cell, revealedNeighborOfNeighbor[0])) {
+                            this.log('找到1-2-1坦克链（需要标记雷）');
+                            return {
+                                row: unrevealed[0].row,
+                                col: unrevealed[0].col,
+                                action: 'flag',
+                                isGuess: false
+                            };
+                        }
                     }
                 }
             }
@@ -47,7 +117,12 @@ export default class TankChainStrategy {
         // 寻找1-1-1模式
         const oneOneOneMove = this.analyzeOneOneOnePattern(grid, rows, cols, revealedCells);
         if (oneOneOneMove) return oneOneOneMove;
-        
+
+        // 打印当前网格状态
+        // GridPrinter.printGrid(grid, rows, cols);
+
+        // 
+
         return null;
     }
     
@@ -70,7 +145,10 @@ export default class TankChainStrategy {
                     // 检查上下是否有可以标记或揭开的格子
                     const move = this.checkLinePattern(grid, rows, cols, 
                         [[cell.row, cell.col], [cell.row, cell.col + 1], [cell.row, cell.col + 2]]);
-                    if (move) return move;
+                        if (move) {
+                            this.log('找到1-1-1模式');
+                            return move;
+                        }
                 }
             }
             
@@ -85,7 +163,10 @@ export default class TankChainStrategy {
                     // 检查左右是否有可以标记或揭开的格子
                     const move = this.checkLinePattern(grid, rows, cols, 
                         [[cell.row, cell.col], [cell.row + 1, cell.col], [cell.row + 2, cell.col]]);
-                    if (move) return move;
+                        if (move) {
+                            this.log('找到1-1-1模式');
+                            return move;
+                        }
                 }
             }
         }
@@ -119,4 +200,37 @@ export default class TankChainStrategy {
         
         return null;
     }
+
+    validateTankChainPattern(grid, rows, cols, one1, two, one2) {
+        // 验证三个数字是否形成有效的1-2-1模式
+        // 1. 检查两个1是否在2的对角位置
+        const dx1 = Math.abs(one1.row - two.row);
+        const dy1 = Math.abs(one1.col - two.col);
+        const dx2 = Math.abs(one2.row - two.row);
+        const dy2 = Math.abs(one2.col - two.col);
+        
+        if (dx1 !== 1 || dy1 !== 1 || dx2 !== 1 || dy2 !== 1) return false;
+        
+        // 2. 检查两个1是否在对角线上
+        if (Math.abs(one1.row - one2.row) !== 2 || Math.abs(one1.col - one2.col) !== 2) return false;
+        
+        return true;
+    }
+
+    areCellsInValidPosition(grid, rows, cols, unknowns, one1, one2) {
+        // 检查未知格子是否在2的旁边，且不在1的旁边
+        for (const unknown of unknowns) {
+            const isNextToOne1 = Math.abs(unknown.row - one1.row) <= 1 && Math.abs(unknown.col - one1.col) <= 1;
+            const isNextToOne2 = Math.abs(unknown.row - one2.row) <= 1 && Math.abs(unknown.col - one2.col) <= 1;
+            if (isNextToOne1 || isNextToOne2) return false;
+        }
+        return true;
+    }
+ 
+    log(message) {
+        if (this.debug) {
+            console.log(`[TankChainStrategy] ${message}`);
+        }
+    }
+
 }

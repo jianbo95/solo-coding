@@ -3,6 +3,11 @@ import RegionStrategy from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2/regio
 import TankChainStrategy from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2/tank-chain-strategy.js';
 import ProbabilityStrategy from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2/probability-strategy.js';
 import Utils from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2/utils.js';
+import GridPatternStrategy from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2/grid-pattern-strategy.js';
+import ConstraintStrategy from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2/constraint-strategy.js';
+import DFSStrategy from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2/dfs-strategy.js';
+import ConnectedBlockStrategy from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2/connected-block-strategy.js';
+// import PatternStrategy from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2/pattern-strategy.js';
 
 export default class MineGameAiV2 {
     constructor() {
@@ -15,6 +20,9 @@ export default class MineGameAiV2 {
         this.tankChainStrategy = new TankChainStrategy();
         this.probabilityStrategy = new ProbabilityStrategy();
         this.utils = new Utils();
+        this.gridPatternStrategy = new GridPatternStrategy();
+        this.connectedBlockStrategy = new ConnectedBlockStrategy();
+        // this.patternStrategy = new PatternStrategy();
     }
 
     getGuessCount() {
@@ -31,6 +39,8 @@ export default class MineGameAiV2 {
      * @returns {Object} 下一步操作
      */
     getNextMove(grid, rows, cols, isGuessing = false, mineCount) {
+        var data = {grid,rows,cols,mineCount};
+        console.log('data', data);
         // 重置猜测计数
         if (!isGuessing) {
             this.guessCount = 0;
@@ -49,6 +59,13 @@ export default class MineGameAiV2 {
             return basicMove;
         }
 
+        // 1.5 定式分析（在基础逻辑之后）
+        // const patternMove = this.patternStrategy.analyze(grid, rows, cols, revealedCells);
+        // if (patternMove) {
+        //     this.log(`定式分析找到移动: ${patternMove.action} at (${patternMove.row}, ${patternMove.col})`);
+        //     return patternMove;
+        // }
+
         // 2. 剩余雷数和区域分析
         const regionMove = this.regionStrategy.analyze(
             grid, rows, cols, mineCount, unrevealedCells, flaggedCount
@@ -63,6 +80,13 @@ export default class MineGameAiV2 {
         if (tankChainMove) {
             this.log(`坦克链分析找到移动: ${tankChainMove.action} at (${tankChainMove.row}, ${tankChainMove.col})`);
             return tankChainMove;
+        }
+
+        // 3.5 联通块分析（在坦克链分析之后，概率分析之前）
+        const blockMove = this.connectedBlockStrategy.analyze(grid, rows, cols, revealedCells, remainingMines);
+        if (blockMove) {
+            this.log(`联通块分析找到移动: ${blockMove.action} at (${blockMove.row}, ${blockMove.col})`);
+            return blockMove;
         }
 
         // 4. 概率分析

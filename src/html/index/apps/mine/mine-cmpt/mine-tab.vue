@@ -12,7 +12,7 @@
                         <div @click="setDifficulty('expert')">高级</div>
                         <div @click="optionsVisible = true">自定义</div>
                         <hr>
-                        <div @click="settingVisible = true">设置</div>
+                        <div @click="settingVisible = true">游戏选项</div>
                         <div @click="$emit('ai-play')">AI玩游戏</div>
                         <div @click="loadSeedVisible = true">加载种子</div>
                     </div>
@@ -30,6 +30,8 @@
                     </div>
                     <input type="file" ref="fileInput" style="display: none" @change="uploadEndgame" accept=".json">
                 </div>
+
+                <div class="menu-item" @click="$emit('unit-test')">单元测试</div>
             </div>
         </div>
 
