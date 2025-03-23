@@ -100,7 +100,7 @@ export default class MineGameAiV2 {
         } else {
             // 添加调试信息
             this.log('坦克链分析未找到移动');
-            console.log('当前已知数字:', revealedCells);
+            // console.log('当前已知数字:', revealedCells);
         }
 
         // 3.5 联通块分析（在坦克链分析之后，概率分析之前）

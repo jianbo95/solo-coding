@@ -24,6 +24,8 @@
             :code="content"
             >
             </cc-super-markdown>
+
+            <div id="disqus_thread"></div>
         </div>
     </div>
 </template>
@@ -59,6 +61,17 @@ export default {
     },
     methods: {
         loadArticle(id, _call) {
+
+            var disqus_config = function () {
+                this.page.identifier = id; // 替换为当前页面的唯一标识符
+            };
+            Core.waitDomById('disqus_thread', () => {
+                var d = document, s = d.createElement('script');
+                s.src = 'https://solo-coding-org.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })
+
             const store = StoreFactory.getStore('mem');
             const map = store.get('idToArticle');
             const articleInfo = map[id];
