@@ -74,7 +74,7 @@ export default {
                     // this.page.identifier = 'test1';
                     console.log('disqus_config config success', this.page.identifier);
                 };
-                history.pushState(null, '', '/article/'+id);
+                history.pushState(null, '', '/article' + id + '.html');
                 window.disqus_config = disqus_config;
                 console.log('disqus code start');
 
