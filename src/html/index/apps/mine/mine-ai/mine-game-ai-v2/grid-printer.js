@@ -1,11 +1,11 @@
-export default class GridPrinter {
-    static debug = false;
+const GridPrinter = {
+    debug: false,
 
-    static setDebug(value) {
+    setDebug(value) {
         this.debug = value;
-    }
+    },
 
-    static printGrid(grid, rows, cols) {
+    printGrid(grid, rows, cols) {
         if (!this.debug) return;
         
         let output = '\n';
@@ -31,17 +31,17 @@ export default class GridPrinter {
         }
         
         console.log(output);
-    }
+    },
     
-    static getCellSymbol(cell) {
+    getCellSymbol(cell) {
         if (cell.flagged) return 'F';
         if (!cell.revealed) return '■';
         if (cell.isMine) return 'O';
         if (cell.adjacentMines === 0) return ' ';
         return cell.adjacentMines;
-    }
+    },
     
-    static printMine(grid, rows, cols) {
+    printMine(grid, rows, cols) {
         if (!this.debug) return;
         
         console.log('\n雷的位置:');
@@ -61,9 +61,9 @@ export default class GridPrinter {
             console.log(row);
         }
         console.log('');
-    }
+    },
     
-    static printRevealed(grid, rows, cols) {
+    printRevealed(grid, rows, cols) {
         if (!this.debug) return;
         
         console.log('\n揭开状态:');
@@ -74,7 +74,7 @@ export default class GridPrinter {
             let row = ` ${r} ┃`;
             for (let c = 0; c < cols; c++) {
                 const cell = grid[r][c];
-                const p = r + ',' + c; // row 纵坐标 + col 横坐标
+                const p = r + ',' + c;
                 if (cell.revealed) {
                     row += ` ${p} R `;
                 } else {
@@ -85,4 +85,6 @@ export default class GridPrinter {
         }
         console.log('');
     }
-}
+};
+
+export default GridPrinter;

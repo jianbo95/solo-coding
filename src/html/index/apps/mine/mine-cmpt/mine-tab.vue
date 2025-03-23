@@ -19,7 +19,7 @@
                 </div>
                 
                 <div class="menu-item" @click="$emit('ai-step')">AI单步</div>
-                <div class="menu-item" @click="$emit('hint')">提示</div>
+                <div class="menu-item" @click="$emit('hint')">AI提示</div>
                 <div class="menu-item dropdown">
                     残局
                     <div class="dropdown-content">

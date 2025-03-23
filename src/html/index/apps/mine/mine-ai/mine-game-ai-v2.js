@@ -60,14 +60,21 @@ export default class MineGameAiV2 {
             return basicMove;
         }
 
-        // 2. 约束推理分析
-        if(this.constraintStrategy != null) {
-            const constraintMove = this.constraintStrategy.analyze(grid, rows, cols, revealedCells);
-            if (constraintMove) {
-                this.log(`约束推理找到移动: ${constraintMove.action} at (${constraintMove.row}, ${constraintMove.col})`);
-                return constraintMove;
-            }
+        // 1.5 网格模式分析
+        const gridPatternMove = this.gridPatternStrategy.analyze(grid, rows, cols, revealedCells);
+        if (gridPatternMove) {
+            this.log(`网格模式分析找到移动: ${gridPatternMove.action} at (${gridPatternMove.row}, ${gridPatternMove.col})`);
+            return gridPatternMove;
         }
+
+        // 2. 约束推理分析
+        // if(this.constraintStrategy != null) {
+        //     const constraintMove = this.constraintStrategy.analyze(grid, rows, cols, revealedCells);
+        //     if (constraintMove) {
+        //         this.log(`约束推理找到移动: ${constraintMove.action} at (${constraintMove.row}, ${constraintMove.col})`);
+        //         return constraintMove;
+        //     }
+        // }
 
         // 1.5 定式分析（在基础逻辑之后）
         // const patternMove = this.patternStrategy.analyze(grid, rows, cols, revealedCells);
