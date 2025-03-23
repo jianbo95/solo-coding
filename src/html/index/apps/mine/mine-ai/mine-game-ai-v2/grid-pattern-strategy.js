@@ -123,6 +123,13 @@ export default class GridPatternStrategy {
         
         console.log(`\n确定位置(${definiteRow},${definiteCol})是雷`);
         
+        // 检查该格子是否已经被标记
+        const targetCell = grid[definiteRow][definiteCol];
+        if (targetCell.flagged) {
+            console.log('该格子已经被标记为雷，跳过');
+            return null;
+        }
+
         // 返回策略结果
         return {
             row: definiteRow,
