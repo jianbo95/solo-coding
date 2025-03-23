@@ -68,8 +68,8 @@ export default {
                     console.log('this', this);
                     console.log('this.page', this.page);
                     console.log('location.href', location.href);
-                    this.page.url = 'https://www.solo-coding.org/#/article?id=' + id ;
-                    this.page.identifier = 'b' + id; // 替换为当前页面的唯一标识符
+                    this.page.url = 'https://www.solo-coding.org/#/article?id=c' + id ;
+                    this.page.identifier = 'c' + id; // 替换为当前页面的唯一标识符
                     // this.page.identifier = 'test1';
                     console.log('disqus_config config success', this.page.identifier);
                 };
