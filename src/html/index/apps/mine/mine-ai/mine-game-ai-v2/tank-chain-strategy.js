@@ -18,28 +18,60 @@ export default class TankChainStrategy {
             );
             
             for (const twoCell of twoNeighbors) {
-                // 获取重叠区域
-                const overlap = this.utils.getSurroundingCells(grid, rows, cols, cell.row, cell.col)
-                    .filter(n1 => 
-                        this.utils.getSurroundingCells(grid, rows, cols, twoCell.row, twoCell.col)
-                            .some(n2 => n2.row === n1.row && n2.col === n1.col)
-                    );
+                // 获取数字2周围的未知格子和已标记的雷
+                const twoSurrounding = this.utils.getSurroundingCells(grid, rows, cols, twoCell.row, twoCell.col);
+                const twoUnknowns = twoSurrounding.filter(n => !n.cell.revealed && !n.cell.flagged);
+                const twoFlags = twoSurrounding.filter(n => n.cell.flagged).length;
                 
-                // 检查重叠区域是否已有一个雷
-                const overlapFlags = overlap.filter(n => n.cell.flagged).length;
-                if (overlapFlags === 1) {
-                    // 获取非重叠区域
-                    const uniqueToOne = neighbors.filter(n1 => 
-                        !overlap.some(n2 => n2.row === n1.row && n2.col === n1.col) &&
-                        !n1.cell.revealed && !n1.cell.flagged
+                // 获取数字1周围的未知格子和已标记的雷
+                const oneUnknowns = neighbors.filter(n => !n.cell.revealed && !n.cell.flagged);
+                const oneFlags = neighbors.filter(n => n.cell.flagged).length;
+                
+                // 获取重叠区域
+                const overlap = oneUnknowns.filter(n1 => 
+                    twoUnknowns.some(n2 => n2.row === n1.row && n2.col === n1.col)
+                );
+                
+                // 获取数字2独有的未知格子
+                const uniqueToTwo = twoUnknowns.filter(n1 => 
+                    !overlap.some(n2 => n2.row === n1.row && n2.col === n1.col)
+                );
+
+                // 如果数字1已经有一个雷，且与数字2共享未知格子
+                if (oneFlags === 1 && overlap.length > 0) {
+                    // 数字1的非重叠区域应该安全
+                    const safeSquares = oneUnknowns.filter(n1 => 
+                        !overlap.some(n2 => n2.row === n1.row && n2.col === n1.col)
                     );
                     
-                    // 数字1的非重叠区域应该安全
-                    if (uniqueToOne.length > 0) {
-                        this.log('找到1-2定式');
+                    if (safeSquares.length > 0) {
+                        this.log('找到1-2定式（数字1已有雷，非重叠区域安全）');
                         return {
-                            row: uniqueToOne[0].row,
-                            col: uniqueToOne[0].col,
+                            row: safeSquares[0].row,
+                            col: safeSquares[0].col,
+                            action: 'reveal',
+                            isGuess: false
+                        };
+                    }
+                }
+                
+                // 如果数字2已经有一个雷，且还有两个未知格子
+                if (twoFlags === 1 && twoUnknowns.length === 2) {
+                    // 检查这两个未知格子中是否有一个与数字1共享
+                    const sharedUnknown = twoUnknowns.find(n1 => 
+                        oneUnknowns.some(n2 => n2.row === n1.row && n2.col === n1.col)
+                    );
+                    
+                    if (sharedUnknown) {
+                        // 非共享的格子一定是安全的
+                        const safeSquare = twoUnknowns.find(n1 => 
+                            n1.row !== sharedUnknown.row || n1.col !== sharedUnknown.col
+                        );
+                        
+                        this.log('找到1-2定式（数字2已有雷，非共享格子安全）');
+                        return {
+                            row: safeSquare.row,
+                            col: safeSquare.col,
                             action: 'reveal',
                             isGuess: false
                         };
@@ -117,6 +149,8 @@ export default class TankChainStrategy {
         // 寻找1-1-1模式
         const oneOneOneMove = this.analyzeOneOneOnePattern(grid, rows, cols, revealedCells);
         if (oneOneOneMove) return oneOneOneMove;
+
+ 
 
         // 打印当前网格状态
         // GridPrinter.printGrid(grid, rows, cols);

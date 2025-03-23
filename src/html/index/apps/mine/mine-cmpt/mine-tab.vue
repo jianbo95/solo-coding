@@ -24,6 +24,7 @@
                     残局
                     <div class="dropdown-content">
                         <div @click="downloadEndgame">下载残局</div>
+                        <div @click="downloadFullEndgame">下载完整残局</div>
                         <div @click="triggerUpload">上传残局</div>
                         <div @click="saveEndgame">保存残局</div>
                         <div @click="loadEndgameVisible = true">加载残局</div>
@@ -392,6 +393,51 @@ export default {
             const dataStr = `[\n${JSON.stringify(formattedData[0], null, 4)},\n${formattedData.slice(1).join(',\n')}\n]`;
             const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
             const exportFileName = `minesweeper_endgame_${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileName);
+            linkElement.click();
+        },
+
+        downloadFullEndgame() {
+            if (!this.gameInstance) return;
+            
+            // 创建完整游戏信息
+            const gameInfo = {
+                rows: this.gameInstance.rows,
+                cols: this.gameInstance.cols,
+                mineCount: this.gameInstance.mineCount,
+                flagsLeft: this.gameInstance.flagsLeft,
+                gameTime: this.gameInstance.gameTime,
+                gameStarted: this.gameInstance.gameStarted,
+                gameOver: this.gameInstance.gameOver,
+                gameWon: this.gameInstance.gameWon,
+                firstClick: this.gameInstance.firstClick
+            };
+
+            // 创建完整的网格状态
+            const gridState = Array(this.gameInstance.rows).fill().map((_, r) => 
+                Array(this.gameInstance.cols).fill().map((_, c) => {
+                    const cell = this.gameInstance.grid[r][c];
+                    return {
+                        isMine: cell.isMine,
+                        revealed: cell.revealed,
+                        flagged: cell.flagged,
+                        adjacentMines: cell.adjacentMines
+                    };
+                })
+            );
+
+            const fullData = {
+                gameInfo: gameInfo,
+                gridState: gridState
+            };
+
+            // 格式化并下载
+            const dataStr = JSON.stringify(fullData, null, 4);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            const exportFileName = `minesweeper_full_endgame_${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
             
             const linkElement = document.createElement('a');
             linkElement.setAttribute('href', dataUri);

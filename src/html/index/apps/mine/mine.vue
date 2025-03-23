@@ -120,7 +120,7 @@ import checkIfMapIsLuckBased from './mine-app/checkIfMapIsLuckBased.js';
 import MineGameAi from './mine-ai/mine-game-ai-v2.js';
 import MineTab from './mine-cmpt/mine-tab.vue';
 import LedDisplay from './mine-cmpt/led-display.vue';
-import grid_demo1 from './test/grip_demo1.js';
+import grid_demo from './test/grip_demo2.js';
 var SelectMineAi = MineGameAi;
 
 export default {
@@ -523,7 +523,7 @@ export default {
             }
         },
         unitTest() {
-            const { grid, rows, cols, mineCount } = grid_demo1();
+            const { grid, rows, cols, mineCount } = grid_demo();
             // 更新当前游戏状态
             this.rows = rows;
             this.cols = cols;

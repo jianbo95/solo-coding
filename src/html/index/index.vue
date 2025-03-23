@@ -1,7 +1,7 @@
 <template>
     <div class="app-container" v-if="init">
         <cc-header></cc-header>
-        <div style="width:100%;height:100%;">
+        <div style="width:100%;height:100%;overflow-y: auto;">
             <div class="main-content">
                 <keep-alive exclude="article">
                     <router-view></router-view>

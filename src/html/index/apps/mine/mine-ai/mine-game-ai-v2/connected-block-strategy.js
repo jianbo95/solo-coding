@@ -5,6 +5,7 @@ export default class ConnectedBlockStrategy {
         this.utils = new Utils();
         this.debug = true;
         this.analyzeLargeBlocks = false; // 添加控制参数
+        this.maxBlockSize = 15;  // 添加最大联通块大小限制
     }
 
     setAnalyzeLargeBlocks(value) {
@@ -93,105 +94,92 @@ export default class ConnectedBlockStrategy {
     }
 
     analyzeBlock(grid, block, remainingMines) {
-        // 如果联通块中的未知格子数量较小，进行完整枚举
-        if (block.unknowns.length <= 20) {
-            const result = this.enumerateBlock(grid, block, remainingMines);
-            if (result) return result;
+        // 如果联通块太大，直接跳过
+        if (block.unknowns.length > this.maxBlockSize) {
+            return null;
         }
         
-        // 只有在开启大型联通块分析时才进行概率分析
-        if (this.analyzeLargeBlocks) {
-            return this.analyzeProbability(grid, block, remainingMines);
-        }
+        const result = this.enumerateBlock(grid, block, remainingMines);
+        if (result) return result;
         
+        // 移除大型联通块分析，因为效果不好且性能差
         return null;
     }
 
     enumerateBlock(grid, block, remainingMines) {
         const { numbers, unknowns, flags } = block;
-        const totalCombinations = Math.pow(2, unknowns.length);
+        
+        // 预计算每个数字格子周围的未知格子索引
+        const numberConstraints = numbers.map(num => {
+            const neighbors = this.utils.getSurroundingCells(grid, grid.length, grid[0].length, num.row, num.col);
+            const unknownIndices = neighbors
+                .filter(n => !n.cell.revealed && !n.cell.flagged)
+                .map(n => unknowns.findIndex(u => u.row === n.row && u.col === n.col))
+                .filter(idx => idx !== -1);
+            const flagCount = neighbors.filter(n => n.cell.flagged).length;
+            return {
+                indices: unknownIndices,
+                requiredMines: num.value - flagCount
+            };
+        });
+
         const validCombinations = [];
+        const totalCombinations = 1 << unknowns.length;
 
-        // 枚举所有可能的组合
-        for (let i = 0; i < totalCombinations; i++) {
-            const combination = new Set();
+        // 使用位运算枚举
+        combinationLoop: for (let i = 0; i < totalCombinations; i++) {
             let mineCount = 0;
-
-            // 生成当前组合
             for (let j = 0; j < unknowns.length; j++) {
-                if ((i & (1 << j)) !== 0) {
-                    combination.add(`${unknowns[j].row},${unknowns[j].col}`);
-                    mineCount++;
-                }
+                if (i & (1 << j)) mineCount++;
             }
+            
+            if (mineCount > remainingMines) continue;
 
-            // 检查是否满足所有数字约束
-            let isValid = true;
-            for (const num of numbers) {
+            // 快速验证每个数字约束
+            for (const constraint of numberConstraints) {
                 let count = 0;
-                const neighbors = this.utils.getSurroundingCells(grid, grid.length, grid[0].length, num.row, num.col);
-                
-                for (const neighbor of neighbors) {
-                    const key = `${neighbor.row},${neighbor.col}`;
-                    if (neighbor.cell.flagged || combination.has(key)) {
-                        count++;
-                    }
+                for (const idx of constraint.indices) {
+                    if (i & (1 << idx)) count++;
                 }
-
-                if (count !== num.value) {
-                    isValid = false;
-                    break;
+                if (count !== constraint.requiredMines) {
+                    continue combinationLoop;
                 }
             }
 
-            if (isValid && mineCount <= remainingMines) {
-                validCombinations.push(combination);
-            }
+            validCombinations.push(i);
         }
 
         if (validCombinations.length === 0) return null;
 
-        // 分析结果
-        const mineProbability = new Map();
-        const safeProbability = new Map();
+        // 使用位运算计算概率
+        const mineCounts = new Array(unknowns.length).fill(0);
+        const totalCount = validCombinations.length;
 
-        // 计算每个格子是雷和安全的概率
-        for (const unknown of unknowns) {
-            const key = `${unknown.row},${unknown.col}`;
-            let mineCount = 0;
-            let safeCount = 0;
-
-            for (const combination of validCombinations) {
-                if (combination.has(key)) {
-                    mineCount++;
-                } else {
-                    safeCount++;
+        // 统计每个位置在所有有效组合中出现的次数
+        for (const combination of validCombinations) {
+            for (let j = 0; j < unknowns.length; j++) {
+                if (combination & (1 << j)) {
+                    mineCounts[j]++;
                 }
             }
-
-            mineProbability.set(key, mineCount / validCombinations.length);
-            safeProbability.set(key, safeCount / validCombinations.length);
         }
 
-        // 找出确定是雷或确定安全的格子
-        for (const [key, prob] of mineProbability) {
-            if (prob === 1) {
-                const [row, col] = key.split(',').map(Number);
+        // 检查是否有确定的格子
+        for (let j = 0; j < unknowns.length; j++) {
+            if (mineCounts[j] === totalCount) {
+                // 所有组合中这个格子都是雷
                 return {
-                    row,
-                    col,
+                    row: unknowns[j].row,
+                    col: unknowns[j].col,
                     action: 'flag',
                     isGuess: false
                 };
             }
-        }
-
-        for (const [key, prob] of safeProbability) {
-            if (prob === 1) {
-                const [row, col] = key.split(',').map(Number);
+            if (mineCounts[j] === 0) {
+                // 所有组合中这个格子都是安全的
                 return {
-                    row,
-                    col,
+                    row: unknowns[j].row,
+                    col: unknowns[j].col,
                     action: 'reveal',
                     isGuess: false
                 };
