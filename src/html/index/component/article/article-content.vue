@@ -61,49 +61,53 @@ export default {
     },
     methods: {
         loadArticle(id, _call) {
-            var url = 'https://www.solo-coding.org/#/article?id=' + id ;
+
             Core.waitDomById('disqus_thread', () => {
                 console.log('navigator.language', navigator.language);
-                // var disqus_config = function () {
-                //     console.log('this', this);
-                //     console.log('this.page', this.page);
-                //     console.log('location.href', location.href);
-                //     this.page.url = 'https://www.solo-coding.org/#/article?id=' + id ;
-                //     this.page.identifier = 'a' + id; // 替换为当前页面的唯一标识符
-                //     // this.page.identifier = 'test1';
-                //     console.log('disqus_config config success', this.page.identifier);
-                // };
-                // window.disqus_config = disqus_config;
+                var disqus_config = function () {
+                    console.log('this', this);
+                    console.log('this.page', this.page);
+                    console.log('location.href', location.href);
+                    this.page.url = 'https://www.solo-coding.org/#/article?id=' + id ;
+                    this.page.identifier = 'b' + id; // 替换为当前页面的唯一标识符
+                    // this.page.identifier = 'test1';
+                    console.log('disqus_config config success', this.page.identifier);
+                };
+                window.disqus_config = disqus_config;
                 console.log('disqus code start');
 
-                var disqus_config = function () { 
-	                this.language = "en";
-                    console.log('disqus_config');
-	            };
+                if(window.DISQUS != null) {
+                    window.DISQUS = null;
+                }
 
-                window.disqus_config = disqus_config;
+                // 移除之前的 Disqus 脚本
+                const existingScript = document.querySelector('script[src*="solo-coding-org.disqus.com"]');
+                if (existingScript) {
+                    existingScript.remove();
+                }
 
                 (function() { // DON'T EDIT BELOW THIS LINE
-                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-                    dsq.src = 'https://solo-coding-org.disqus.com/embed.js';
-                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                    var d = document, s = d.createElement('script');
+                    s.src = 'https://solo-coding-org.disqus.com/embed.js';
+                    s.setAttribute('data-timestamp', +new Date());
+                    (d.head || d.body).appendChild(s);
                 })();
 
                 /* * * Disqus Reset Function * * */
-                var timer = setInterval(() => {
-                    console.log('window.DISQUS', window.DISQUS);
-                    if(window.DISQUS != null) {
-                        console.log('reset', id);
-                        DISQUS.reset({
-                            reload: true,
-                            config: function () {
-                                this.page.identifier = id;
-                                this.page.url = url;
-                            }
-                        });
-                        clearInterval(timer);
-                    }
-                }, 2000);
+                // var timer = setInterval(() => {
+                //     console.log('window.DISQUS', window.DISQUS);
+                //     if(window.DISQUS != null) {
+                //         console.log('reset', id);
+                //         DISQUS.reset({
+                //             reload: true,
+                //             config: function () {
+                //                 this.page.identifier = 'test2';
+                //                 this.page.url = url + '&type=test2';
+                //             }
+                //         });
+                //         clearInterval(timer);
+                //     }
+                // }, 2000);
 
                 console.log('disqus code end');
             })
