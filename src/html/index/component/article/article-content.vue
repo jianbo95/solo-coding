@@ -65,14 +65,16 @@ export default {
             Core.waitDomById('disqus_thread', () => {
                 console.log('navigator.language', navigator.language);
                 var disqus_config = function () {
-                    console.log('this', this);
-                    console.log('this.page', this.page);
-                    console.log('location.href', location.href);
-                    this.page.url = 'https://www.solo-coding.org/#/article?id=c' + id ;
-                    this.page.identifier = 'c' + id; // 替换为当前页面的唯一标识符
+                    // console.log('this', this);
+                    // console.log('this.page', this.page);
+                    // console.log('location.href', location.href);
+                    // this.page.url = 'https://www.solo-coding.org/#/article?id=a' + id ;
+                    this.page.identifier = 'a3' + id; // 替换为当前页面的唯一标识符
+                    this.page.title = 'a3' + id;
                     // this.page.identifier = 'test1';
                     console.log('disqus_config config success', this.page.identifier);
                 };
+                history.pushState(null, '', '/article/'+id);
                 window.disqus_config = disqus_config;
                 console.log('disqus code start');
 
