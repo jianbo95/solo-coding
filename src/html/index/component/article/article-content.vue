@@ -64,15 +64,25 @@ export default {
 
             Core.waitDomById('disqus_thread', () => {
                 var disqus_config = function () {
+                    console.log('this', this);
+                    console.log('this.page', this.page);
                     this.page.url = 'https://www.solo-coding.org/#/article?id=' + id; 
-                    this.page.identifier = id; // 替换为当前页面的唯一标识符
-                    console.log('disqus_config config success', id);
+                    this.page.identifier = 'a' + id; // 替换为当前页面的唯一标识符
+                    console.log('disqus_config config success', this.page.identifier);
                 };
                 window.disqus_config = disqus_config;
-                var d = document, s = d.createElement('script');
-                s.src = 'https://solo-coding-org.disqus.com/embed.js';
-                s.setAttribute('data-timestamp', +new Date());
-                (d.head || d.body).appendChild(s);
+                console.log('disqus code start');
+
+                $('#disqus_thread').empty();
+
+                (function() { // DON'T EDIT BELOW THIS LINE
+                    var d = document, s = d.createElement('script');
+                    s.src = 'https://solo-coding-org.disqus.com/embed.js';
+                    s.setAttribute('data-timestamp', +new Date());
+                    (d.head || d.body).appendChild(s);
+                })();
+
+                console.log('disqus code end');
             })
 
             const store = StoreFactory.getStore('mem');
