@@ -1,4 +1,3 @@
-// import MinesweeperAI from '@/html/index/apps/mine/mine-ai/aiGame.js';
 import MinesweeperAI from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2.js';
 
 // 创建基于种子的随机数生成器
@@ -71,7 +70,30 @@ function parseSeed(seedString) {
     };
 }
 
-function generateMinesBySeed(rows, cols, mineCount, finalSeed) {
+/**
+ * 根据种子生成扫雷游戏地图
+ * @param {number} rows 地图行数 (2-100)
+ * @param {number} cols 地图列数 (2-100)
+ * @param {number} mineCount 地雷数量 (2-9999)
+ * @param {string|null} finalSeed 种子字符串，格式为"RRRCCCSSSRRCCXXXXXX"，其中：
+ *   - RRR: 3位行数
+ *   - CCC: 3位列数
+ *   - SSS: 4位地雷数
+ *   - RR: 2位首次点击行号
+ *   - CC: 2位首次点击列号
+ *   - XXXXXX: 时间戳+随机偏移
+ * @param {number} maxAttempts 最大尝试生成次数，默认50次
+ * @returns {Object} 返回生成的地图信息
+ *   - grid: 地图数组
+ *   - guessCount: AI计算的最少猜测次数
+ *   - seed: 最终使用的种子
+ *   - rows: 行数
+ *   - cols: 列数
+ *   - mineCount: 地雷数
+ *   - safeRow: 安全起始行
+ *   - safeCol: 安全起始列
+ */
+function generateMinesBySeed(rows, cols, mineCount, finalSeed, maxAttempts = 50) {
 
     let safeRow, safeCol, buildSeed, params;
     
@@ -112,7 +134,6 @@ function generateMinesBySeed(rows, cols, mineCount, finalSeed) {
         };
     }
 
-    const maxAttempts = 50;
     let bestRevealedCount = 0;
 
     function countAdjacentMines(grid, rows, cols, row, col) {

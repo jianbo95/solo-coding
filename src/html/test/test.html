@@ -1,36 +1,127 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title><%= title %></title>
+  <script>
+    !function(p){"use strict";!function(t){var s=window,e=document,i=p,c="".concat("https:"===e.location.protocol?"https://":"http://","sdk.51.la/js-sdk-pro.min.js"),n=e.createElement("script"),r=e.getElementsByTagName("script")[0];n.type="text/javascript",n.setAttribute("charset","UTF-8"),n.async=!0,n.src=c,n.id="LA_COLLECT",i.d=n;var o=function(){s.LA.ids.push(i)};s.LA?s.LA.ids&&o():(s.LA=p,s.LA.ids=[],o()),r.parentNode.insertBefore(n,r)}()}({id:"3LZgGW29E2Bdu9vA",ck:"3LZgGW29E2Bdu9vA"});
+  </script>
+  <script type="text/javascript">
+    window.loadTime = new Date();
+    window.logTime = function() {
+      // console.log('record time ' + (new Date().getTime() - loadTime.getTime()) + ' ms ');
+    };
+    window.devMode = "";
+    var data = '{"title":"快速开发系统","login":{"title":"快速开发系统-登录"},"data":"{}","devMode":""}';
+    console.log('编译前系统配置参数')
+    console.log(data);
+    window.Conf = JSON.parse(data); 
+    window.Version = '<%= version %>';
+    window.Site = location.origin
+    // console.log('location.hostname', location.origin);
+    console.log('加载编译前系统配置参数完成，全局变量名为Conf')
+  </script>
+  
+  
+</head>
+
+<body class="ss">
+  <div id="super-door">
+    <div class="loading-text">Loading...</div>
+  </div>
+  <style>
+    /* body {
+      background-image: url('./static/images/bg.jpeg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    } */
+
+    #super-door {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 999;
+      background: #fff;
+      transition: opacity 0.8s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .loading-text {
+      font-size: 48px;
+      color: #333;
+      font-weight: 300;
+      letter-spacing: 4px;
+      animation: fadeInOut 2s ease-in-out infinite;
+    }
+
+    @keyframes fadeInOut {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+  </style>
+  
+  <script>
+    window.CloseLoading = function() {
+      const door = document.getElementById('super-door');
+      door.style.opacity = '0';
+      setTimeout(function (){
+        door.style.display = 'none';
+      }, 800);
+    };
+  </script>
+  <div id="particles-js"></div>
+
+  <style>
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      background-color: #e4e4e4;
+      background-image: url('./static/images/bg.jpeg');
+      background-size: cover;
+      background-position: 50%;
+      background-repeat: no-repeat;
+    }
+  </style>
 
   <link rel="stylesheet" href="./static/css/base.css">
-	<link rel="stylesheet" href="./static/lib/element-ui/index.css">
-  <link rel="stylesheet" href="./static/lib/element-ui/display.css">
+	<link rel="stylesheet" href="https://unpkg.com/element-ui@2.15.13/lib/theme-chalk/index.css">
+  <link rel="stylesheet" href="https://unpkg.com/element-ui@2.15.13/lib/theme-chalk/display.css">
   <link rel="stylesheet" href="./static/css/page.css?v=1">
   <link rel="stylesheet" href="./static/fonts/font.css">
   <link rel="stylesheet" href="./static/css/custom.css">
-
+  
   <!-- 兼容IE浏览器 -->
-  <script>
-    window.polyfill = "../static/lib/ie-fix/polyfill.min.js";
-  </script>
-  <script type="text/javascript" src="../static/lib/ie-fix/loadjs.js"></script>
+  <script type="text/javascript" src="./static/lib/util/concurrent-load.js"></script>
+  <script type="text/javascript" src="./static/lib/util/concurrent-counter.js"></script>
+  <script type="text/javascript" src="./static/lib/util/module-define.js"></script>
+  <script type="text/javascript" src="./static/lib/ie-fix/loadjs.js?v=1"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vuex@3.6.2/dist/vuex.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue-router@3.6.5/dist/vue-router.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-i18n/8.28.2/vue-i18n.min.js" integrity="sha512-OD/aEqRudGeQz9qqsZa3C4lqLNmBpQ4m+xZdw44XCGJ9/w5ZzlELE1+Nbz0ri8ZIH5c0OnL5PKPMFWHcz9C20A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script type="text/javascript" src="https://unpkg.com/element-ui@2.15.13/lib/index.js"></script>
+  <script type="text/javascript" src="https://unpkg.com/element-ui@2.15.13/lib/umd/locale/en.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/less@3.13.1/dist/less.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
 
-  <script type="text/javascript" src="../static/lib/jquery.js"></script>
-	<script type="text/javascript" src="../static/lib/vue/vue.min.js"></script>
-  <script type="text/javascript" src="../static/lib/vuex/vuex.js"></script>
-	<script type="text/javascript" src="../static/lib/vue-router/vue-router.min.js"></script>
-  <script type="text/javascript" src="../static/lib/element-ui/index.js"></script>
-
-  <!-- 流程图 -->
-  <script type="text/javascript" src="../static/lib/qunee-min.js"></script>
-
-</head>
-<body>
   <div id="app"></div>
-
 </body>
-</html>
