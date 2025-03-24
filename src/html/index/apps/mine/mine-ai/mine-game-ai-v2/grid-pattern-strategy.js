@@ -17,8 +17,8 @@ var mode = [
 ];
     
 export default class GridPatternStrategy {
-    constructor() {
-        this.debug = true;
+    constructor(debug) {
+        this.debug = debug;
     }
 
     analyze(grid, rows, cols, revealedCells) {
@@ -64,8 +64,8 @@ export default class GridPatternStrategy {
     }
 
     printMatchedGrid(grid, startRow, startCol) {
-        console.log('找到匹配的九宫格模式：');
-        console.log('格子内容：');
+        this.log('找到匹配的九宫格模式：');
+        this.log('格子内容：');
         
         for (let r = 0; r < 3; r++) {
             let row = [];
@@ -77,42 +77,42 @@ export default class GridPatternStrategy {
                     row.push('-');
                 }
             }
-            console.log(row.join(' '));
+            this.log(row.join(' '));
         }
 
-        console.log('\n格子坐标：');
+        this.log('\n格子坐标：');
         for (let r = 0; r < 3; r++) {
             let row = [];
             for (let c = 0; c < 3; c++) {
                 row.push(`(${startRow + r},${startCol + c})`);
             }
-            console.log(row.join(' '));
+            this.log(row.join(' '));
         }
 
         // 推算所有存在雷的情况，有以下两种情况
         // 并把两种情况的格子内容打印出来
-        console.log('\n所有可能的雷的分布情况：');
+        this.log('\n所有可能的雷的分布情况：');
         
         // 第一种可能
-        console.log('可能性 1:');
+        this.log('可能性 1:');
         const possibility1 = [
             ['0', '1', '+'],
             ['0', '2', '-'],
             ['0', '-', '+']
         ];
         for (let r = 0; r < 3; r++) {
-            console.log(possibility1[r].join(' '));
+            this.log(possibility1[r].join(' '));
         }
 
         // 第二种可能
-        console.log('\n可能性 2:');
+        this.log('\n可能性 2:');
         const possibility2 = [
             ['0', '1', '-'],
             ['0', '2', '+'],
             ['0', '-', '+']
         ];
         for (let r = 0; r < 3; r++) {
-            console.log(possibility2[r].join(' '));
+            this.log(possibility2[r].join(' '));
         }
 
         // 直接可以判断出坐标 (2,2) 一定有雷，并推算出九宫格内 (2,2) 对应 grid 中的实际位置，并返回
@@ -121,12 +121,12 @@ export default class GridPatternStrategy {
         const definiteRow = startRow + 2;
         const definiteCol = startCol + 2;
         
-        console.log(`\n确定位置(${definiteRow},${definiteCol})是雷`);
+        this.log(`\n确定位置(${definiteRow},${definiteCol})是雷`);
         
         // 检查该格子是否已经被标记
         const targetCell = grid[definiteRow][definiteCol];
         if (targetCell.flagged) {
-            console.log('该格子已经被标记为雷，跳过');
+            this.log('该格子已经被标记为雷，跳过');
             return null;
         }
 
@@ -140,7 +140,7 @@ export default class GridPatternStrategy {
 
     log(message) {
         if (this.debug) {
-            console.log(`[GridPatternStrategy] ${message}`);
+            this.log(`[GridPatternStrategy] ${message}`);
         }
     }
 }

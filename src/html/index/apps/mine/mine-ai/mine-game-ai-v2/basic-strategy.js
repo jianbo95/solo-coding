@@ -1,8 +1,8 @@
 import GridPrinter from './grid-printer.js';
 
 export default class BasicStrategy {
-    constructor() {
-        this.debug = false;
+    constructor(debug) {
+        this.debug = debug;
     }
 
     analyze(grid, rows, cols, revealedCells) {

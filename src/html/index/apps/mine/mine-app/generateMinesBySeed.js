@@ -1,4 +1,5 @@
-import MinesweeperAI from '@/html/index/apps/mine/mine-ai/aiGame.js';
+// import MinesweeperAI from '@/html/index/apps/mine/mine-ai/aiGame.js';
+import MinesweeperAI from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2.js';
 
 // 创建基于种子的随机数生成器
 function SeededRandom(seed) {
@@ -111,7 +112,7 @@ function generateMinesBySeed(rows, cols, mineCount, finalSeed) {
         };
     }
 
-    const maxAttempts = 500;
+    const maxAttempts = 50;
     let bestRevealedCount = 0;
 
     function countAdjacentMines(grid, rows, cols, row, col) {

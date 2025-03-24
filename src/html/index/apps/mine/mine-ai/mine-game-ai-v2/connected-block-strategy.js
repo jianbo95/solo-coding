@@ -1,9 +1,9 @@
 import Utils from './utils.js';
 
 export default class ConnectedBlockStrategy {
-    constructor() {
+    constructor(debug) {
         this.utils = new Utils();
-        this.debug = true;
+        this.debug = debug;
         this.analyzeLargeBlocks = false; // 添加控制参数
         this.maxBlockSize = 15;  // 添加最大联通块大小限制
     }

@@ -2,9 +2,9 @@ import Utils from './utils.js';
 import GridPrinter from './grid-printer.js';
 
 export default class TankChainStrategy {
-    constructor() {
+    constructor(debug) {
+        this.debug = debug;
         this.utils = new Utils();
-        this.debug = true;  // 添加调试开关
     }
 
     analyzeOneTwoPattern(grid, rows, cols, revealedCells) {
