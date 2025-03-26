@@ -1,0 +1,207 @@
+{
+    "gameInfo": {
+        "rows": 6,
+        "cols": 5,
+        "mineCount": 4,
+        "flagsLeft": 3,
+        "gameTime": 30,
+        "gameStarted": true,
+        "gameOver": false,
+        "gameWon": false,
+        "firstClick": false
+    },
+    "gridState": [
+        [
+            {
+                "isMine": false,
+                "revealed": true,
+                "flagged": false,
+                "adjacentMines": 0
+            },
+            {
+                "isMine": false,
+                "revealed": true,
+                "flagged": false,
+                "adjacentMines": 0
+            },
+            {
+                "isMine": false,
+                "revealed": true,
+                "flagged": false,
+                "adjacentMines": 1
+            },
+            {
+                "isMine": true,
+                "revealed": false,
+                "flagged": false,
+                "adjacentMines": 0
+            },
+            {
+                "isMine": false,
+                "revealed": false,
+                "flagged": false,
+                "adjacentMines": 0
+            }
+        ],
+        [
+            {
+                "isMine": false,
+                "revealed": true,
+                "flagged": false,
+                "adjacentMines": 0
+            },
+            {
+                "isMine": false,
+                "revealed": true,
+                "flagged": false,
+                "adjacentMines": 0
+            },
+            {
+                "isMine": false,
+                "revealed": true,
+                "flagged": false,
+                "adjacentMines": 1
+            },
+            {
+                "isMine": false,
+                "revealed": false,
+                "flagged": false,
+                "adjacentMines": 0
+            },
+            {
+                "isMine": false,
+                "revealed": false,
+                "flagged": false,
+                "adjacentMines": 0
+            }
+        ],
+        [
+            {
+                "isMine": false,
+                "revealed": true,
+                "flagged": false,
+                "adjacentMines": 1
+            },
+            {
+                "isMine": false,
+                "revealed": true,
+                "flagged": false,
+                "adjacentMines": 1
+            },
+            {
+                "isMine": false,
+                "revealed": true,
+                "flagged": false,
+                "adjacentMines": 2
+            },
+            {
+                "isMine": false,
+                "revealed": false,
+                "flagged": false,
+                "adjacentMines": 0
+            },
+            {
+                "isMine": false,
+                "revealed": false,
+                "flagged": false,
+                "adjacentMines": 0
+            }
+        ],
+        [
+            {
+                "isMine": false,
+                "revealed": true,
+                "flagged": false,
+                "adjacentMines": 1
+            },
+            {
+                "isMine": true,
+                "revealed": false,
+                "flagged": true,
+                "adjacentMines": 0
+            },
+            {
+                "isMine": false,
+                "revealed": true,
+                "flagged": false,
+                "adjacentMines": 2
+            },
+            {
+                "isMine": true,
+                "revealed": false,
+                "flagged": false,
+                "adjacentMines": 0
+            },
+            {
+                "isMine": false,
+                "revealed": false,
+                "flagged": false,
+                "adjacentMines": 0
+            }
+        ],
+        [
+            {
+                "isMine": false,
+                "revealed": true,
+                "flagged": false,
+                "adjacentMines": 1
+            },
+            {
+                "isMine": false,
+                "revealed": true,
+                "flagged": false,
+                "adjacentMines": 1
+            },
+            {
+                "isMine": false,
+                "revealed": true,
+                "flagged": false,
+                "adjacentMines": 3
+            },
+            {
+                "isMine": false,
+                "revealed": false,
+                "flagged": false,
+                "adjacentMines": 0
+            },
+            {
+                "isMine": false,
+                "revealed": false,
+                "flagged": false,
+                "adjacentMines": 0
+            }
+        ],
+        [
+            {
+                "isMine": false,
+                "revealed": true,
+                "flagged": false,
+                "adjacentMines": 0
+            },
+            {
+                "isMine": false,
+                "revealed": true,
+                "flagged": false,
+                "adjacentMines": 0
+            },
+            {
+                "isMine": false,
+                "revealed": true,
+                "flagged": false,
+                "adjacentMines": 1
+            },
+            {
+                "isMine": true,
+                "revealed": false,
+                "flagged": false,
+                "adjacentMines": 0
+            },
+            {
+                "isMine": false,
+                "revealed": false,
+                "flagged": false,
+                "adjacentMines": 0
+            }
+        ]
+    ]
+}

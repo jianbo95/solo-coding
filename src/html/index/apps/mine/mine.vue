@@ -139,7 +139,7 @@ export default {
             mineCount: 15,
             useTime: 300,
             showCoordinates: false,
-            reduceGuesses: false,
+            reduceGuesses: false, // 减少猜测
             grid: [],
             gameInit: false,
             gameStarted: false,
@@ -282,7 +282,11 @@ export default {
             console.log('generateMapWithSafeClick');
             
             // 修改：直接传入正确的参数顺序
-            const result = generateMines(this.rows, this.cols, this.mineCount, seed);
+            var maxAttempts = 1;
+            if(this.reduceGuesses == true) {
+                maxAttempts = 50;
+            }
+            const result = generateMines(this.rows, this.cols, this.mineCount, seed, maxAttempts);
             const { grid, guessCount, seed: genSeed, safeRow, safeCol } = result;
             
             this.currentSeed = genSeed; // 存储生成的种子
