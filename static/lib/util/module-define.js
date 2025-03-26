@@ -30,6 +30,7 @@ var ModuleDefine = {
         'markdownit': './static/lib/markdown/markdown-it.min.js',
         'loadHighlightCss': './static/lib/markdown/highlight.css',
         'purecss': './static/lib/purecss/pure-min.css',
+        'elementCss': './static/lib/element-ui/index.css',
         'difflib': {
             'difflib': './static/lib/difflib/difflib.js',
             'diffview': './static/lib/difflib/diffview.js',
@@ -64,6 +65,9 @@ var ModuleDefine = {
     load: function(modules, _finish) {
         if(Object.prototype.toString.call(modules) == '[object String]') {
             modules = [modules];
+        }
+        if(window.Counter == null) {
+            window.Counter = window.ConcurrentCounter
         }
         var counter = Counter.auto('loadModule');
         for (let i = 0; i < modules.length; i++) {

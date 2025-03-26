@@ -49,10 +49,22 @@ export default {
     },
 
     created() {
-        this.renderMarkdown()
+        this.initJs(() => {
+            this.renderMarkdown()
+        });
     },
 
     methods: {
+        initJs(_call) {
+            var modeuls = [
+                'markdownit',
+                'hljs',
+                'loadHighlightCss'];
+            ModuleDefine.load(modeuls, () => {
+                console.log('load finish');
+                _call();
+            });
+        },
         renderMarkdown() {
             if (this.code) {
                 const md = window.markdownit({

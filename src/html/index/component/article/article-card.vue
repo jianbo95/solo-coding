@@ -9,7 +9,7 @@
             <span class="tags">
                 <i class="el-icon-collection-tag"></i>
                 <el-tag 
-                    :size="window.size" 
+                    :size="size" 
                     v-for="tag in article.tags" 
                     :key="tag">
                     {{ $t('tag.' + tag) }}
@@ -22,6 +22,11 @@
 
 <script>
 export default {
+    data() {
+        return {
+            size: window.size
+        }
+    },
     props: {
         article: {
             type: Object,

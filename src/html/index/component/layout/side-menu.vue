@@ -1,6 +1,6 @@
 <template>
     <div class="side-menu">
-        <el-menu :size="window.size" class="menu-list">
+        <el-menu :size="size" class="menu-list">
             <el-menu-item index="1">
                 <i class="el-icon-house"></i>
                 <span>{{ $t('menu.home') }}</span>
@@ -20,7 +20,9 @@
 <script>
 export default {
     data() {
-        return {}
+        return {
+            size: window.size,
+        }
     }
 }
 </script>

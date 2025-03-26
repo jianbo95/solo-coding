@@ -1,12 +1,17 @@
 <template>
     <div class="widget calendar">
         <div class="widget-title">{{ $t('main.calendar') }}</div>
-        <el-calendar :size="window.size"></el-calendar>
+        <el-calendar :size="size"></el-calendar>
     </div>
 </template>
 
 <script>
 export default {
+    data() {
+        return {
+            size: window.size
+        }
+    },
     name: 'SiteCalendar'
 }
 </script>

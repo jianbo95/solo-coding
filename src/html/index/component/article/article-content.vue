@@ -9,7 +9,7 @@
             <span class="tags">
                 <i class="el-icon-collection-tag"></i>
                 <el-tag 
-                    :size="window.size" 
+                    :size="size" 
                     v-for="tag in tags" 
                     :key="tag">
                     {{ $t('tag.' + tag) }}
@@ -35,6 +35,7 @@ import http from '@/html/index/util/http.js';
 export default {
     data() {
         return {
+            size: window.size,
             init: false,
             title: '',
             time: '',
@@ -74,9 +75,18 @@ export default {
                     // this.page.identifier = 'test1';
                     console.log('disqus_config config success', this.page.identifier);
                 };
+                // pushState 实现评论，评论生效后再切回来
                 history.pushState(null, '', '/article' + id + '.html');
                 window.disqus_config = disqus_config;
                 console.log('disqus code start');
+                
+                var timer = setInterval(() => {
+                    console.log('window.DISQUS', window.DISQUS);
+                    if(window.DISQUS != null) {
+                        history.pushState(null, '', '/#/article?id=' + id);
+                        clearInterval(timer);
+                    }
+                }, 1000);
 
                 if(window.DISQUS != null) {
                     window.DISQUS = null;

@@ -13,13 +13,20 @@
                         <div @click="optionsVisible = true">自定义</div>
                         <hr>
                         <div @click="settingVisible = true">游戏选项</div>
-                        <div @click="$emit('ai-play')">AI玩游戏</div>
                         <div @click="loadSeedVisible = true">加载种子</div>
                     </div>
                 </div>
-                
-                <div class="menu-item" @click="$emit('ai-step')">AI单步</div>
-                <div class="menu-item" @click="$emit('hint')">AI提示</div>
+
+                <div class="menu-item dropdown">
+                    AI助手
+                    <div class="dropdown-content">
+                        <div @click="$emit('ai-step')">AI单步</div>
+                        <div @click="$emit('hint')">AI提示</div>
+                        <div @click="$emit('ai-play')">AI玩游戏</div>
+                    </div>
+                    <input type="file" ref="fileInput" style="display: none" @change="uploadEndgame" accept=".json">
+                </div>
+
                 <div class="menu-item dropdown">
                     残局
                     <div class="dropdown-content">
