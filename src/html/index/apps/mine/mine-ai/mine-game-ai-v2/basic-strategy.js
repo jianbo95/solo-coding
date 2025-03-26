@@ -24,8 +24,6 @@ export default class BasicStrategy {
             const unrevealed = neighbors.filter(n => !n.cell.revealed && !n.cell.flagged);
             const flagged = neighbors.filter(n => n.cell.flagged).length;
 
-            // 第2列，第3行
-            // 邻居 [1,2] 状态：未揭开 标记：否 类型：安全
             // 新增：打印每个邻居格子的状态
             neighbors.forEach(n => {
                 this.log(`-- 邻居 [${n.row},${n.col}] `

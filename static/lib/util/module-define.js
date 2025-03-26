@@ -72,10 +72,15 @@ var ModuleDefine = {
         var counter = Counter.auto('loadModule');
         for (let i = 0; i < modules.length; i++) {
             const module = modules[i];
-            var url = this.module[module];
-            if(url == null) {
-                console.error('module not exist', module);
-                continue;
+            var url = null;
+            if(module.indexOf('http') == 0) {
+                url = module;	
+            } else {
+                url = this.module[module];
+                if(url == null) {
+                    console.error('module not exist', module);
+                    continue;
+                }
             }
             if(!isString(url)) {
                 this.loadMulti(counter, url);
@@ -97,7 +102,11 @@ var ModuleDefine = {
         }
 
         counter.finish(function() {
-            _finish();
+            if(_finish != null) {
+                _finish();
+            } else {
+                console.log('loadModule finish', modules);
+            }
         });
     }
 };

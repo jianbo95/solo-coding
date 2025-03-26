@@ -24,7 +24,6 @@
                         <div @click="$emit('hint')">AI提示</div>
                         <div @click="$emit('ai-play')">AI玩游戏</div>
                     </div>
-                    <input type="file" ref="fileInput" style="display: none" @change="uploadEndgame" accept=".json">
                 </div>
 
                 <div class="menu-item dropdown">

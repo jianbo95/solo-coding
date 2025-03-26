@@ -14,16 +14,22 @@ export default class MineGameAiV2 {
         this.guessCount = 0;
         this.debug = false;
         
-        // 初始化各个策略
+        // 工具类，提供通用的辅助函数
         this.utils = new Utils();
+        // 基础策略：处理单个数字周围的明显地雷和安全格
         this.basicStrategy = new BasicStrategy(this.debug);
+        // 区域策略：分析不同区域的地雷分布
         this.regionStrategy = new RegionStrategy(this.debug);
+        // 坦克链策略：分析相邻数字间的复杂关系
         this.tankChainStrategy = new TankChainStrategy(this.debug);
+        // 概率策略：计算每个未知格子是地雷的概率
         this.probabilityStrategy = new ProbabilityStrategy(this.debug);
+        // 网格模式策略：识别和处理特定的网格模式
         this.gridPatternStrategy = new GridPatternStrategy(this.debug);
-        // this.constraintStrategy = new ConstraintStrategy(); // 添加约束策略
+        // 连通块策略：分析相互连接的数字块
         this.connectedBlockStrategy = new ConnectedBlockStrategy(this.debug);
-        // this.patternStrategy = new PatternStrategy();
+        // this.constraintStrategy = new ConstraintStrategy(); // 约束策略：使用约束满足问题求解
+        // this.patternStrategy = new PatternStrategy(); // 模式策略：识别常见的地雷分布模式
     }
 
     getGuessCount() {

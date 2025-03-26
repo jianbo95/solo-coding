@@ -139,6 +139,7 @@ export default {
             mineCount: 15,
             useTime: 300,
             showCoordinates: false,
+            reduceGuesses: false,
             grid: [],
             gameInit: false,
             gameStarted: false,
@@ -176,10 +177,8 @@ export default {
         }
     },
     created() {
-        var modeuls = [
-            'seedrandom',
-        ];
-        ModuleDefine.load(modeuls, () => {
+        
+        ModuleDefine.load('seedrandom', () => {
             console.log('load finish');
             this.init = true;
             Core.waitRef(this.$refs, 'mineTab', () => {
@@ -201,6 +200,7 @@ export default {
                 this.mineCount = options.mineCount;
                 this.useTime = options.useTime;
                 this.showCoordinates = options.showCoordinates;
+                this.reduceGuesses = options.reduceGuesses;
             }
         },
         /**
@@ -772,6 +772,7 @@ export default {
 }
 
 .game-message {
+    text-align: center;
     margin-top: 20px;
     margin-bottom: 15px;
     width: 100%;

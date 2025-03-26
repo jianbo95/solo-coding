@@ -2,5 +2,8 @@
     "id": "mine",
     "name": "扫雷",
     "name.en": "mine",
-    "icon": "C"
+    "icon": "C",
+    "load": {
+        "seedrandom": "https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"
+    }
 }
