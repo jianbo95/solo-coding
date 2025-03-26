@@ -1,9 +1,9 @@
 import Utils from './utils.js';
 
 export default class PatternStrategy {
-    constructor() {
+    constructor(debug) {
+        this.debug = debug;
         this.utils = new Utils();
-        this.debug = true;
     }
 
     analyze(grid, rows, cols, revealedCells) {

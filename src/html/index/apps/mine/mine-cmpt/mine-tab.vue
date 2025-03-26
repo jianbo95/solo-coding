@@ -105,6 +105,10 @@
                     <span>显示坐标:</span>
                     <el-switch v-model="options.showCoordinates"></el-switch>
                 </div>
+                <div class="option-item">
+                    <span>减少猜测:</span>
+                    <el-switch v-model="options.reduceGuesses"></el-switch>
+                </div>
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button :size="size" @click="settingVisible = false">取消</el-button>
@@ -237,7 +241,8 @@ export default {
                 cols: 10,
                 mineCount: 15,
                 useTime: 300,
-                showCoordinates: false
+                showCoordinates: false,
+                reduceGuesses: true
             };
         },
         
@@ -299,10 +304,17 @@ export default {
             const reader = new FileReader();
             reader.onload = (e) => {
                 try {
-                    const data = JSON.parse(e.target.result);
+                    const fileData = JSON.parse(e.target.result);
+                    let data;
                     
-                    // 验证数据格式
-                    if (!Array.isArray(data) || data.length < 2) {
+                    // 判断是下载的残局还是直接的数据格式
+                    if (fileData.data && Array.isArray(fileData.data)) {
+                        // 下载的残局格式
+                        data = fileData.data;
+                    } else if (Array.isArray(fileData)) {
+                        // 直接的数据格式
+                        data = fileData;
+                    } else {
                         throw new Error('无效的残局文件格式');
                     }
 
@@ -320,11 +332,10 @@ export default {
                     }
 
                     // 构造残局数据
-                    const endgame = {
-                        ...gameInfo,
+                    const endgame = Object.assign({}, gameInfo, {
                         timestamp: Date.now(),
                         data: data
-                    };
+                    });
 
                     // 加载残局
                     this.$emit('load-endgame', endgame);
@@ -332,13 +343,11 @@ export default {
 
                 } catch (error) {
                     console.error('解析残局文件失败:', error);
-                    this.$message.error('无效的残局文件格式');
+                    this.$message.error(error.message || '无效的残局文件格式');
                 }
             };
             
             reader.readAsText(file);
-            
-            // 清空文件输入框，允许重复选择同一文件
             event.target.value = '';
         },
         
@@ -386,18 +395,17 @@ export default {
             const endgameData = this.createEndgameData(this.gameInstance);
             if (!endgameData) return;
             
-            // 格式化数组为棋盘样式
-            const formattedData = [
-                endgameData[0],  // 保持游戏信息数组不变
-                ...endgameData.slice(1).map(array => 
-                    JSON.stringify(array)
-                        .replace(/],\[/g, '],\n    [')  // 每行数据换行
-                        .replace(/^\[/, '[\n    [')     // 开头换行
-                        .replace(/\]$/, '\n]')          // 结尾换行
-                )
-            ];
+            // 构造与本地存储格式一致的数据结构
+            const singleEndgame = 
+            Object.assign({},endgameData[0][0],
+                {
+                    timestamp: Date.now(),
+                    data: endgameData
+                }
+            );
             
-            const dataStr = `[\n${JSON.stringify(formattedData[0], null, 4)},\n${formattedData.slice(1).join(',\n')}\n]`;
+            // 格式化并下载
+            const dataStr = JSON.stringify(singleEndgame, null, 4);
             const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
             const exportFileName = `minesweeper_endgame_${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
             
@@ -458,13 +466,17 @@ export default {
             if (!endgameData) return;
 
             // 保存到本地存储
-            const savedEndgames = JSON.parse(localStorage.getItem('game.mine.endGames') || '[]');
-            savedEndgames.push({
-                ...endgameData[0][0],
+            const savedEndgames = JSON.parse(localStorage.getItem('game.mine.endGameMap') || '{}');
+            const newEndgame = Object.assign({}, endgameData[0][0], {
                 timestamp: Date.now(),
                 data: endgameData
             });
-            localStorage.setItem('game.mine.endGames', JSON.stringify(savedEndgames));
+            
+            // 使用种子作为键名
+            const key = 'handSave-' + (endgameData[0][0].seed || Date.now());
+            savedEndgames[key] = newEndgame;
+            
+            localStorage.setItem('game.mine.endGameMap', JSON.stringify(savedEndgames));
 
             // 立即重新加载残局列表
             this.loadSavedEndgames();
@@ -481,12 +493,16 @@ export default {
             this.$message.success('残局加载成功');
         },
         
-        // 加载保存的残局列表
-        loadSavedEndgames() {
+       // 加载保存的残局列表
+       loadSavedEndgames() {
             try {
-                const savedData = localStorage.getItem('game.mine.endGames');
+                const savedData = localStorage.getItem('game.mine.endGameMap');
                 if (savedData) {
-                    this.savedEndgames = JSON.parse(savedData);
+                    const endgamesObj = JSON.parse(savedData);
+                    // 将对象转换为数组用于显示
+                    this.savedEndgames = Object.values(endgamesObj);
+                } else {
+                    this.savedEndgames = [];
                 }
             } catch (e) {
                 console.error('加载残局列表失败', e);
@@ -496,13 +512,20 @@ export default {
         
         // 修改删除保存的残局方法
         deleteEndgame(index) {
-            this.savedEndgames.splice(index, 1);
+            const endgame = this.savedEndgames[index];
+            const savedEndgames = JSON.parse(localStorage.getItem('game.mine.endGameMap') || '{}');
             
-            try {
-                localStorage.setItem('game.mine.endGames', JSON.stringify(this.savedEndgames));
+            // 查找并删除对应的键
+            const key = Object.keys(savedEndgames).find(k => 
+                savedEndgames[k].timestamp === endgame.timestamp
+            );
+            
+            if (key) {
+                delete savedEndgames[key];
+                localStorage.setItem('game.mine.endGameMap', JSON.stringify(savedEndgames));
+                this.loadSavedEndgames(); // 重新加载列表
                 this.$message.success('残局删除成功');
-            } catch (e) {
-                console.error('删除残局失败', e);
+            } else {
                 this.$message.error('删除残局失败');
             }
         },

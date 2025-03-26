@@ -1,28 +1,28 @@
-import BasicStrategy from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2/basic-strategy.js';
-import RegionStrategy from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2/region-strategy.js';
-import TankChainStrategy from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2/tank-chain-strategy.js';
-import ProbabilityStrategy from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2/probability-strategy.js';
-import Utils from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2/utils.js';
-import GridPatternStrategy from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2/grid-pattern-strategy.js';
-import ConstraintStrategy from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2/constraint-strategy.js';
-import DFSStrategy from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2/dfs-strategy.js';
-import ConnectedBlockStrategy from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2/connected-block-strategy.js';
-// import PatternStrategy from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2/pattern-strategy.js';
+import BasicStrategy from '/html/index/apps/mine/mine-ai/mine-game-ai-v2/basic-strategy.js';
+import RegionStrategy from '/html/index/apps/mine/mine-ai/mine-game-ai-v2/region-strategy.js';
+import TankChainStrategy from '/html/index/apps/mine/mine-ai/mine-game-ai-v2/tank-chain-strategy.js';
+import ProbabilityStrategy from '/html/index/apps/mine/mine-ai/mine-game-ai-v2/probability-strategy.js';
+import Utils from '/html/index/apps/mine/mine-ai/mine-game-ai-v2/utils.js';
+import GridPatternStrategy from '/html/index/apps/mine/mine-ai/mine-game-ai-v2/grid-pattern-strategy.js';
+import ConstraintStrategy from '/html/index/apps/mine/mine-ai/mine-game-ai-v2/constraint-strategy.js';
+import DFSStrategy from '/html/index/apps/mine/mine-ai/mine-game-ai-v2/dfs-strategy.js';
+import ConnectedBlockStrategy from '/html/index/apps/mine/mine-ai/mine-game-ai-v2/connected-block-strategy.js';
+// import PatternStrategy from '/html/index/apps/mine/mine-ai/mine-game-ai-v2/pattern-strategy.js';
 
 export default class MineGameAiV2 {
     constructor() {
         this.guessCount = 0;
-        this.debug = true;
+        this.debug = false;
         
         // 初始化各个策略
-        this.basicStrategy = new BasicStrategy();
-        this.regionStrategy = new RegionStrategy();
-        this.tankChainStrategy = new TankChainStrategy();
-        this.probabilityStrategy = new ProbabilityStrategy();
         this.utils = new Utils();
-        this.gridPatternStrategy = new GridPatternStrategy();
+        this.basicStrategy = new BasicStrategy(this.debug);
+        this.regionStrategy = new RegionStrategy(this.debug);
+        this.tankChainStrategy = new TankChainStrategy(this.debug);
+        this.probabilityStrategy = new ProbabilityStrategy(this.debug);
+        this.gridPatternStrategy = new GridPatternStrategy(this.debug);
         // this.constraintStrategy = new ConstraintStrategy(); // 添加约束策略
-        this.connectedBlockStrategy = new ConnectedBlockStrategy();
+        this.connectedBlockStrategy = new ConnectedBlockStrategy(this.debug);
         // this.patternStrategy = new PatternStrategy();
     }
 
@@ -41,7 +41,7 @@ export default class MineGameAiV2 {
      */
     getNextMove(grid, rows, cols, isGuessing = false, mineCount) {
         var data = {grid,rows,cols,mineCount};
-        console.log('data', data);
+        // console.log('data', data);
         // 重置猜测计数
         if (!isGuessing) {
             this.guessCount = 0;

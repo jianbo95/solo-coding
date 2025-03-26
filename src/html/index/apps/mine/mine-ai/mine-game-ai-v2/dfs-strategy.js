@@ -1,9 +1,9 @@
 import Utils from './utils.js';
 
 export default class DFSStrategy {
-    constructor() {
+    constructor(debug) {
+        this.debug = debug;
         this.utils = new Utils();
-        this.debug = true;
         this.SEARCH_LIMIT = 10000000; // 搜索限制，类似 MineSolver.h 中的 SUMLIMIT
         this.DEEP_DFS_LIMIT = 1000;   // 深度DFS限制，类似 MineSolver.h 中的 DEEPDFSLIMIT
     }

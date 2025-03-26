@@ -1,7 +1,8 @@
 import Utils from './utils.js';
 
 export default class RegionStrategy {
-    constructor() {
+    constructor(debug) {
+        this.debug = debug;
         this.utils = new Utils();
     }
 
