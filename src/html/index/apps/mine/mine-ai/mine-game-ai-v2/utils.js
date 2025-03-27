@@ -100,12 +100,11 @@ export default class Utils {
         const isCorrect = (result.action === 'flag') === cell.isMine;
         
         // 添加验证结果到返回对象中
-        const verifiedResult = {
-            ...result,
+        const verifiedResult = Object.assign({}, result, {
             isCorrect,
             type,
             actualState: cell.isMine ? 'mine' : 'safe'
-        };
+        });
         
         if (!isCorrect) {
             console.log('\n=== 推断错误 ===');

@@ -402,7 +402,7 @@ export default class OverlapRegionStrategy {
                         if (isSubset) {
                             const currentCount = center.value - this.utils.countFlagsAroundCells(grid, [{row: center.row, col: center.col}]);
                             newRegion.counts.add(currentCount);
-                            newRegion.centers.push({ ...center, count: currentCount });
+                            newRegion.centers.push(Object.assign({}, center, { count: currentCount }));
                         }
                     });
 
