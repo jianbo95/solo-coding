@@ -48,7 +48,7 @@ export default class MineGameAiV2 {
      * @param {Number} mineCount 总地雷数
      * @returns {Object} 下一步操作
      */
-    getNextMove(grid, rows, cols, isGuessing = false, mineCount) {
+    getNextMove(grid, rows, cols, isGuessing = false, mineCount, debug = false) {
         var data = {grid,rows,cols,mineCount};
         // console.log('data', data);
         // 重置猜测计数
@@ -70,7 +70,7 @@ export default class MineGameAiV2 {
         }
 
         // 1.7 重叠区域分析
-        const overlapMove = this.overlapRegionStrategy.analyze(grid, rows, cols, revealedCells);
+        const overlapMove = this.overlapRegionStrategy.analyze(grid, rows, cols, revealedCells, debug);
         if (overlapMove) {
             this.log(`重叠区域分析找到移动: ${overlapMove.action} at (${overlapMove.row}, ${overlapMove.col})`);
             return this.utils.verifyResult({ ...overlapMove, strategy: 'overlap' }, grid, '重叠区域');

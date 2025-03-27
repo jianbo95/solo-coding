@@ -36,7 +36,7 @@
             <div v-if="showCoordinates" class="col-coordinates">
                 <div class="coordinate-spacer"></div>
                 <div v-for="colIndex in cols" :key="'col-'+colIndex" class="coordinate">
-                    {{colIndex}}
+                    {{colIndex - 1}}
                 </div>
             </div>
             
@@ -44,7 +44,7 @@
                 <!-- 行坐标 -->
                 <div v-if="showCoordinates" class="row-coordinates">
                     <div v-for="rowIndex in rows" :key="'row-'+rowIndex" class="coordinate">
-                        {{rowIndex}}
+                        {{rowIndex - 1}}
                     </div>
                 </div>
                 
@@ -546,7 +546,7 @@ export default {
             const ai = new SelectMineAi();
             
             console.log('this.mineCount', this.mineCount);
-            const move = ai.getNextMove(this.grid, this.rows, this.cols, false, this.mineCount);
+            const move = ai.getNextMove(this.grid, this.rows, this.cols, false, this.mineCount, true);
             
             // 打印未处理的格子数量
             let unhandledCells = 0;
