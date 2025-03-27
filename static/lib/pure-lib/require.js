@@ -115,8 +115,18 @@ var require = function(parentUrl, url) {
         return window[staticModule[url]];
     }
 
+    // actualUrl: ./html/index/util/locales/en.js
+    // parentUrl: html/index/util/i18n.js
+    // lastUrl:./locales/en.js
+
+    // actualUrl: ./html/index/apps/mine/mine-ai/html/index/apps/mine/mine-ai/mine-game-ai-v2/overlap-region-strategy.js
+    // parentUrl: html/index/apps/mine/mine-ai/mine-game-ai-v2.js
+    // lastUrl:/html/index/apps/mine/mine-ai/mine-game-ai-v2/overlap-region-strategy.js
+    // 这里正确应该是 ./html/index/apps/mine/mine-ai/mine-game-ai-v2/overlap-region-strategy.js
+
+    // var lastUrl = url;
     url = CoreUtil.actualUrl(url, parentUrl);
-    // console.log('actualUrl: ' + url + ' parentUrl: ' + parentUrl);
+    // console.log('actualUrl: ' + url + '\nparentUrl: ' + parentUrl + '\nlastUrl:'+ lastUrl);
     
     if(url.indexOf('.vue') == url.length - 4) {
         // console.log('require vue', url);

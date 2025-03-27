@@ -50,9 +50,23 @@ var CoreUtil = {
     // 然后页面地址是 /compile/require.html
     // 直接相加就是 /compile/../static/lib/pure/httpVuePlus2.js
     // 页面用相对路径引入，但首先我要拿到全路径，全路径才能保证唯一性！
+
+    // 正确例子
+    // actualUrl: ./html/index/util/locales/en.js
+    // parentUrl: html/index/util/i18n.js
+    // lastUrl:./locales/en.js
+
+    // 错误例子
+    // actualUrl: ./html/index/apps/mine/mine-ai/html/index/apps/mine/mine-ai/mine-game-ai-v2/overlap-region-strategy.js
+    // parentUrl: html/index/apps/mine/mine-ai/mine-game-ai-v2.js
+    // lastUrl:/html/index/apps/mine/mine-ai/mine-game-ai-v2/overlap-region-strategy.js
+    // 这里正确应该是 ./html/index/apps/mine/mine-ai/mine-game-ai-v2/overlap-region-strategy.js
     actualUrl: function(url, parentUrl) {
         if(url.indexOf('@') == 0) {
             return url.substring(1);
+        }
+        if(url.indexOf('/') == 0) {
+            return url;
         }
         if(parentUrl != null) {
             var baseUrl = parentUrl.substring(0, parentUrl.lastIndexOf('/') + 1);
