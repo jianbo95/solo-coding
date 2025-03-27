@@ -30,7 +30,7 @@ export default class MineGameAiV2 {
         // 连通块策略：分析相互连接的数字块
         this.connectedBlockStrategy = new ConnectedBlockStrategy(this.debug);
         // 重叠区域策略：分析数字格子周围重叠区域的雷分布
-        this.overlapRegionStrategy = new OverlapRegionStrategy(true);
+        this.overlapRegionStrategy = new OverlapRegionStrategy(false);
         // this.constraintStrategy = new ConstraintStrategy(); // 约束策略：使用约束满足问题求解
         // this.patternStrategy = new PatternStrategy(); // 模式策略：识别常见的地雷分布模式
     }
@@ -60,29 +60,27 @@ export default class MineGameAiV2 {
         const { unrevealedCells, revealedCells, flaggedCount } = this.utils.collectCellInfo(grid, rows, cols);
         const remainingMines = mineCount - flaggedCount;
 
-        this.log(`剩余雷数: ${remainingMines}, 未揭开格子: ${unrevealedCells.length}`);
+        this.log(`剩余雷数: ${remainingMines}, 未揭开格子: ${unrevealedCells.length}, 揭开格子: ${revealedCells.length}`);
 
         // 1. 基础逻辑推理 - 单格分析
         const basicMove = this.basicStrategy.analyze(grid, rows, cols, revealedCells);
         if (basicMove) {
             this.log(`基础逻辑找到移动: ${basicMove.action} at (${basicMove.row}, ${basicMove.col})`);
-            return basicMove;
+            return this.utils.verifyResult({ ...basicMove, strategy: 'basic' }, grid, '基础逻辑');
         }
 
         // 1.7 重叠区域分析
         const overlapMove = this.overlapRegionStrategy.analyze(grid, rows, cols, revealedCells);
         if (overlapMove) {
             this.log(`重叠区域分析找到移动: ${overlapMove.action} at (${overlapMove.row}, ${overlapMove.col})`);
-            return overlapMove;
-        } else {
-            console.log('重叠区域分析未找到移动');
+            return this.utils.verifyResult({ ...overlapMove, strategy: 'overlap' }, grid, '重叠区域');
         }
 
         // 1.5 网格模式分析
         const gridPatternMove = this.gridPatternStrategy.analyze(grid, rows, cols, revealedCells);
         if (gridPatternMove) {
             this.log(`网格模式分析找到移动: ${gridPatternMove.action} at (${gridPatternMove.row}, ${gridPatternMove.col})`);
-            return gridPatternMove;
+            return this.utils.verifyResult({ ...gridPatternMove, strategy: 'gridPattern' }, grid, '网格模式');
         }
 
         // 2. 约束推理分析
@@ -107,25 +105,21 @@ export default class MineGameAiV2 {
         );
         if (regionMove) {
             this.log(`区域分析找到移动: ${regionMove.action} at (${regionMove.row}, ${regionMove.col})`);
-            return regionMove;
+            return this.utils.verifyResult({ ...regionMove, strategy: 'region' }, grid, '区域分析');
         }
 
-        // 3. 坦克链分析 (Tank Chains) - 分析相邻数字之间的关系
+        // 3. 坦克链分析
         const tankChainMove = this.tankChainStrategy.analyze(grid, rows, cols, revealedCells);
         if (tankChainMove) {
             this.log(`坦克链分析找到移动: ${tankChainMove.action} at (${tankChainMove.row}, ${tankChainMove.col})`);
-            return tankChainMove;
-        } else {
-            // 添加调试信息
-            this.log('坦克链分析未找到移动');
-            // console.log('当前已知数字:', revealedCells);
+            return this.utils.verifyResult({ ...tankChainMove, strategy: 'tankChain' }, grid, '坦克链');
         }
 
-        // 3.5 联通块分析（在坦克链分析之后，概率分析之前）
+        // 3.5 联通块分析
         const blockMove = this.connectedBlockStrategy.analyze(grid, rows, cols, revealedCells, remainingMines);
         if (blockMove) {
             this.log(`联通块分析找到移动: ${blockMove.action} at (${blockMove.row}, ${blockMove.col})`);
-            return blockMove;
+            return this.utils.verifyResult({ ...blockMove, strategy: 'connectedBlock' }, grid, '联通块');
         }
 
         // 4. 概率分析
@@ -137,7 +131,7 @@ export default class MineGameAiV2 {
             } else {
                 this.log(`概率分析确定: ${probMove.action} at (${probMove.row}, ${probMove.col})`);
             }
-            return probMove;
+            return this.utils.verifyResult({ ...probMove, strategy: 'probability' }, grid, '概率分析');
         }
 
         // 5. 随机选择
@@ -148,10 +142,11 @@ export default class MineGameAiV2 {
                 row: unrevealedCells[randomIndex].row,
                 col: unrevealedCells[randomIndex].col,
                 action: 'reveal',
-                isGuess: true
+                isGuess: true,
+                strategy: 'random'
             };
             this.log(`随机选择: ${randomMove.action} at (${randomMove.row}, ${randomMove.col})`);
-            return randomMove;
+            return this.utils.verifyResult(randomMove, grid, '随机选择');
         }
 
         return null;

@@ -551,7 +551,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .mine-tabs {
     width: 100%;
     margin-bottom: 20px;

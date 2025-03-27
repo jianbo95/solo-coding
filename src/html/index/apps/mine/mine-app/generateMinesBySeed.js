@@ -1,5 +1,11 @@
 import MinesweeperAI from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2.js';
 
+const DebugOption = {
+    type: 'overlap', // 当策略为 'overlap' 时
+    condition: 'correctFalse', // 当推断结果为错误时
+    action: 'close' // close 表示结束AI
+};
+
 // 创建基于种子的随机数生成器
 function SeededRandom(seed) {
     const rng = new Math.seedrandom(seed);
@@ -280,9 +286,35 @@ function generateMinesBySeed(rows, cols, mineCount, finalSeed, maxAttempts = 50)
         while (!isComplete && moveCount < maxMoves) {
             moveCount++;
             const move = ai.getNextMove(testGrid, rows, cols);
+            // console.log('getNextMove', move);
             
             if (!move) {
                 break;
+            }
+
+            // 检查是否需要根据 DebugOption 结束 AI
+            if (DebugOption.type === move.strategy && 
+                ((DebugOption.condition === 'correctFalse' && !move.isCorrect)
+                 )) {
+                if (DebugOption.action === 'close') {
+                    console.log('根据 DebugOption 设置结束 AI');
+                    finalItem = item;
+                    bestGuessCount = guessCount;
+                    return {
+                        grid: finalItem.grid,
+                        guessCount: bestGuessCount,
+                        seed: finalItem.seed,
+                        rows,
+                        cols,
+                        mineCount,
+                        safeRow,
+                        safeCol,
+                        debugState: {
+                            currentGrid: testGrid,
+                            lastMove: move
+                        }
+                    };
+                }
             }
 
             if (move.isGuess) {

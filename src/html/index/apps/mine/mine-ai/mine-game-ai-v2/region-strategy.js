@@ -33,7 +33,6 @@ export default class RegionStrategy {
         }
 
         // 区域分析 - 识别独立区域并分析
-        console.log('识别独立区域并分析');
         const regions = this.identifyRegions(grid, rows, cols);
         for (const region of regions) {
             const regionMove = this.analyzeRegion(grid, region, remainingMines);

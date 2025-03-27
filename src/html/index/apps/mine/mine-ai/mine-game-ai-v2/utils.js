@@ -43,6 +43,28 @@ export default class Utils {
     }
 
     /**
+     * 获取周围未揭示的格子
+     */
+    getUnrevealedNeighbors(grid, rows, cols, row, col) {
+        const neighbors = [];
+        for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
+                if (i === 0 && j === 0) continue;
+                
+                const newRow = row + i;
+                const newCol = col + j;
+                
+                if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
+                    if (!grid[newRow][newCol].revealed && !grid[newRow][newCol].flagged) {
+                        neighbors.push({ row: newRow, col: newCol });
+                    }
+                }
+            }
+        }
+        return neighbors;
+    }
+
+    /**
      * 计算未揭开格子总数
      */
     countUnrevealed(grid, rows, cols) {
@@ -69,5 +91,28 @@ export default class Utils {
             return count + this.getSurroundingCells(grid, grid.length, grid[0].length, cell.row, cell.col)
                 .filter(c => c.cell.flagged).length;
         }, 0);
+    }
+
+    verifyResult(result, grid, type) {
+        if (!result) return null;
+        
+        const cell = grid[result.row][result.col];
+        const isCorrect = (result.action === 'flag') === cell.isMine;
+        
+        // 添加验证结果到返回对象中
+        const verifiedResult = {
+            ...result,
+            isCorrect,
+            type,
+            actualState: cell.isMine ? 'mine' : 'safe'
+        };
+        
+        if (!isCorrect) {
+            console.log('\n=== 推断错误 ===');
+            console.log(`${type}推断格子 (${result.row}, ${result.col}) ${result.action === 'flag' ? '是雷' : '不是雷'}`);
+            console.log(`实际情况: ${cell.isMine ? '是雷' : '不是雷'}`);
+        }
+        
+        return verifiedResult;
     }
 }
