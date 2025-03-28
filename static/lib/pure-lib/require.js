@@ -149,6 +149,7 @@ var require = function(parentUrl, url) {
 
     var result;
     try {
+        // console.log('code', code)
         result = eval(code); 
     } catch (e) {
         console.error(e);

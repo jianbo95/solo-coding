@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="/static/lib/jquery.min.js"></script>
+    <script>
+        var Flag = () => {};
+        window.exports = {};
+        $.get('/test/demo/zh.js', (code) => {
+            console.log(code);
+            var result = eval(code);
+            console.log(result);
+        }, 'text');
+    </script>
+</head>
+<body>
+    eval test
+</body>
+</html>

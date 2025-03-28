@@ -78,7 +78,7 @@ for(var i in files) {
 var compile = {
     options: {
         mergeJs: true,
-        minifyJs: false,
+        minifyJs: true,
         compileJs: true,
     },
     handleApi: function() {
@@ -270,9 +270,15 @@ var compile = {
         } else {
             output += 'exports;';
         }
+
+        const options = {
+            output: {
+                semicolons: true // 确保压缩后保留分号
+            }
+        };
     
         if(this.options.minifyJs == true) {
-            output = Uglify.minify(output).code;
+            output = Uglify.minify(output, options).code;
         }
         // console.log(output);
         if(this.options.mergeJs == true && mergeJs == true) {

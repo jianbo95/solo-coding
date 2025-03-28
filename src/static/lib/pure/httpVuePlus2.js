@@ -242,7 +242,7 @@ var HttpVuePlus = {
                 // console.log(code);
                 this.loadImportSize ++;
                 
-                if(code.indexOf('Flag("compileByPublish");') != -1) {
+                if(code.indexOf('compileByPublish') != -1) {
                     // console.log('Flag("compileByPublish");', resourceUrl, code);
                     // 编译过的js
                     var jsCode = code;
@@ -251,8 +251,8 @@ var HttpVuePlus = {
                     call();
                 } else {
                     var jsCode = this.loadJs(code, name);
-                        this.loadScript(jsCode, name, resourceUrl, () => {
-                            // console.log('loadScript success');
+                    this.loadScript(jsCode, name, resourceUrl, () => {
+                        // console.log('loadScript success');
                         call();
                     });
                 }
