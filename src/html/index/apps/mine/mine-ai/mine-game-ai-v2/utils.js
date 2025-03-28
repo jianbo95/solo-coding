@@ -106,11 +106,11 @@ export default class Utils {
             actualState: cell.isMine ? 'mine' : 'safe'
         });
         
-        if (!isCorrect) {
-            console.log('\n=== 推断错误 ===');
-            console.log(`${type}推断格子 (${result.row}, ${result.col}) ${result.action === 'flag' ? '是雷' : '不是雷'}`);
-            console.log(`实际情况: ${cell.isMine ? '是雷' : '不是雷'}`);
-        }
+        // if (!isCorrect) {
+        //     console.log('\n=== 推断错误 ===');
+        //     console.log(`${type}推断格子 (${result.row}, ${result.col}) ${result.action === 'flag' ? '是雷' : '不是雷'}`);
+        //     console.log(`实际情况: ${cell.isMine ? '是雷' : '不是雷'}`);
+        // }
         
         return verifiedResult;
     }

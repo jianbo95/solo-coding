@@ -260,10 +260,17 @@ export default class OverlapRegionStrategy {
         
         // 尝试无雷推断
         const noMineResult = this.analyzeNoMineRegions(
+            Array.from(uniqueCenters)
+        );
+        if (noMineResult) return this.utils.verifyResult(noMineResult, grid, '无雷');
+
+        // 尝试无雷推断2
+        const noMineResult2 = this.analyzeNoMineAtLeastRegions(
             Array.from(uniqueCenters), 
             Array.from(centerToAtLeastRegions.entries())
         );
-        if (noMineResult) return this.utils.verifyResult(noMineResult, grid, '无雷');
+        if (noMineResult2) return this.utils.verifyResult(noMineResult2, grid, '无雷');
+        
 
         // 尝试有雷推断
         const hasMineResult = this.analyzeHasMineRegions(Array.from(uniqueCenters));
@@ -438,7 +445,7 @@ export default class OverlapRegionStrategy {
         return null;
     }
 
-    analyzeNoMineRegions(centersList, atLeastRegionsList) {
+    analyzeNoMineRegions(centersList) {
         for (const [centerKey, data] of centersList) {
             this.log(`\n分析中心节点 (${data.center.row}, ${data.center.col}) 值: ${data.center.value}`);
             const regions = Array.from(data.regions);
@@ -528,9 +535,13 @@ export default class OverlapRegionStrategy {
                 }
             }
         }
+        
+        this.log('\n无雷推断结束：未找到可以确定的无雷格子');
+        return null;
+    }
 
+    analyzeNoMineAtLeastRegions(centersList, atLeastRegionsList) {
         // 添加对至少区域的处理
-        // console.log('分析至少叠加区域，当前数量' + atLeastRegionsList.length);
         for (const [centerKey, atLeastRegions] of atLeastRegionsList) {
             this.log(`\n分析至少叠加区域中心节点 ${centerKey} 的至少区域`);
 
@@ -606,6 +617,7 @@ export default class OverlapRegionStrategy {
                 }
             }
         }
+
         this.log('\n无雷推断结束：未找到可以确定的无雷格子');
         return null;
     }
