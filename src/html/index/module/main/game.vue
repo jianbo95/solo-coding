@@ -7,7 +7,7 @@
            @click="enterGame(game.id)">
         <div class="game-icon">
             <template v-if="game.icon != null && game.icon.indexOf('.png') != -1">
-              <img :src="`/html/index/apps/${game.id}/${game.icon}`" :alt="game.name">
+              <img :src="gameIcon(game)" :alt="game.name">
             </template>
             <template v-else>
               <span style="font-size:30px; color:cadetblue;">{{game.icon}}</span>
@@ -33,6 +33,9 @@ export default {
   },
   
   methods: {
+    gameIcon(game) {
+      return `/html/index/apps/${game.id}/${game.icon}`;
+    },
     loadGames() {
       api.getGameData(res => {
         console.log('game data', res);

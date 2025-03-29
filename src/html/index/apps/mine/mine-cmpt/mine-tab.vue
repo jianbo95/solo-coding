@@ -38,7 +38,14 @@
                     <input type="file" ref="fileInput" style="display: none" @change="uploadEndgame" accept=".json">
                 </div>
 
-                <div class="menu-item" @click="$emit('unit-test')">单元测试</div>
+                <div class="menu-item dropdown">
+                    单元测试
+                    <div class="dropdown-content">
+                        <div @click="$emit('unit-test')">单元测试</div>
+                        <div @click="testAI">策略分析</div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -162,6 +169,9 @@
 </template>
 
 <script>
+import generateMinesTool from '@/html/index/apps/mine/mine-app/generateMinesBySeed.js';
+import MinesweeperAI from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2.js';
+
 export default {
     name: 'MineTab',
     props: {
@@ -210,6 +220,191 @@ export default {
         this.loadSavedEndgames();
     },
     methods: {
+        testAI() {
+            // 调用 buildMinesGridListBySeed 方法生成多个地图
+            var {gridList} = generateMinesTool.buildMinesGridListBySeed({
+                rows: this.options.rows,
+                cols: this.options.cols,
+                mineCount: this.options.mineCount,
+                maxAttempts: 50
+            });
+
+            // 统计数据
+            const stats = {
+                totalGames: gridList.length,
+                wins: 0,
+                losses: 0,
+                strategies: {}, // 策略使用统计
+                strategySuccess: {}, // 策略成功统计
+                strategyFailure: {}, // 策略失败统计
+                totalGuesses: 0,
+                averageGuesses: 0,
+                failedSeeds: {} // 记录失败的种子
+            };
+
+            // 遍历每个地图进行AI测试
+            gridList.forEach((item, index) => {
+                const testGrid = JSON.parse(JSON.stringify(item.grid));
+                const ai = new MinesweeperAI();
+                let isComplete = false;
+                let maxMoves = this.options.rows * this.options.cols * 2;
+                let moveCount = 0;
+                let guessCount = 0;
+                let hitMine = false;
+
+                // 模拟AI玩游戏
+                while (!isComplete && moveCount < maxMoves && !hitMine) {
+                    moveCount++;
+                    const move = ai.getNextMove(testGrid, this.options.rows, this.options.cols);
+                    
+                    if (!move) break;
+
+                    // 统计策略使用情况
+                    stats.strategies[move.strategy] = (stats.strategies[move.strategy] || 0) + 1;
+                    
+                    if (move.isGuess) {
+                        guessCount++;
+                    }
+
+                    // 模拟移动
+                    if (move.action === 'reveal') {
+                        if (!move.isCorrect) {
+                            hitMine = true;
+                            // 策略失败统计
+                            stats.strategyFailure[move.strategy] = (stats.strategyFailure[move.strategy] || 0) + 1;
+                            // 记录失败的种子（所有策略）
+                            if (!stats.failedSeeds[move.strategy]) {
+                                stats.failedSeeds[move.strategy] = [];
+                            }
+                            stats.failedSeeds[move.strategy].push({
+                                seed: item.seed,
+                                position: `(${move.row}, ${move.col})`
+                            });
+                        } else {
+                            // 策略成功统计
+                            stats.strategySuccess[move.strategy] = (stats.strategySuccess[move.strategy] || 0) + 1;
+                            this.simulateReveal(testGrid, move.row, move.col);
+                        }
+                    } else {
+                        testGrid[move.row][move.col].flagged = true;
+                    }
+
+                    // 检查是否完成
+                    isComplete = this.checkGridCompletion(testGrid);
+                }
+
+                // 更新统计数据
+                if (isComplete && !hitMine) {
+                    stats.wins++;
+                } else {
+                    stats.losses++;
+                }
+                stats.totalGuesses += guessCount;
+            });
+
+            // 计算平均值
+            stats.averageGuesses = (stats.totalGuesses / stats.totalGames).toFixed(2);
+            stats.winRate = ((stats.wins / stats.totalGames) * 100).toFixed(2);
+
+            // 策略名称映射
+            const strategyNames = {
+                'basic': '基础策略',
+                'pattern': '模式匹配',
+                'overlap': '重叠分析',
+                'probability': '概率计算',
+                'guess': '随机猜测'
+            };
+
+            // 计算每个策略的使用率和成功率
+            const strategyStats = Object.keys(stats.strategies).map(strategy => {
+                const uses = stats.strategies[strategy];
+                const success = stats.strategySuccess[strategy] || 0;
+                const failure = stats.strategyFailure[strategy] || 0;
+                const totalAttempts = success + failure;
+                
+                return {
+                    name: strategyNames[strategy] || strategy,
+                    uses,
+                    success,
+                    failure,
+                    useRate: ((uses / Object.values(stats.strategies).reduce((a, b) => a + b, 0)) * 100).toFixed(2),
+                    successRate: totalAttempts > 0 ? ((success / totalAttempts) * 100).toFixed(2) : '0.00'
+                };
+            });
+
+            // 输出统计结果
+            console.log('AI 测试统计:', {
+                总场数: stats.totalGames,
+                胜场: stats.wins,
+                负场: stats.losses,
+                胜率: `${stats.winRate}%`,
+                平均猜测次数: stats.averageGuesses,
+                策略统计: strategyStats.map(s => ({
+                    策略名称: s.name,
+                    // 使用次数: s.uses,
+                    使用率: `${s.useRate}%`,
+                    // 成功次数: s.success,
+                    // 失败次数: s.failure,
+                    成功率: `${s.successRate}%`
+                }))
+            });
+
+            // 输出每个策略的失败种子信息（最多5个）
+            Object.keys(stats.failedSeeds).forEach(strategy => {
+                if (stats.failedSeeds[strategy] && stats.failedSeeds[strategy].length > 0) {
+                    const failedCases = stats.failedSeeds[strategy].slice(0, 5);
+                    console.log(`${strategyNames[strategy] || strategy}失败案例(${stats.failedSeeds[strategy].length}个中的前5个):`, 
+                        failedCases.map(item => ({
+                            种子: item.seed,
+                            失败位置: item.position
+                        }))
+                    );
+                }
+            });
+
+            // this.$message({
+            //     dangerouslyUseHTMLString: true,
+            //     message: `
+            //         <div style="text-align:left">
+            //             <div>AI测试完成：</div>
+            //             <div>总场数: ${stats.totalGames}</div>
+            //             <div>胜率: ${stats.winRate}%</div>
+            //             <div>平均猜测次数: ${stats.averageGuesses}</div>
+            //         </div>
+            //     `,
+            //     type: 'success',
+            //     duration: 5000
+            // });
+        },
+
+        // 辅助方法：模拟揭开格子
+        simulateReveal(grid, row, col) {
+            if (row < 0 || row >= grid.length || col < 0 || col >= grid[0].length) return;
+            if (grid[row][col].revealed || grid[row][col].isMine) return;
+            
+            grid[row][col].revealed = true;
+            
+            if (grid[row][col].adjacentMines === 0) {
+                for (let r = Math.max(0, row - 1); r <= Math.min(grid.length - 1, row + 1); r++) {
+                    for (let c = Math.max(0, col - 1); c <= Math.min(grid[0].length - 1, col + 1); c++) {
+                        if (r === row && c === col) continue;
+                        this.simulateReveal(grid, r, c);
+                    }
+                }
+            }
+        },
+
+        // 辅助方法：检查地图是否完成
+        checkGridCompletion(grid) {
+            for (let row = 0; row < grid.length; row++) {
+                for (let col = 0; col < grid[0].length; col++) {
+                    if (!grid[row][col].isMine && !grid[row][col].revealed) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        },
         loadSeed() {
             if (!this.seedInput) {
                 this.$message.warning('请输入有效的种子');

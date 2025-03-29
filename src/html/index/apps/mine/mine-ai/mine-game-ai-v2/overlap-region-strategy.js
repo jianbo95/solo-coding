@@ -20,6 +20,10 @@ export default class OverlapRegionStrategy {
         };
     }
 
+    buildFlog(isLog) {
+        return this.utils.buildFlog(isLog, this);
+    }
+
     analyze(grid, rows, cols, revealedCells, debug) {
         var currentDebug = this.debug;
         if(debug === true) {
@@ -93,13 +97,42 @@ export default class OverlapRegionStrategy {
 
         // 打印叠加区域和中心节点的关系
         this.log('\n=== 叠加区域分析 ===');
+        // 创建一个节点到叠加区域的映射
+        const nodeToRegionMap = new Map();
         regions.forEach((region, key) => {
             this.log('\n叠加区域:', region.nodes.map(n => `(${n.row}, ${n.col})`).join(', '));
+            region.nodes.forEach(node => {
+                // 使用坐标作为key
+                const nodeKey = `${node.row},${node.col}`;
+                if (!nodeToRegionMap.has(nodeKey)) {
+                    nodeToRegionMap.set(nodeKey, []);
+                }
+                var newRegion = {
+                    nodes: Array.from(region.nodes),
+                    counts: region.counts,
+                };
+                nodeToRegionMap.get(nodeKey).push(newRegion);
+            });
             this.log('相关的中心节点:');
             region.centers.forEach(center => {
                 this.log(`  (${center.row}, ${center.col}) 值: ${center.value}, 需要的雷数: ${center.count}`);
             });
         });
+
+        // 遍历 nodeToRegionMap 并打印
+        var log3 = this.buildFlog(true);
+        log3('\n=== 节点与叠加区域的关系 ===');
+        nodeToRegionMap.forEach((regions, nodeKey) => {
+            const [row, col] = nodeKey.split(',').map(Number);
+            log3(`\n节点 (${row}, ${col}) 关联的叠加区域:`);
+            regions.forEach((region, index) => {
+                log3(`区域 ${index + 1}:`);
+                log3(`- 格子: ${region.nodes.map(n => `(${n.row}, ${n.col})`).join(', ')}`);
+                log3(`- 雷数: ${Array.from(region.counts)[0]}`);
+                // log3(`- 中心节点: ${region.centers.map(c => `(${c.row}, ${c.col})[值=${c.value}]`).join(', ')}`);
+            });
+        });
+        
         // 可以根据叠加区域找到所有的中心节点了
         // 现在还需要根据中心节点找到所有的叠加区域
         let centerList = [];
@@ -156,21 +189,22 @@ export default class OverlapRegionStrategy {
         // 这个格子就是节点 (2, 3)，所以 (2, 3) 不是雷
         // 分析包含关系的区域
 
-
         // 在处理完普通叠加区域后，生成至少叠加区域
-        this.log('\n=== 至少叠加区域分析 ===');
+        var log2 = this.buildFlog(false);
+        
+        log2('\n=== 至少叠加区域分析 ===');
         regions.forEach((region, key) => {
             const nodes = region.nodes;
             const mineCount = Array.from(region.counts)[0];
             
             // 只处理有2个以上格子且雷数大于1的区域
             if (nodes.length >= 2 && mineCount > 0) {
-                this.log(`\n原始区域信息:`);
-                this.log(`- 格子: ${nodes.map(n => `(${n.row}, ${n.col})`).join(', ')}`);
-                this.log(`- 雷数: ${mineCount}`);
-                this.log(`- 中心节点: ${region.centers.map(c => `(${c.row}, ${c.col})[值=${c.value}]`).join(', ')}`);
+                log2(`\n原始区域信息:`);
+                log2(`- 格子: ${nodes.map(n => `(${n.row}, ${n.col})`).join(', ')}`);
+                log2(`- 雷数: ${mineCount}`);
+                log2(`- 中心节点: ${region.centers.map(c => `(${c.row}, ${c.col})[值=${c.value}]`).join(', ')}`);
                 
-                this.log('\n生成的至少区域:');
+                log2('\n生成的至少区域:');
                 // 生成所有可能的两两组合
                 for (let i = 0; i < nodes.length; i++) {
                     for (let j = i + 1; j < nodes.length; j++) {
@@ -207,10 +241,10 @@ export default class OverlapRegionStrategy {
                         
                         atLeastRegions.set(regionKey, atLeastRegion);
                         
-                        this.log(`- 格子组合: (${nodes[i].row}, ${nodes[i].col}), (${nodes[j].row}, ${nodes[j].col})`);
-                        this.log(`  至少雷数: ${atLeastRegion.minMines}`);
-                        this.log(`  拆分来源: ${atLeastRegion.sourceRegion.nodes.map(n => `(${n.row}, ${n.col})`).join(', ')} 雷数: ${atLeastRegion.sourceRegion.mineCount}`);
-                        this.log(`  拆分说明: 原始区域${nodes.length}个格子${mineCount}个雷，拆分出${splitOutCount}个格子，剩余至少${minMines}个雷`);
+                        log2(`- 格子组合: (${nodes[i].row}, ${nodes[i].col}), (${nodes[j].row}, ${nodes[j].col})`);
+                        log2(`  至少雷数: ${atLeastRegion.minMines}`);
+                        log2(`  拆分来源: ${atLeastRegion.sourceRegion.nodes.map(n => `(${n.row}, ${n.col})`).join(', ')} 雷数: ${atLeastRegion.sourceRegion.mineCount}`);
+                        log2(`  拆分说明: 原始区域${nodes.length}个格子${mineCount}个雷，拆分出${splitOutCount}个格子，剩余至少${minMines}个雷`);
                     }
                 }
             }
@@ -257,11 +291,11 @@ export default class OverlapRegionStrategy {
                 this.log(`  - 至少雷数: ${region.minMines}`);
             });
         });
+
+        // TODO 至多叠加区域分析
         
         // 尝试无雷推断
-        const noMineResult = this.analyzeNoMineRegions(
-            Array.from(uniqueCenters)
-        );
+        const noMineResult = this.analyzeNoMineRegions(nodeToRegionMap);
         if (noMineResult) return this.utils.verifyResult(noMineResult, grid, '无雷');
 
         // 尝试无雷推断2
@@ -273,7 +307,7 @@ export default class OverlapRegionStrategy {
         
 
         // 尝试有雷推断
-        const hasMineResult = this.analyzeHasMineRegions(Array.from(uniqueCenters));
+        const hasMineResult = this.analyzeHasMineRegions(nodeToRegionMap);
         if (hasMineResult) {
             console.log('有雷推断');
             return this.utils.verifyResult(hasMineResult, grid, '有雷');
@@ -445,10 +479,10 @@ export default class OverlapRegionStrategy {
         return null;
     }
 
-    analyzeNoMineRegions(centersList) {
-        for (const [centerKey, data] of centersList) {
-            this.log(`\n分析中心节点 (${data.center.row}, ${data.center.col}) 值: ${data.center.value}`);
-            const regions = Array.from(data.regions);
+    analyzeNoMineRegions(nodeToRegionMap) {
+        for (const [nodeKey, data] of nodeToRegionMap) {
+            this.log(`\n分析节点 ${nodeKey} 的所有区域`);
+            const regions = Array.from(data);
             
             // 比较每对区域
             for (let i = 0; i < regions.length; i++) {
@@ -541,19 +575,21 @@ export default class OverlapRegionStrategy {
     }
 
     analyzeNoMineAtLeastRegions(centersList, atLeastRegionsList) {
+        var log = this.buildFlog(false);
+
         // 添加对至少区域的处理
         for (const [centerKey, atLeastRegions] of atLeastRegionsList) {
-            this.log(`\n分析至少叠加区域中心节点 ${centerKey} 的至少区域`);
+            log(`\n分析至少叠加区域中心节点 ${centerKey} 的至少区域`);
 
             // 获取该中心节点的所有普通叠加区域，并打印出来
             const centerData = centersList.find(([key, _]) => key === centerKey);
             if (centerData) {
                 const [_, data] = centerData;
-                this.log('\n该中心节点的普通叠加区域:');
+                log('\n该中心节点的普通叠加区域:');
                 Array.from(data.regions).forEach((region, index) => {
-                    this.log(`区域 ${index + 1}:`);
-                    this.log(`- 格子: ${region.nodes.map(n => `(${n.row}, ${n.col})`).join(', ')}`);
-                    this.log(`- 雷数: ${Array.from(region.counts)[0]}`);
+                    log(`区域 ${index + 1}:`);
+                    log(`- 格子: ${region.nodes.map(n => `(${n.row}, ${n.col})`).join(', ')}`);
+                    log(`- 雷数: ${Array.from(region.counts)[0]}`);
                 });
             }
             
@@ -577,14 +613,14 @@ export default class OverlapRegionStrategy {
                             
                             // 如果大区域的雷数等于至少区域的最小雷数，差集一定没有雷
                             if (largeCount === smallerRegion.minMines && diffNodes.length > 0) {
-                                this.log(`\n发现至少区域推断:`); 
-                                this.log(`至少区域: ${smallerRegion.nodes.map(n => `(${n.row}, ${n.col})`).join(', ')}`);
-                                this.log(`至少雷数: ${smallerRegion.minMines}`);
-                                this.log(`大区域: ${largerRegion.nodes.map(n => `(${n.row}, ${n.col})`).join(', ')}`);
-                                this.log(`大区域雷数: ${largeCount}`);
-                                this.log(`差集格子: ${diffNodes.map(n => `(${n.row}, ${n.col})`).join(', ')}`);
-                                this.log(`推断原因: 大区域雷数(${largeCount}) = 至少区域雷数(${smallerRegion.minMines})`);
-                                this.log(`结论: 由于大区域包含至少区域，且雷数相等，所以差集格子一定不是雷`);
+                                log(`\n发现至少区域推断:`); 
+                                log(`至少区域: ${smallerRegion.nodes.map(n => `(${n.row}, ${n.col})`).join(', ')}`);
+                                log(`至少雷数: ${smallerRegion.minMines}`);
+                                log(`大区域: ${largerRegion.nodes.map(n => `(${n.row}, ${n.col})`).join(', ')}`);
+                                log(`大区域雷数: ${largeCount}`);
+                                log(`差集格子: ${diffNodes.map(n => `(${n.row}, ${n.col})`).join(', ')}`);
+                                log(`推断原因: 大区域雷数(${largeCount}) = 至少区域雷数(${smallerRegion.minMines})`);
+                                log(`结论: 由于大区域包含至少区域，且雷数相等，所以差集格子一定不是雷`);
                                 
                                 return {
                                     row: diffNodes[0].row,
@@ -596,14 +632,14 @@ export default class OverlapRegionStrategy {
 
                             // 新增：如果大区域的雷数小于至少区域的最小雷数，差集也一定没有雷
                             if (largeCount < smallerRegion.minMines && diffNodes.length > 0) {
-                                this.log(`\n发现至少区域推断:`);
-                                this.log(`至少区域: ${smallerRegion.nodes.map(n => `(${n.row}, ${n.col})`).join(', ')}`);
-                                this.log(`至少雷数: ${smallerRegion.minMines}`);
-                                this.log(`大区域: ${largerRegion.nodes.map(n => `(${n.row}, ${n.col})`).join(', ')}`);
-                                this.log(`大区域雷数: ${largeCount}`);
-                                this.log(`差集格子: ${diffNodes.map(n => `(${n.row}, ${n.col})`).join(', ')}`);
-                                this.log(`推断原因: 大区域雷数(${largeCount}) < 至少区域雷数(${smallerRegion.minMines})`);
-                                this.log(`结论: 由于大区域包含至少区域，但雷数更少，所以差集格子一定不是雷`);
+                                log(`\n发现至少区域推断:`);
+                                log(`至少区域: ${smallerRegion.nodes.map(n => `(${n.row}, ${n.col})`).join(', ')}`);
+                                log(`至少雷数: ${smallerRegion.minMines}`);
+                                log(`大区域: ${largerRegion.nodes.map(n => `(${n.row}, ${n.col})`).join(', ')}`);
+                                log(`大区域雷数: ${largeCount}`);
+                                log(`差集格子: ${diffNodes.map(n => `(${n.row}, ${n.col})`).join(', ')}`);
+                                log(`推断原因: 大区域雷数(${largeCount}) < 至少区域雷数(${smallerRegion.minMines})`);
+                                log(`结论: 由于大区域包含至少区域，但雷数更少，所以差集格子一定不是雷`);
                                 
                                 return {
                                     row: diffNodes[0].row,
@@ -618,53 +654,36 @@ export default class OverlapRegionStrategy {
             }
         }
 
-        this.log('\n无雷推断结束：未找到可以确定的无雷格子');
+        log('\n无雷推断结束：未找到可以确定的无雷格子');
         return null;
     }
 
-    analyzeHasMineRegions(centersList) {
-        for (const [centerKey, data] of centersList) {
-            this.log(`\n分析中心节点 (${data.center.row}, ${data.center.col}) 值: ${data.center.value}`);
-            const regions = Array.from(data.regions);
+    analyzeHasMineRegions(nodeToRegionMap) {
+        for (const [nodeKey, data] of nodeToRegionMap) {
+            this.log(`\n分析节点 ${nodeKey} 的所有区域`);
+            const regions = Array.from(data);
             
+            // 比较每对区域
             for (let i = 0; i < regions.length; i++) {
                 for (let j = i + 1; j < regions.length; j++) {
                     const region1 = regions[i];
                     const region2 = regions[j];
                     
-                    this.log(`\n比较两个区域:`);
-                    this.log(`区域1: ${region1.nodes.map(n => `(${n.row}, ${n.col})`).join(', ')} 雷数: ${Array.from(region1.counts)[0]}`);
-                    this.log(`区域2: ${region2.nodes.map(n => `(${n.row}, ${n.col})`).join(', ')} 雷数: ${Array.from(region2.counts)[0]}`);
-                    
-                    // 检查两个区域的包含关系（双向检查）
+                    // 检查包含关系
                     let smallerRegion, largerRegion, diffNodes;
                     
-                    // 检查region2是否包含region1
-                    const is2ContainsRegion1 = region1.nodes.every(node1 => 
-                        region2.nodes.some(node2 => 
-                            node2.row === node1.row && node2.col === node1.col
-                        )
-                    );
-                    
-                    // 检查region1是否包含region2
-                    const is1ContainsRegion2 = region2.nodes.every(node2 => 
-                        region1.nodes.some(node1 => 
-                            node1.row === node1.row && node1.col === node1.col
-                        )
-                    );
+                    // 检查包含关系（双向）
+                    const { is2ContainsRegion1, is1ContainsRegion2 } = this.utils.checkRegionContainment(region1, region2);
                     
                     if (is2ContainsRegion1) {
-                        this.log('发现包含关系: 区域2 包含 区域1');
                         smallerRegion = region1;
                         largerRegion = region2;
                         diffNodes = this.calculateDiffNodes(region2, region1);
                     } else if (is1ContainsRegion2) {
-                        this.log('发现包含关系: 区域1 包含 区域2');
                         smallerRegion = region2;
                         largerRegion = region1;
                         diffNodes = this.calculateDiffNodes(region1, region2);
                     } else {
-                        this.log('未发现包含关系，继续检查下一对区域');
                         continue;
                     }
                     
@@ -672,42 +691,14 @@ export default class OverlapRegionStrategy {
                         const smallCount = Array.from(smallerRegion.counts)[0];
                         const largeCount = Array.from(largerRegion.counts)[0];
                         
-                        this.log(`\n分析雷数关系:`);
-                        this.log(`小区域信息:`);
-                        this.log(`- 格子: ${smallerRegion.nodes.map(n => `(${n.row}, ${n.col})`).join(', ')}`);
-                        this.log(`- 雷数: ${smallCount}`);
-                        this.log(`- 中心节点: ${smallerRegion.centers.map(c => `(${c.row}, ${c.col})[值=${c.value}]`).join(', ')}`);
-                        
-                        this.log(`\n大区域信息:`);
-                        this.log(`- 格子: ${largerRegion.nodes.map(n => `(${n.row}, ${n.col})`).join(', ')}`);
-                        this.log(`- 雷数: ${largeCount}`);
-                        this.log(`- 中心节点: ${largerRegion.centers.map(c => `(${c.row}, ${c.col})[值=${c.value}]`).join(', ')}`);
-                        
-                        this.log(`\n差集区域信息:`);
-                        this.log(`- 格子: ${diffNodes.map(n => `(${n.row}, ${n.col})`).join(', ')}`);
-                        this.log(`- 格子数量: ${diffNodes.length}`);
-                        
-                        // 找出共用的中心节点
-                        const commonCenters = smallerRegion.centers.filter(center1 => 
-                            largerRegion.centers.some(center2 => 
-                                center1.row === center2.row && center1.col === center2.col
-                            )
-                        );
-                        
-                        if (commonCenters.length > 0) {
-                            this.log(`\n共用的中心节点:`);
-                            commonCenters.forEach(center => {
-                                this.log(`- (${center.row}, ${center.col})[值=${center.value}]`);
-                            });
-                        }
-                        
                         // 如果大区域的雷数等于小区域雷数加上差集格子数，差集区域都是雷
                         if (largeCount === smallCount + diffNodes.length) {
-                            this.log(`\n推断过程:`);
-                            this.log(`1. 大区域雷数(${largeCount}) = 小区域雷数(${smallCount}) + 差集格子数(${diffNodes.length})`);
-                            this.log(`2. 大区域包含小区域的所有格子，且额外包含差集格子`);
-                            this.log(`3. 由于雷数差值(${largeCount - smallCount})正好等于差集格子数(${diffNodes.length})`);
-                            this.log(`4. 结论: 差集格子 ${diffNodes.map(n => `(${n.row}, ${n.col})`).join(', ')} 一定都是雷`);
+                            this.log(`\n发现有雷推断:`);
+                            this.log(`小区域: ${smallerRegion.nodes.map(n => `(${n.row}, ${n.col})`).join(', ')} 雷数: ${smallCount}`);
+                            this.log(`大区域: ${largerRegion.nodes.map(n => `(${n.row}, ${n.col})`).join(', ')} 雷数: ${largeCount}`);
+                            this.log(`差集格子: ${diffNodes.map(n => `(${n.row}, ${n.col})`).join(', ')}`);
+                            this.log(`推断原因: 大区域雷数(${largeCount}) = 小区域雷数(${smallCount}) + 差集格子数(${diffNodes.length})`);
+                            this.log(`结论: 差集格子一定都是雷`);
                             
                             return {
                                 row: diffNodes[0].row,
@@ -716,12 +707,11 @@ export default class OverlapRegionStrategy {
                                 isGuess: false
                             };
                         }
-                        
-                        this.log('未找到可以推断的情况，继续检查下一对区域');
                     }
                 }
             }
         }
+        
         this.log('\n有雷推断结束：未找到可以确定的雷格子');
         return null;
     }

@@ -115,13 +115,15 @@
 </template>
 
 <script>
-import generateMines from './mine-app/generateMinesBySeed.js';
+import generateMinesTool from './mine-app/generateMinesBySeed.js';
 import checkIfMapIsLuckBased from './mine-app/checkIfMapIsLuckBased.js';
 import MineGameAi from './mine-ai/mine-game-ai-v2.js';
 import MineTab from './mine-cmpt/mine-tab.vue';
 import LedDisplay from './mine-cmpt/led-display.vue';
 import grid_demo from './test/grip_demo1_1.js';
+
 var SelectMineAi = MineGameAi;
+var generateMines = generateMinesTool.generateMinesBySeed;
 
 export default {
     name: 'Minesweeper',
@@ -286,7 +288,13 @@ export default {
             if(this.reduceGuesses == true) {
                 maxAttempts = 50;
             }
-            const result = generateMines(this.rows, this.cols, this.mineCount, seed, maxAttempts);
+            const result = generateMines({
+                rows: this.rows,
+                cols: this.cols,
+                mineCount: this.mineCount,
+                finalSeed: seed,
+                maxAttempts: maxAttempts
+            });
             const { grid, guessCount, seed: genSeed, safeRow, safeCol } = result;
             
             this.currentSeed = genSeed; // 存储生成的种子
@@ -366,16 +374,6 @@ export default {
             }
         },
         
-        generateMines(firstRow, firstCol) {
-            const { grid, guessCount } = generateMines(this.rows, this.cols, this.mineCount, firstRow, firstCol);
-            this.grid = grid;
-            if(guessCount == 0) {
-                return;
-            }
-            // 检查地图是否需要靠运气才能完成
-            this.checkIfMapIsLuckBased();
-        },
-        
         countAdjacentMines(row, col) {
             let count = 0;
             for (let r = Math.max(0, row - 1); r <= Math.min(this.rows - 1, row + 1); r++) {
@@ -392,7 +390,7 @@ export default {
             if (this.gameOver || this.grid[row][col].flagged) return;
             
             // 新增操作日志
-            console.log(`用户点击 [揭開] 位置: 行 ${row + 1}, 列 ${col + 1}`);
+            console.log(`用户点击 [揭開] 位置: 行 ${row }, 列 ${col}`);
             
             // 保存当前状态
             this.moveHistory.push({
@@ -427,7 +425,7 @@ export default {
             if (this.gameOver || this.grid[row][col].revealed) return;
             
             // 新增操作日志
-            console.log(`用户点击 [标记] 位置: 行 ${row + 1}, 列 ${col + 1}`);
+            console.log(`用户点击 [标记] 位置: 行 ${row}, 列 ${col}`);
             
             // 保存当前状态
             this.moveHistory.push({
@@ -547,7 +545,7 @@ export default {
             
             console.log('this.mineCount', this.mineCount);
             const move = ai.getNextMove(this.grid, this.rows, this.cols, false, this.mineCount, true);
-            
+            console.log('AI决策', move);
             // 打印未处理的格子数量
             let unhandledCells = 0;
             for (let r = 0; r < this.rows; r++) {

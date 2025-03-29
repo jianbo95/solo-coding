@@ -6,6 +6,66 @@ const DebugOption = {
     action: 'close' // close 表示结束AI
 };
 
+function generateSingleGrid2(rng, rows, cols, mineCount, safeRow, safeCol) {
+    function countAdjacentMines(grid, rows, cols, row, col) {
+        let count = 0;
+        for (let r = Math.max(0, row - 1); r <= Math.min(rows - 1, row + 1); r++) {
+            for (let c = Math.max(0, col - 1); c <= Math.min(cols - 1, col + 1); c++) {
+                if (r === row && c === col) continue;
+                if (grid[r][c].isMine) count++;
+            }
+        }
+        return count;
+    }
+    
+    const minePositions = new Set();
+    const grid = Array(rows).fill().map(() => 
+        Array(cols).fill().map(() => ({
+            isMine: false,
+            revealed: false,
+            flagged: false,
+            adjacentMines: 0,
+            isSafe: false  // 新增安全位置标记
+        }))
+    );
+
+    // 标记第一次点击的格子为安全
+    grid[safeRow][safeCol].isSafe = true;
+    
+    // 确保第一次点击的位置及其周围不是雷
+    const safePositions = new Set();
+    for (let r = Math.max(0, safeRow - 1); r <= Math.min(rows - 1, safeRow + 1); r++) {
+        for (let c = Math.max(0, safeCol - 1); c <= Math.min(cols - 1, safeCol + 1); c++) {
+            safePositions.add(`${r},${c}`);
+        }
+    }
+    
+    // 放置地雷
+    let placedMines = 0;
+    while (placedMines < mineCount) {
+        const row = Math.floor(rng.random() * rows);
+        const col = Math.floor(rng.random() * cols);
+        const posKey = `${row},${col}`;
+        
+        if (!minePositions.has(posKey) && !safePositions.has(posKey)) {
+            minePositions.add(posKey);
+            grid[row][col].isMine = true;
+            placedMines++;
+        }
+    }
+    
+    // 计算每个格子周围的雷数
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            if (!grid[r][c].isMine) {
+                grid[r][c].adjacentMines = countAdjacentMines(grid, rows, cols, r, c);
+            }
+        }
+    }
+    
+    return grid;
+}
+
 // 创建基于种子的随机数生成器
 function SeededRandom(seed) {
     const rng = new Math.seedrandom(seed);
@@ -76,30 +136,62 @@ function parseSeed(seedString) {
     };
 }
 
+// 将 generateSingleGrid 移到外部
+function generateSingleGrid(rng, rows, cols, mineCount, safeRow, safeCol) {
+    const minePositions = new Set();
+    const grid = Array(rows).fill().map(() => 
+        Array(cols).fill().map(() => ({
+            isMine: false,
+            revealed: false,
+            flagged: false,
+            adjacentMines: 0
+        }))
+    );
+    
+    // 确保第一次点击的位置及其周围不是雷
+    const safePositions = new Set();
+    for (let r = Math.max(0, safeRow - 1); r <= Math.min(rows - 1, safeRow + 1); r++) {
+        for (let c = Math.max(0, safeCol - 1); c <= Math.min(cols - 1, safeCol + 1); c++) {
+            safePositions.add(`${r},${c}`);
+        }
+    }
+    
+    // 放置地雷
+    let placedMines = 0;
+    while (placedMines < mineCount) {
+        const row = Math.floor(rng.random() * rows);
+        const col = Math.floor(rng.random() * cols);
+        const posKey = `${row},${col}`;
+        
+        if (!minePositions.has(posKey) && !safePositions.has(posKey)) {
+            minePositions.add(posKey);
+            grid[row][col].isMine = true;
+            placedMines++;
+        }
+    }
+    
+    // 计算每个格子周围的雷数
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            if (!grid[r][c].isMine) {
+                grid[r][c].adjacentMines = countAdjacentMines(grid, rows, cols, r, c);
+            }
+        }
+    }
+    
+    return grid;
+}
+
 /**
  * 根据种子生成扫雷游戏地图
- * @param {number} rows 地图行数 (2-100)
- * @param {number} cols 地图列数 (2-100)
- * @param {number} mineCount 地雷数量 (2-9999)
- * @param {string|null} finalSeed 种子字符串，格式为"RRRCCCSSSRRCCXXXXXX"，其中：
- *   - RRR: 3位行数
- *   - CCC: 3位列数
- *   - SSS: 4位地雷数
- *   - RR: 2位首次点击行号
- *   - CC: 2位首次点击列号
- *   - XXXXXX: 时间戳+随机偏移
- * @param {number} maxAttempts 最大尝试生成次数，默认50次
- * @returns {Object} 返回生成的地图信息
- *   - grid: 地图数组
- *   - guessCount: AI计算的最少猜测次数
- *   - seed: 最终使用的种子
- *   - rows: 行数
- *   - cols: 列数
- *   - mineCount: 地雷数
- *   - safeRow: 安全起始行
- *   - safeCol: 安全起始列
+ * @param {Object} options 配置选项
+ * @param {number} options.rows 地图行数 (2-100)
+ * @param {number} options.cols 地图列数 (2-100)
+ * @param {number} options.mineCount 地雷数量 (2-9999)
+ * @param {string|null} [options.finalSeed] 种子字符串，格式为"RRRCCCSSSRRCCXXXXXX"
+ * @param {number} [options.maxAttempts=50] 最大尝试生成次数
  */
-function generateMinesBySeed(rows, cols, mineCount, finalSeed, maxAttempts = 50) {
+function generateMinesBySeed({ rows, cols, mineCount, finalSeed = null, maxAttempts = 50}) {
 
     let safeRow, safeCol, buildSeed, params;
     
@@ -375,6 +467,39 @@ function generateMinesBySeed(rows, cols, mineCount, finalSeed, maxAttempts = 50)
     };
 }
 
+function buildMinesGridListBySeed({ rows, cols, mineCount, maxAttempts = 50 }) {
+    const gridList = [];
+    let safeRow = Math.floor(Math.random() * rows);
+    let safeCol = Math.floor(Math.random() * cols);
+    
+    // 生成基础种子
+    const notFinalSeed = buildRandSeed(rows, cols, mineCount, safeRow, safeCol);
+    const params = parseSeed(notFinalSeed);
+    
+    // 生成指定数量的地图
+    for (let i = 0; i < maxAttempts; i++) {
+        const finalSeed = encodeSeedString(rows, cols, mineCount, safeRow, safeCol, params.baseSeed + i);
+        const currentRng = new SeededRandom(finalSeed);
+        const grid = generateSingleGrid2(currentRng, rows, cols, mineCount, safeRow, safeCol);
+        
+        gridList.push({
+            grid,
+            seed: finalSeed
+        });
+    }
+
+    return {
+        gridList,
+        params: {
+            rows,
+            cols,
+            mineCount,
+            safeRow,
+            safeCol
+        }
+    };
+}
+
 // 检查地图是否完成
 function checkGridCompletion(grid) {
     for (let row = 0; row < grid.length; row++) {
@@ -388,4 +513,7 @@ function checkGridCompletion(grid) {
     return true;
 }
 
-export default generateMinesBySeed;
+export default {
+    generateMinesBySeed: generateMinesBySeed,
+    buildMinesGridListBySeed: buildMinesGridListBySeed
+};

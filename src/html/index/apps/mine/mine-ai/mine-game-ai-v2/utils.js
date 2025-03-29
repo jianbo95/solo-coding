@@ -114,4 +114,61 @@ export default class Utils {
         
         return verifiedResult;
     }
+
+    // 构建函数内打印对象
+    buildFlog(isLog, _instance) {
+        return function(...args) {
+            if(isLog === false) return;
+            if (_instance.debug) {
+                _instance.log(...args);
+            }
+        };
+    }
+
+    /**
+     * 检查两个区域的包含关系
+     * @param {Array} region1 第一个区域
+     * @param {Array} region2 第二个区域
+     * @returns {Object} 包含关系结果
+     */
+    checkRegionContainment(region1, region2) {
+        // 检查region2是否包含region1
+        const is2ContainsRegion1 = region1.nodes.every(node1 => 
+            region2.nodes.some(node2 => 
+                node2.row === node1.row && node2.col === node1.col
+            )
+        );
+        
+        // 检查region1是否包含region2
+        const is1ContainsRegion2 = region2.nodes.every(node2 => 
+            region1.nodes.some(node1 => 
+                node1.row === node2.row && node1.col === node2.col
+            )
+        );
+
+        return {
+            is2ContainsRegion1,
+            is1ContainsRegion2
+        };
+    }
+
+    /**
+     * 查找未揭开的安全位置
+     * @param {Array} grid 游戏网格
+     * @param {Number} rows 行数
+     * @param {Number} cols 列数
+     * @returns {Object|null} 安全位置坐标或null
+     */
+    findUnrevealedSafeCell(grid, rows, cols) {
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+                const cell = grid[row][col];
+                if (!cell.revealed && cell.isSafe) {
+                    return { row, col };
+                }
+            }
+        }
+        return null;
+    }
+
 }
