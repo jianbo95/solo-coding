@@ -22,7 +22,7 @@ export default class MineGameAiV2 {
             // gridPattern: true,      // 网格模式策略
             // region: true,           // 区域策略
             // tankChain: true,        // 坦克链策略
-            connectedBlock: true,   // 连通块策略
+            // connectedBlock: true,   // 连通块策略
             probability: true       // 概率策略
         };
 

@@ -226,8 +226,11 @@ export default {
                 rows: this.options.rows,
                 cols: this.options.cols,
                 mineCount: this.options.mineCount,
-                maxAttempts: 50
+                maxAttempts: 500
             });
+
+            // 指定策略，记录该策略触发且成功的种子
+            var recordSuccess = 'connectedBlock';   // 连通块策略
 
             // 统计数据
             const stats = {
@@ -239,7 +242,8 @@ export default {
                 strategyFailure: {}, // 策略失败统计
                 totalGuesses: 0,
                 averageGuesses: 0,
-                failedSeeds: {} // 记录失败的种子
+                failedSeeds: {}, // 记录失败的种子
+                successSeeds: {} // 记录成功的种子
             };
 
             // 遍历每个地图进行AI测试
@@ -276,13 +280,37 @@ export default {
                             if (!stats.failedSeeds[move.strategy]) {
                                 stats.failedSeeds[move.strategy] = [];
                             }
+                            
+                            // 计算剩余雷数
+                            let remainingMines = this.options.mineCount;
+                            for (let r = 0; r < testGrid.length; r++) {
+                                for (let c = 0; c < testGrid[0].length; c++) {
+                                    if (testGrid[r][c].flagged && testGrid[r][c].isMine) {
+                                        remainingMines--;
+                                    }
+                                }
+                            }
+                            
                             stats.failedSeeds[move.strategy].push({
                                 seed: item.seed,
-                                position: `(${move.row}, ${move.col})`
+                                position: `(${move.row}, ${move.col})`,
+                                remainingMines: remainingMines
                             });
                         } else {
                             // 策略成功统计
                             stats.strategySuccess[move.strategy] = (stats.strategySuccess[move.strategy] || 0) + 1;
+                            
+                            // 记录指定策略的成功案例
+                            if (move.strategy === recordSuccess) {
+                                if (!stats.successSeeds[move.strategy]) {
+                                    stats.successSeeds[move.strategy] = [];
+                                }
+                                stats.successSeeds[move.strategy].push({
+                                    seed: item.seed,
+                                    position: `(${move.row}, ${move.col})`
+                                });
+                            }
+                            
                             this.simulateReveal(testGrid, move.row, move.col);
                         }
                     } else {
@@ -356,7 +384,21 @@ export default {
                     console.log(`${strategyNames[strategy] || strategy}失败案例(${stats.failedSeeds[strategy].length}个中的前5个):`, 
                         failedCases.map(item => ({
                             种子: item.seed,
-                            失败位置: item.position
+                            失败位置: item.position,
+                            剩余雷数: item.remainingMines
+                        }))
+                    );
+                }
+            });
+
+            // 输出指定策略的成功案例（最多5个）
+            Object.keys(stats.successSeeds).forEach(strategy => {
+                if (stats.successSeeds[strategy] && stats.successSeeds[strategy].length > 0) {
+                    const successCases = stats.successSeeds[strategy].slice(0, 5);
+                    console.log(`${strategyNames[strategy] || strategy}成功案例(${stats.successSeeds[strategy].length}个中的前5个):`, 
+                        successCases.map(item => ({
+                            种子: item.seed,
+                            成功位置: item.position
                         }))
                     );
                 }
