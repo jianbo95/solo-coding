@@ -171,6 +171,7 @@
 <script>
 import generateMinesTool from '@/html/index/apps/mine/mine-app/generateMinesBySeed.js';
 import MinesweeperAI from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2.js';
+import GridPrinter from '@/html/index/apps/mine/mine-ai/mine-game-ai-v2/grid-printer.js';
 
 export default {
     name: 'MineTab',
@@ -218,6 +219,19 @@ export default {
         }
         // 加载保存的残局
         this.loadSavedEndgames();
+        window.t = () => { this.testAI(); }
+        window.p = () => { this.$emit('ai-play') }
+        window.h = () => { this.$emit('hint') }
+        window.g = () => {
+            // 打印当前地图
+            GridPrinter.setDebug(true);
+            GridPrinter.printGrid(this.gameInstance.grid, this.gameInstance.rows, this.gameInstance.cols);
+            GridPrinter.setDebug(false);
+        }
+        window.s = (seed) => {
+            this.$emit('load-seed', seed);
+            // 016030009908061743407625367
+        }
     },
     methods: {
         testAI() {
@@ -226,7 +240,7 @@ export default {
                 rows: this.options.rows,
                 cols: this.options.cols,
                 mineCount: this.options.mineCount,
-                maxAttempts: 500
+                maxAttempts: 50
             });
 
             // 指定策略，记录该策略触发且成功的种子
@@ -455,10 +469,15 @@ export default {
             
             this.loadSeedVisible = false;
             this.$emit('load-seed', this.seedInput.trim());
+            // 016030009908061743407625367
             this.seedInput = '';
         },
         setGameInstance(gameInstance) {
             this.gameInstance = gameInstance;
+
+            window.u = () => {
+                gameInstance.undoLastMove();
+            };
         },
         // 获取保存的设置
         getSavedOptions() {

@@ -119,10 +119,26 @@ export default class Utils {
     buildFlog(isLog, _instance) {
         return function(...args) {
             if(isLog === false) return;
-            if (_instance.debug) {
+            // if (_instance.debug) {
                 _instance.log(...args);
-            }
+            // }
         };
+    }
+
+    checkRegionContainOne(region1, region2) {
+        if(region1.length <= 1) {
+            return false;
+        }
+        if(region2.length < 4) {
+            return false;
+        }
+        // region2必须大于4，region1必须大于等于1
+        // 检查region2是否包含region1
+        return region1.nodes.every(node1 => 
+            region2.nodes.some(node2 => 
+                node2.row === node1.row && node2.col === node1.col
+            )
+        );
     }
 
     /**
@@ -133,18 +149,10 @@ export default class Utils {
      */
     checkRegionContainment(region1, region2) {
         // 检查region2是否包含region1
-        const is2ContainsRegion1 = region1.nodes.every(node1 => 
-            region2.nodes.some(node2 => 
-                node2.row === node1.row && node2.col === node1.col
-            )
-        );
+        const is2ContainsRegion1 = this.checkRegionContainOne(region1, region2);
         
         // 检查region1是否包含region2
-        const is1ContainsRegion2 = region2.nodes.every(node2 => 
-            region1.nodes.some(node1 => 
-                node1.row === node2.row && node1.col === node2.col
-            )
-        );
+        const is1ContainsRegion2 = this.checkRegionContainOne(region2, region1);
 
         return {
             is2ContainsRegion1,
@@ -169,6 +177,26 @@ export default class Utils {
             }
         }
         return null;
+    }
+
+    generateCombinations(arr, size) {
+        const result = [];
+        
+        function backtrack(start, current) {
+            if (current.length === size) {
+                result.push([...current]);
+                return;
+            }
+            
+            for (let i = start; i < arr.length; i++) {
+                current.push(arr[i]);
+                backtrack(i + 1, current);
+                current.pop();
+            }
+        }
+        
+        backtrack(0, []);
+        return result;
     }
 
 }

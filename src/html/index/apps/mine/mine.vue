@@ -1,5 +1,5 @@
 <template>
-    <div class="minesweeper-container" v-if="init">
+    <div class="minesweeper-container" v-if="init" v-show="false">
         <div class="game-header">
             <mine-tab ref="mineTab"
                 @ai-step="aiStep"
@@ -390,7 +390,7 @@ export default {
             if (this.gameOver || this.grid[row][col].flagged) return;
             
             // 新增操作日志
-            console.log(`用户点击 [揭開] 位置: 行 ${row }, 列 ${col}`);
+            // console.log(`用户点击 [揭開] 位置: 行 ${row }, 列 ${col}`);
             
             // 保存当前状态
             this.moveHistory.push({
@@ -425,7 +425,7 @@ export default {
             if (this.gameOver || this.grid[row][col].revealed) return;
             
             // 新增操作日志
-            console.log(`用户点击 [标记] 位置: 行 ${row}, 列 ${col}`);
+            // console.log(`用户点击 [标记] 位置: 行 ${row}, 列 ${col}`);
             
             // 保存当前状态
             this.moveHistory.push({
@@ -625,7 +625,7 @@ export default {
             const ai = new SelectMineAi();
             
             const move = ai.getNextMove(this.grid, this.rows, this.cols, false, this.mineCount);
-            console.log('nextMove', move);
+            // console.log('nextMove', move);
             this.guessCount = ai.getGuessCount();
             
             if (!move) {
@@ -666,7 +666,7 @@ export default {
             const ai = new SelectMineAi();
             
             const move = ai.getNextMove(this.grid, this.rows, this.cols, false, this.mineCount);
-            console.log('nextMove', move); // {row: 5, col: 1}
+            // console.log('nextMove', move); // {row: 5, col: 1}
             this.guessCount = ai.getGuessCount();
             
             if (!move) return;

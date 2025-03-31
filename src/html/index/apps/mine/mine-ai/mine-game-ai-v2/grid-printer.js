@@ -10,22 +10,26 @@ const GridPrinter = {
         
         let output = '\n';
         
+        // 计算最大列数的字符宽度
+        const maxColWidth = Math.max(2, cols.toString().length);
+        
         // 打印列标题
         output += '   ';
         for (let c = 0; c < cols; c++) {
-            output += ` ${c.toString().padStart(2)} `;
+            output += ` ${c.toString().padStart(maxColWidth)} `;
         }
         output += '\n';
         
         // 打印分隔线
-        output += '   ' + '━'.repeat(cols * 3 + 1) + '\n';
+        output += '   ' + '━'.repeat(cols * (maxColWidth + 2) + 1) + '\n';
         
         // 打印每一行
         for (let r = 0; r < rows; r++) {
             output += `${r.toString().padStart(2)} ┃`;
             for (let c = 0; c < cols; c++) {
                 const cell = grid[r][c];
-                output += ` ${this.getCellSymbol(cell)} `;
+                const symbol = this.getCellSymbol(cell).toString();
+                output += `${symbol.padStart(maxColWidth)}  `;
             }
             output += '\n';
         }
@@ -36,8 +40,8 @@ const GridPrinter = {
     getCellSymbol(cell) {
         if (cell.flagged) return 'F';
         if (!cell.revealed) return '■';
-        if (cell.isMine) return 'O';
-        if (cell.adjacentMines === 0) return ' ';
+        if (cell.isMine) return '*';
+        if (cell.adjacentMines === 0) return '0';
         return cell.adjacentMines;
     },
     
