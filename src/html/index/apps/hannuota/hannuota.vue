@@ -160,10 +160,10 @@ export default {
       confirm: '确定'
     }};
     var i18n = I18n;
-    i18n.setLocaleMessage('zh', {
-        ...i18n.getLocaleMessage('zh'),
-        ...hannuotaZh
-    });
+    i18n.setLocaleMessage('zh', Object.assign({},
+      i18n.getLocaleMessage('zh'),
+      hannuotaZh
+    ));
     var hannuotaEn = {'hannuota': {
       title: 'Tower of Hanoi',
       discs: 'Disc Count:',
@@ -185,10 +185,10 @@ export default {
       cancel: 'Cancel',
       confirm: 'Confirm'
     }};
-    i18n.setLocaleMessage('en', {
-        ...i18n.getLocaleMessage('en'),
-        ...hannuotaEn
-    });
+    i18n.setLocaleMessage('en', Object.assign({},
+        i18n.getLocaleMessage('en'),
+        hannuotaEn
+    ));
     this.init = true;
     this.initGame();
   }

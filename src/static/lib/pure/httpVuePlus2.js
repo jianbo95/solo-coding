@@ -156,7 +156,7 @@ var HttpVuePlus = {
         code = VueCodeWrap.wrap(code, url, name);
         
         // console.log('wrap code', code);
-        if(window.CoreUtil != null && CoreUtil.isIE()) {
+        if(window.CoreUtil != null) {
             code = this.compileScript(code, url);
         }
         

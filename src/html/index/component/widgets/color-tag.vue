@@ -45,10 +45,15 @@ export default {
     },
     computed: {
         tagList() {
-            return this.tags.map(tag => ({
-                ...tag,
-                count: tag.count || 0
-            }));
+            return this.tags.map(tag => 
+                Object.assign(
+                    {},
+                    tag,
+                    {
+                        count: tag.count || 0
+                    }
+                )
+            );
         }
     },
     methods: {

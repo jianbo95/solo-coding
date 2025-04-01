@@ -138,7 +138,9 @@ export default {
         },
 
         anchorPoint(id) {
-            document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+            if(document.getElementById(id) != null) {
+                document.getElementById(id).scrollIntoView({ behavior: 'smooth' })
+            }
         }
     }
 }
