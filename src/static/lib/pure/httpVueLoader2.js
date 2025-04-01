@@ -419,10 +419,19 @@ window.cmptMap = {};
 			var component = new Component(name).load(url, name)
 				.then(function (component) {
                     timeCache[url] = new Date();
-					return component.normalize();
+
+					var normalizeResult = component.normalize();
+					// normalizeResult.then(function(normalizeResult){
+					// 	console.log('normalizeResult', normalizeResult);
+					// });
+					return normalizeResult;
 				})
 				.then(function (component) {
 
+					// var compileResult = component.compile();
+					// compileResult.then(function(compileResult){
+					// 	console.log('compileResult', compileResult);
+					// });
 					return component.compile();
 				})
 				.then(function (component) {
@@ -486,7 +495,6 @@ window.cmptMap = {};
 	};
 
 	httpVueLoader.require = function (moduleName) {
-
 		return window[moduleName];
 	};
 

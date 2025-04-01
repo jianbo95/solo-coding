@@ -13,7 +13,7 @@ module.exports = [
         entry: 'src/main.js',
         input: 'src/html/index/index.html',
 		output: '/index.html', // vite默认为 '/none.html'
-        mode: 'import',
+        mode: 'require',
         inject: true
     },
     {

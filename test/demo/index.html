@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cache staticRenderFns with CDN Vue</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <p>这是一个静态文本</p>
+        <p>{{ message }}</p>
+    </div>
+    <script>
+        const template = `
+            <div>
+                <p>这是一个静态文本</p>
+                <p>{{ message }}</p>
+            </div>
+        `;
+        const cacheKey = 'staticRenderFnsCache';
+
+        // 尝试从 localStorage 读取缓存
+        let cachedRenderFns = localStorage.getItem(cacheKey);
+        let compiled;
+
+        if (cachedRenderFns) {
+            // 若有缓存，解析缓存
+            const { render, staticRenderFns } = JSON.parse(cachedRenderFns);
+            compiled = {
+                render: new Function('with(this){return ' + render + '}'),
+                staticRenderFns: staticRenderFns.map(fn => new Function('with(this){return ' + fn + '}'))
+            };
+        } else {
+            // 若无缓存，编译模板
+            compiled = Vue.compile(template);
+            // 存储编译结果到 localStorage
+            localStorage.setItem(cacheKey, JSON.stringify({
+                render: compiled.render.toString(),
+                staticRenderFns: compiled.staticRenderFns.map(fn => fn.toString())
+            }));
+        }
+
+        new Vue({
+            el: '#app',
+            data: {
+                message: 'Hello, Vue!'
+            },
+            render: compiled.render,
+            staticRenderFns: compiled.staticRenderFns
+        });
+    </script>
+</body>
+
+</html>

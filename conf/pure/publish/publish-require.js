@@ -383,6 +383,8 @@ var compile = {
             if(compileJs == true) {
                 continue;
             }
+            // TODO 增加 compileVue
+
             var compileHtml = this.compileHtml(file, fileType, relativePath, path, codeMap);
             if(compileHtml == true) {
                 continue;

@@ -11725,6 +11725,7 @@
       // turn code into functions
       var res = {};
       var fnGenErrors = [];
+      // 在 Vue 的编译过程中，模板（template）会被编译成字符串形式的渲染函数代码。为了让这些代码能够在运行时被执行，需要将它们转换为 JavaScript 函数。这段代码就是完成这个转换过程的关键部分。
       res.render = createFunction(compiled.render, fnGenErrors);
       res.staticRenderFns = compiled.staticRenderFns.map(function (code) {
         return createFunction(code, fnGenErrors)
@@ -11839,15 +11840,17 @@
       optimize(ast, options);
     }
     var code = generate(ast, options);
-    return {
+    var result = {
       ast: ast,
       render: code.render,
       staticRenderFns: code.staticRenderFns
     }
+    console.log('compileResult', result);
+    return result;
   });
 
   /*  */
-
+  // console.log('createCompiler(baseOptions)',  baseOptions);
   var ref$1 = createCompiler(baseOptions);
   var compile = ref$1.compile;
   var compileToFunctions = ref$1.compileToFunctions;
@@ -11959,6 +11962,7 @@
   }
 
   Vue.compile = compileToFunctions;
+  Vue.compileToString = compile;
 
   return Vue;
 

@@ -4,7 +4,7 @@
     <keep-alive>
       <router-view />
     </keep-alive>
-
+    <jianbo></jianbo>
   </div>
 </template>
 
