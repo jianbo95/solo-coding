@@ -1,5 +1,5 @@
 <template>
-    <div class="minesweeper-container" v-if="init" v-show="false">
+    <div class="minesweeper-container" v-if="init" v-show="true">
         <div class="game-header">
             <mine-tab ref="mineTab"
                 @ai-step="aiStep"
