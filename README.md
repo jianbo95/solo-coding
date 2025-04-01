@@ -1,5 +1,9 @@
 # solo-coding
 
+## requireJs模式优化
+1. vue 内 import写法转换成 require 写法
+2. TODO merge.js 尝试用根路径
+
 ## 如何开始
 基于 requireJs 还是 import ？
 requireJs 性能应该要好很多吧。

@@ -124,10 +124,12 @@ var require = function(parentUrl, url) {
     // lastUrl:/html/index/apps/mine/mine-ai/mine-game-ai-v2/overlap-region-strategy.js
     // 这里正确应该是 ./html/index/apps/mine/mine-ai/mine-game-ai-v2/overlap-region-strategy.js
 
-    // var lastUrl = url;
-    url = CoreUtil.actualUrl(url, parentUrl);
-    // console.log('actualUrl: ' + url + '\nparentUrl: ' + parentUrl + '\nlastUrl:'+ lastUrl);
-    
+    var requestUrl = url;
+    // url = CoreUtil.actualUrl(url, parentUrl);
+    // console.log('actualUrl: ' + url + '\nparentUrl: ' + parentUrl + '\nrequestUrl:'+ requestUrl);
+    url = CoreUtil.absoluteUrl(url, parentUrl);
+    // console.log('absoluteUrl: ' + url + '\nparentUrl: ' + parentUrl + '\nrequestUrl:'+ requestUrl);
+
     if(url.indexOf('.vue') == url.length - 4) {
         // console.log('require vue', url);
         // console.log(window);
@@ -166,4 +168,5 @@ var require = function(parentUrl, url) {
 };
 
 window.require = require;
+window._require = require;
 })();

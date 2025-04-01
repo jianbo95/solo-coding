@@ -141,6 +141,7 @@ var HttpVuePlus = {
 
     /**
      * 加载并编译vue文件，返回编译好的vue文件
+     * code中包含了template、script、style代码
      */
     loadCompile (code, url, name, _call) {
         var lines = code.split('\n');
@@ -151,6 +152,7 @@ var HttpVuePlus = {
         
         code = lines.join('\n');
         
+        code = code.replace('<script>', '<script> var parentUrl = null;');
         code = VueCodeWrap.wrap(code, url, name);
         
         // console.log('wrap code', code);
@@ -177,7 +179,11 @@ var HttpVuePlus = {
         }
 
         if(line.indexOf('import') !== -1 && line.indexOf('from') !== -1) {
-            return this.loadImport(line, url, counter);
+            if(window.require == null) {
+                return this.loadImport(line, url, counter);
+            } else {
+                return this.loadImportToRequire(line, url, counter);
+            }
         } else if(line.indexOf('export default') !== -1) {
             return this.loadExport(line, url);
         } else {
@@ -243,6 +249,7 @@ var HttpVuePlus = {
                 this.loadImportSize ++;
                 
                 if(code.indexOf('compileByPublish') != -1) {
+                    // require模式下vue中加载js文件也是通过eval实现
                     // console.log('Flag("compileByPublish");', resourceUrl, code);
                     // 编译过的js
                     var jsCode = code;
@@ -279,6 +286,82 @@ var HttpVuePlus = {
         }
             
         return '';
+    },
+    
+    loadImportToRequireFirst: true,
+    /**
+     * 加载行中的import
+     * @param {String} line 
+     * @param {String} url 
+     * @returns 
+     */
+    loadImportToRequire (line, url) {
+        line = line.trim();
+        if(line.indexOf('//') != -1) {
+            line = line.split('//')[0];
+        }
+        var info = UrlParser.parse(url);
+        var splits = line.split('from');
+        var name = splits[0].replace('import', '').trim();
+        if(window[name] != null) {
+            // console.log('loadImport return ' + url);
+            return;
+        }
+        var path = splits[1].replaceAll('\'', '')
+            .replaceAll('"', '')
+            .replaceAll(';', '')
+            .trim();
+        // loadJs
+        // import Test from './test/test.js';
+        var urlDir = this.urlDir(url);
+        
+        // 判断资源类型
+        // console.log('原始引用', line);
+        // console.log('引入模块名', name);
+        // console.log('vue的文件路径', url);
+        // console.log('引入vue的路径', urlDir);
+        // console.log('引入时的路径', path);
+
+        // vue的文件路径 ../../module/devtool/test2.vue
+        // 引入vue的路径 ../../module/devtool
+        // 引入时的路径 ../../app/util/TestImport.js
+        // 拼接路径 ../../module/devtool/../../app/util/TestImport.js
+
+        // urlDir 是引入path的路径
+        var resourceUrl = this.buildResourceUrl(urlDir, path);
+        if(window.require != null) {
+            resourceUrl = CoreUtil.shortUrl(resourceUrl);
+        }
+
+        // 举个例子，要加载的是 parentUrl，然后 parentUrl 引入了 requestUrl
+        // parentUrl:../../html/index/module/main/home.vue ，这个是 /html/index/router/index-router.js 引入的
+        // requestUrl:../../component/layout/side-menu.vue
+        // rootUrl:../../html/index/module/main/../../component/layout/side-menu.vue
+        // http://localhost:98/html/index/router/index-router.js
+        // index-router.js 的跟路径是 /html/index/router，所以 parentUrl 路径就变成了 ../../html/index/module/main/home.vue
+        // import Home from '@/html/index/module/main/home.vue';
+        // pushRoute('/', Home);
+
+        // console.log('parentUrl:' + url);
+        // console.log('requestUrl:' + path);
+        console.log('rootUrl:' + resourceUrl);
+        // console.log('parentUrl:' + url + ' resourceUrl:' + resourceUrl);
+        
+        var type = this.parseType(resourceUrl);
+        var result = '';
+        if(type == 'js') {
+            result = 'var ' + name + ' = _require("' + resourceUrl + '")';
+        } else if(type == 'vue') {
+            result = 'var ' + name + ' = _require("' + resourceUrl + '")';
+        }
+
+        // if(this.loadImportToRequireFirst == true) {
+        //     console.log('loadImportToRequireFirst', result
+        //         , '\n url:' + url);
+        //     this.loadImportToRequireFirst = false;
+        // }
+            
+        return result;
     },
     parseType (url) {
         return url.substring(url.lastIndexOf('.') + 1);

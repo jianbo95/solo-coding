@@ -141,7 +141,9 @@ module.exports = {
         if(url.indexOf('.vue') == -1) {
             url = url + '.vue';
         }
-        url = url.replace('@/', '../../');
+        // 这里是根据 index-router.js 的特有路径判断出来的
+        // url = url.replace('@/', '../../../');
+        url = url.replace('@/', '/');
         return url;
     }
 };

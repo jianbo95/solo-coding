@@ -730,7 +730,7 @@ Template.prototype = {
     }
 
     // Slurp spaces and tabs before <%_ and after _%>
-    console.log(this.templateText);
+    // console.log(this.templateText);
     this.templateText =
       this.templateText.replace(/[ \t]*<%_/gm, '<%_').replace(/_%>[ \t]*/gm, '_%>');
 

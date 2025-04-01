@@ -35,41 +35,7 @@ projectConfig.pageData = pageData;
 projectConfig.frontPath = "D:\\www\\jianbo_plus\\h5\\lowcode-front-v2";
 projectConfig.version = new Date().getTime();
 
-var path = tool.getRootPath();
-var static = path + 'src/html/index/apps';
-var files = tool.readFiles(static);
-var data = {};
-var routerCode = '';
 
-for(var i in files) {
-    var file = files[i];
-    console.log('file', file);
-    if(file.indexOf('game.json') + 9 == file.length) {
-        // .json 结尾
-        continue;
-    }
-    if(file.indexOf('.json') + 5 == file.length) {
-        // .json 结尾
-        var json = tool.readFileBuffer(file);
-        var gameData = JSON.parse(json);
-        data[gameData.id] = gameData;
-
-        var routerFile = file.substring(0, file.indexOf('.json')) + '.vue';
-        // 自动路由
-        // 判断 routerFile 是否存在
-        if(tool.isFile(routerFile) == false) {
-            continue;
-        }
-
-        var path = tool.getRootPath();
-        var src = path + 'src/';
-        var relativePath = routerFile.replace(src, '');
-        var id = gameData.id;
-        var lineCode = 'import ' + id + ' from \'@/' + relativePath + '\';\n'
-            + "pushRoute('/game/"+ id +"', "+ id +");\n\n";
-        routerCode += lineCode;
-    }
-}
 
 // console.log(data);
 // console.log(routerCode);
@@ -213,6 +179,7 @@ var compile = {
         var code = tool.readFile(file);
         if(relativePath == 'html/index/router/index-router.js') {
             var start = '// router config start';
+            var routerCode = this.buildRouter();
             code = code.replace(start, start + '\n' + routerCode);
         }
         var url = relativePath;
@@ -282,14 +249,54 @@ var compile = {
         }
         // console.log(output);
         if(this.options.mergeJs == true && mergeJs == true) {
-            if(url.indexOf('.') != 0 && url.indexOf('/') != 0) {
-                url = './' + url;
-            }
+            url = '/' + url;
+            console.log('url:' + url);
+            // if(url.indexOf('.') != 0 && url.indexOf('/') != 0) {
+            //     url = './' + url;
+            // }
             codeMap[url] = output;
         } else {
             tool.writeFile(path + 'dist/' + relativePath, output);
         }
         return true;
+    },
+    buildRouter() {
+        var path = tool.getRootPath();
+        var static = path + 'src/html/index/apps';
+        var files = tool.readFiles(static);
+        var data = {};
+        var routerCode = '';
+
+        for(var i in files) {
+            var file = files[i];
+            // console.log('file', file);
+            if(file.indexOf('game.json') + 9 == file.length) {
+                // .json 结尾
+                continue;
+            }
+            if(file.indexOf('.json') + 5 == file.length) {
+                // .json 结尾
+                var json = tool.readFileBuffer(file);
+                var gameData = JSON.parse(json);
+                data[gameData.id] = gameData;
+
+                var routerFile = file.substring(0, file.indexOf('.json')) + '.vue';
+                // 自动路由
+                // 判断 routerFile 是否存在
+                if(tool.isFile(routerFile) == false) {
+                    continue;
+                }
+
+                var path = tool.getRootPath();
+                var src = path + 'src/';
+                var relativePath = routerFile.replace(src, '');
+                var id = gameData.id;
+                var lineCode = 'import ' + id + ' from \'@/' + relativePath + '\';\n'
+                    + "pushRoute('/game/"+ id +"', "+ id +");\n\n";
+                routerCode += lineCode;
+            }
+        }
+        return routerCode;
     },
     run() {
         this.cleanDist();
@@ -331,6 +338,7 @@ var compile = {
         // 输出codeMap
         if(this.options.mergeJs == true) {
             var result = 'LoadMerge(' + JSON.stringify(codeMap) + ')';
+            console.log('Object.keys()', Object.keys(codeMap));
             // var resultPath = path + 'dist/merge.js';
             var resultPath = path + 'dist/static/pure-merge.js';
             tool.writeFile(resultPath, result);
@@ -370,7 +378,7 @@ var compile = {
                 continue;
             }
             // console.log('fileType', fileType);
-            console.log(file);
+            // console.log('File:' + file);
             var compileJs = this.compileJs(file, fileType, relativePath, path, codeMap);
             if(compileJs == true) {
                 continue;

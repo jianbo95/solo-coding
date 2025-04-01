@@ -44,6 +44,7 @@ export default {
     },
     
     enterGame(id) {
+      // TODO 先获取游戏数据
       this.$router.push(`/game/${id}`)
     }
   }

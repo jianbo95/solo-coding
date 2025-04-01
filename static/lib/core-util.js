@@ -96,6 +96,30 @@ var CoreUtil = {
         // console.log('shortUrl', url);
         return url;
     },
+    absoluteUrl: function(url, parentUrl) {
+        // demo1
+        // actualUrl: ./static/lib/pure/httpVuePlus2.js
+        // parentUrl: null
+        // requestUrl:./static/lib/pure/httpVuePlus2.js
+        // absoluteUrl: /static/lib/pure/httpVuePlus2.js
+        
+        // demo2
+        // actualUrl: ./static/lib/pure/VueCodeWrap.js
+        // parentUrl: ./static/lib/pure/httpVuePlus2.js
+        // requestUrl: ./VueCodeWrap.js
+        // absoluteUrl: /static/lib/pure/VueCodeWrap.js
+
+        // demo3
+        // actualUrl: ./app/util/watermark.js
+        // parentUrl: ./app/Api.js
+        // requestUrl:./util/watermark.js
+        // absoluteUrl: /app/util/watermark.js
+        var actualUrl = this.actualUrl(url, parentUrl);
+        if(actualUrl.indexOf('./') == 0) {
+            return actualUrl.substring(1);
+        }
+        return actualUrl;
+    },
     shortUrl: function(url) {
         // 处理 URL 逻辑的辅助函数 
         var shortUrlByI = function(urls, i, j) {

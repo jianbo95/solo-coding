@@ -552,6 +552,7 @@ window.cmptMap = {};
 							responseText = vueCache[url];
 						}
 
+						// console.log('xhr._url', xhr._url);
 						var js = HttpVuePlus.load(responseText, xhr._url, name, (code) => {
 							// Logger.info('xhr', xhr);
 							httpVueLoader.UrlData[xhr.responseURL] = code;

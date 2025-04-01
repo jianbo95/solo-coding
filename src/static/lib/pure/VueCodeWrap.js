@@ -14,7 +14,8 @@ var CommonUtil = {};
 	};
     
 export default  {
-    // 入口
+    
+    // 当包含 <template edit> 代码时有效
     wrap(code, url, name) {
         if(code.indexOf('<template edit>') == -1) {
             // TODO cc-input 强制 edit

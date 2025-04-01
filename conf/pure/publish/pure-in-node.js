@@ -19,8 +19,8 @@ global.JavaApi = {
         }
         // 遍历path所有文件
         var files = tool.readFiles(path);        
-        console.log('path', path);
-        console.log('files', files);
+        // console.log('path', path);
+        // console.log('files', files);
         return JSON.stringify(files);
     },
     data: {},
@@ -31,7 +31,7 @@ global.JavaApi = {
         return this.data[key];
     },
     read: function(path) {
-        console.log('read path', path);
+        // console.log('read path', path);
         var fs = require('fs');
         var root = tool.getRootPath();
         if(path[0] == '@') {
