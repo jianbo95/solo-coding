@@ -57,7 +57,7 @@ var requireTool = {
     
         RequireCode[url] = code;
         var endTime = new Date();
-        console.log('编译时间：' + (endTime.getTime() - startTime.getTime()) + ' 毫秒' + url);
+        // console.log('编译时间：' + (endTime.getTime() - startTime.getTime()) + ' 毫秒' + url);
         logTime();
 
         return code;
@@ -128,6 +128,7 @@ var require = function(parentUrl, url) {
     // url = CoreUtil.actualUrl(url, parentUrl);
     // console.log('actualUrl: ' + url + '\nparentUrl: ' + parentUrl + '\nrequestUrl:'+ requestUrl);
     url = CoreUtil.absoluteUrl(url, parentUrl);
+    console.log('RootUrl', url);
     // console.log('absoluteUrl: ' + url + '\nparentUrl: ' + parentUrl + '\nrequestUrl:'+ requestUrl);
 
     if(url.indexOf('.vue') == url.length - 4) {

@@ -1,4 +1,494 @@
-var result = {
-    render: `with(this){return [_c('div',{staticClass:"login-page",staticStyle:{"height":"100%"}},[_c('cc-page',{attrs:{"loading":loading,"init":init}},[_c('div',{staticStyle:{"position":"absolute","left":"40px","top":"30px"}},[_c('img',{staticClass:"img-circle-none",attrs:{"alt":"image","src":"../../assets/images/logo-l.png"}})]),_v(" "),_c('div',{staticStyle:{"position":"absolute","left":"25%","top":"15%"}},[_c('div',{staticStyle:{"float":"left"}},[_c('div',[_c('h1',{staticStyle:{"font-weight":"100"}},[_v("众诚整车残值询报价系统")])]),_v(" "),_c('h3',[_v("\\r\\n                    欢迎使用 \\r\\n                    "),_c('strong',[_v("众诚整车残值询报价系统")])]),_v(" "),_c('div',[_c('el-button',{attrs:{"circle":"","icon":"el-icon-right","size":"mini"}})],1)]),_v(" "),_c('div',{staticStyle:{"float":"left","margin":"10px 0 0 20px","background":"#fff","width":"350px","color":"#000"}},[_c('div',{staticStyle:{"text-align":"center"}},[_c('h2',[_v(_s(loginTitle))])]),_v(" "),_c('div',{staticStyle:{"text-align":"center","font-size":"10px"}},[_v("\\r\\n                    欢迎登录整车残值询报价公共平台\\r\\n                ")]),_v(" "),_c('div',{staticStyle:{"padding":"20px"}},[(loginTitle=='用户登录')?_c('section',[_c('div',{staticStyle:{"margin-top":"10px"}},[_c('el-input',{attrs:{"placeholder":"请输入用户名","suffix-icon":"el-icon-user"},model:{value:(ruleForm.username),callback:function ($$v) {$set(ruleForm, "username", $$v)},expression:"ruleForm.username"}})],1),_v(" "),_c('div',{staticStyle:{"margin-top":"10px"}},[_c('el-input',{attrs:{"type":"password","placeholder":"请输入密码","suffix-icon":"el-icon-lock"},model:{value:(ruleForm.password),callback:function ($$v) {$set(ruleForm, "password", $$v)},expression:"ruleForm.password"}})],1),_v(" "),(loginMode == 'qw')?_c('div',{staticStyle:{"margin-top":"10px"}},[_c('el-row',[_c('el-col',{attrs:{"span":12}},[_c('cc-input',{attrs:{"size":"unset","prop":"mobileVerify","placeholder":"请输入验证码"},model:{value:(ruleForm.mobileVerify),callback:function ($$v) {$set(ruleForm, "mobileVerify", $$v)},expression:"ruleForm.mobileVerify"}})],1),_v(" "),_c('el-col',{staticStyle:{"text-align":"right"},attrs:{"span":12}},[(isSend)?_c('el-button',{staticStyle:{"width":"90%"},attrs:{"type":"warning","plain":""},on:{"click":sendMobileCode}},[_v("发送企微验证码")]):_e(),_v(" "),(!isSend)?_c('el-button',{staticStyle:{"width":"90%"},attrs:{"type":"warning","plain":""}},[_v(" "+_s(sendmsg)+" ")]):_e()],1)],1)],1):_e(),_v(" "),(loginMode == 'pic')?_c('div',{staticStyle:{"margin-top":"10px"}},[_c('el-row',[_c('el-col',{attrs:{"span":12}},[_c('el-input',{staticStyle:{"width":"100%"},attrs:{"placeholder":"请输入验证码"},model:{value:(verify),callback:function ($$v) {verify=$$v},expression:"verify"}})],1),_v(" "),_c('el-col',{attrs:{"span":12}},[_c('img',{staticStyle:{"border":"1px solid #999","width":"88%","float":"right","cursor":"pointer"},attrs:{"src":img},on:{"click":changeImg}})])],1)],1):_e(),_v(" "),_c('div',{staticStyle:{"margin-top":"10px"}},[_c('el-button',{staticStyle:{"width":"100%"},attrs:{"type":"primary","size":"medium"},on:{"click":function($event){return login()}}},[_v("登录")])],1)]):_e(),_v(" "),(loginTitle=='拍卖商用户登录')?_c('section',[_c('el-form',{ref:"ruleForm",attrs:{"model":ruleForm,"rules":rules,"label-position":"left"}},[_c('el-input',{attrs:{"placeholder":"请输入用户名","suffix-icon":"el-icon-user"},on:{"input":inputUserName},model:{value:(ruleForm.username),callback:function ($$v) {$set(ruleForm, "username", $$v)},expression:"ruleForm.username"}}),_v(" "),_c('el-input',{staticStyle:{"margin-top":"10px"},attrs:{"type":"password","placeholder":"请输入密码","suffix-icon":"el-icon-lock"},on:{"input":inputPassword},model:{value:(ruleForm.password),callback:function ($$v) {$set(ruleForm, "password", $$v)},expression:"ruleForm.password"}}),_v(" "),_c('el-row',{staticStyle:{"margin-top":"10px"}},[_c('cc-query-input',{attrs:{"disabled":"","pr20":false,"pl10":false,"size":"unset","span":18,"labelWidth":"0px","prop":"mobile","placeholder":"请获取手机号码"},model:{value:(ruleForm.mobile),callback:function ($$v) {$set(ruleForm, "mobile", $$v)},expression:"ruleForm.mobile"}}),_v(" "),_c('el-col',{staticStyle:{"text-align":"right"},attrs:{"span":6}},[_c('el-button',{attrs:{"type":"warning","plain":""},on:{"click":queryMobile}},[_v("获取")])],1)],1),_v(" "),_c('el-row',{staticStyle:{"margin-top":"10px"}},[_c('el-col',{attrs:{"span":12}},[_c('cc-query-input',{attrs:{"pr20":false,"pl10":false,"size":"unset","span":24,"labelWidth":"0px","prop":"mobileVerify","placeholder":"请输入验证码"},model:{value:(ruleForm.mobileVerify),callback:function ($$v) {$set(ruleForm, "mobileVerify", $$v)},expression:"ruleForm.mobileVerify"}})],1),_v(" "),_c('el-col',{staticStyle:{"text-align":"right"},attrs:{"span":12}},[(isSend)?_c('el-button',{staticStyle:{"width":"90%"},attrs:{"type":"warning","plain":""},on:{"click":sendMobileCode}},[_v("发送验证码")]):_e(),_v(" "),(!isSend)?_c('el-button',{staticStyle:{"width":"90%"},attrs:{"type":"warning","plain":""}},[_v(" "+_s(sendmsg)+" ")]):_e()],1)],1),_v(" "),_c('div',{staticStyle:{"margin-top":"10px"}},[_c('el-button',{staticStyle:{"width":"100%"},attrs:{"type":"primary","size":"medium"},on:{"click":function($event){return loginMobile()}}},[_v("登录")])],1)],1)],1):_e()])])])])],1)]}`,
-     staticRenderFns: []
+with (this) {
+  return [
+    _c(
+      'div',
+      { staticClass: 'login-page', staticStyle: { height: '100%' } },
+      [
+        _c('cc-page', { attrs: { loading: loading, init: init } }, [
+          _c(
+            'div',
+            {
+              staticStyle: { position: 'absolute', left: '40px', top: '30px' }
+            },
+            [
+              _c('img', {
+                staticClass: 'img-circle-none',
+                attrs: { alt: 'image', src: '../../assets/images/logo-l.png' }
+              })
+            ]
+          ),
+          _v(' '),
+          _c(
+            'div',
+            { staticStyle: { position: 'absolute', left: '25%', top: '15%' } },
+            [
+              _c('div', { staticStyle: { float: 'left' } }, [
+                _c('div', [
+                  _c('h1', { staticStyle: { 'font-weight': '100' } }, [
+                    _v('众诚整车残值询报价系统')
+                  ])
+                ]),
+                _v(' '),
+                _c('h3', [
+                  _v(
+                    '\\r\\n                    欢迎使用 \\r\\n                    '
+                  ),
+                  _c('strong', [_v('众诚整车残值询报价系统')])
+                ]),
+                _v(' '),
+                _c(
+                  'div',
+                  [
+                    _c('el-button', {
+                      attrs: { circle: '', icon: 'el-icon-right', size: 'mini' }
+                    })
+                  ],
+                  1
+                )
+              ]),
+              _v(' '),
+              _c(
+                'div',
+                {
+                  staticStyle: {
+                    float: 'left',
+                    margin: '10px 0 0 20px',
+                    background: '#fff',
+                    width: '350px',
+                    color: '#000'
+                  }
+                },
+                [
+                  _c('div', { staticStyle: { 'text-align': 'center' } }, [
+                    _c('h2', [_v(_s(loginTitle))])
+                  ]),
+                  _v(' '),
+                  _c(
+                    'div',
+                    {
+                      staticStyle: {
+                        'text-align': 'center',
+                        'font-size': '10px'
+                      }
+                    },
+                    [
+                      _v(
+                        '\\r\\n                    欢迎登录整车残值询报价公共平台\\r\\n                '
+                      )
+                    ]
+                  ),
+                  _v(' '),
+                  _c('div', { staticStyle: { padding: '20px' } }, [
+                    loginTitle == '用户登录'
+                      ? _c('section', [
+                          _c(
+                            'div',
+                            { staticStyle: { 'margin-top': '10px' } },
+                            [
+                              _c('el-input', {
+                                attrs: {
+                                  placeholder: '请输入用户名',
+                                  'suffix-icon': 'el-icon-user'
+                                },
+                                model: {
+                                  value: ruleForm.username,
+                                  callback: function ($$v) {
+                                    $set(ruleForm, 'username', $$v)
+                                  },
+                                  expression: 'ruleForm.username'
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _v(' '),
+                          _c(
+                            'div',
+                            { staticStyle: { 'margin-top': '10px' } },
+                            [
+                              _c('el-input', {
+                                attrs: {
+                                  type: 'password',
+                                  placeholder: '请输入密码',
+                                  'suffix-icon': 'el-icon-lock'
+                                },
+                                model: {
+                                  value: ruleForm.password,
+                                  callback: function ($$v) {
+                                    $set(ruleForm, 'password', $$v)
+                                  },
+                                  expression: 'ruleForm.password'
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _v(' '),
+                          loginMode == 'qw'
+                            ? _c(
+                                'div',
+                                { staticStyle: { 'margin-top': '10px' } },
+                                [
+                                  _c(
+                                    'el-row',
+                                    [
+                                      _c(
+                                        'el-col',
+                                        { attrs: { span: 12 } },
+                                        [
+                                          _c('cc-input', {
+                                            attrs: {
+                                              size: 'unset',
+                                              prop: 'mobileVerify',
+                                              placeholder: '请输入验证码'
+                                            },
+                                            model: {
+                                              value: ruleForm.mobileVerify,
+                                              callback: function ($$v) {
+                                                $set(
+                                                  ruleForm,
+                                                  'mobileVerify',
+                                                  $$v
+                                                )
+                                              },
+                                              expression:
+                                                'ruleForm.mobileVerify'
+                                            }
+                                          })
+                                        ],
+                                        1
+                                      ),
+                                      _v(' '),
+                                      _c(
+                                        'el-col',
+                                        {
+                                          staticStyle: {
+                                            'text-align': 'right'
+                                          },
+                                          attrs: { span: 12 }
+                                        },
+                                        [
+                                          isSend
+                                            ? _c(
+                                                'el-button',
+                                                {
+                                                  staticStyle: { width: '90%' },
+                                                  attrs: {
+                                                    type: 'warning',
+                                                    plain: ''
+                                                  },
+                                                  on: { click: sendMobileCode }
+                                                },
+                                                [_v('发送企微验证码')]
+                                              )
+                                            : _e(),
+                                          _v(' '),
+                                          !isSend
+                                            ? _c(
+                                                'el-button',
+                                                {
+                                                  staticStyle: { width: '90%' },
+                                                  attrs: {
+                                                    type: 'warning',
+                                                    plain: ''
+                                                  }
+                                                },
+                                                [_v(' ' + _s(sendmsg) + ' ')]
+                                              )
+                                            : _e()
+                                        ],
+                                        1
+                                      )
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
+                              )
+                            : _e(),
+                          _v(' '),
+                          loginMode == 'pic'
+                            ? _c(
+                                'div',
+                                { staticStyle: { 'margin-top': '10px' } },
+                                [
+                                  _c(
+                                    'el-row',
+                                    [
+                                      _c(
+                                        'el-col',
+                                        { attrs: { span: 12 } },
+                                        [
+                                          _c('el-input', {
+                                            staticStyle: { width: '100%' },
+                                            attrs: {
+                                              placeholder: '请输入验证码'
+                                            },
+                                            model: {
+                                              value: verify,
+                                              callback: function ($$v) {
+                                                verify = $$v
+                                              },
+                                              expression: 'verify'
+                                            }
+                                          })
+                                        ],
+                                        1
+                                      ),
+                                      _v(' '),
+                                      _c('el-col', { attrs: { span: 12 } }, [
+                                        _c('img', {
+                                          staticStyle: {
+                                            border: '1px solid #999',
+                                            width: '88%',
+                                            float: 'right',
+                                            cursor: 'pointer'
+                                          },
+                                          attrs: { src: img },
+                                          on: { click: changeImg }
+                                        })
+                                      ])
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
+                              )
+                            : _e(),
+                          _v(' '),
+                          _c(
+                            'div',
+                            { staticStyle: { 'margin-top': '10px' } },
+                            [
+                              _c(
+                                'el-button',
+                                {
+                                  staticStyle: { width: '100%' },
+                                  attrs: { type: 'primary', size: 'medium' },
+                                  on: {
+                                    click: function ($event) {
+                                      return login()
+                                    }
+                                  }
+                                },
+                                [_v('登录')]
+                              )
+                            ],
+                            1
+                          )
+                        ])
+                      : _e(),
+                    _v(' '),
+                    loginTitle == '拍卖商用户登录'
+                      ? _c(
+                          'section',
+                          [
+                            _c(
+                              'el-form',
+                              {
+                                ref: 'ruleForm',
+                                attrs: {
+                                  model: ruleForm,
+                                  rules: rules,
+                                  'label-position': 'left'
+                                }
+                              },
+                              [
+                                _c('el-input', {
+                                  attrs: {
+                                    placeholder: '请输入用户名',
+                                    'suffix-icon': 'el-icon-user'
+                                  },
+                                  on: { input: inputUserName },
+                                  model: {
+                                    value: ruleForm.username,
+                                    callback: function ($$v) {
+                                      $set(ruleForm, 'username', $$v)
+                                    },
+                                    expression: 'ruleForm.username'
+                                  }
+                                }),
+                                _v(' '),
+                                _c('el-input', {
+                                  staticStyle: { 'margin-top': '10px' },
+                                  attrs: {
+                                    type: 'password',
+                                    placeholder: '请输入密码',
+                                    'suffix-icon': 'el-icon-lock'
+                                  },
+                                  on: { input: inputPassword },
+                                  model: {
+                                    value: ruleForm.password,
+                                    callback: function ($$v) {
+                                      $set(ruleForm, 'password', $$v)
+                                    },
+                                    expression: 'ruleForm.password'
+                                  }
+                                }),
+                                _v(' '),
+                                _c(
+                                  'el-row',
+                                  { staticStyle: { 'margin-top': '10px' } },
+                                  [
+                                    _c('cc-query-input', {
+                                      attrs: {
+                                        disabled: '',
+                                        pr20: false,
+                                        pl10: false,
+                                        size: 'unset',
+                                        span: 18,
+                                        labelWidth: '0px',
+                                        prop: 'mobile',
+                                        placeholder: '请获取手机号码'
+                                      },
+                                      model: {
+                                        value: ruleForm.mobile,
+                                        callback: function ($$v) {
+                                          $set(ruleForm, 'mobile', $$v)
+                                        },
+                                        expression: 'ruleForm.mobile'
+                                      }
+                                    }),
+                                    _v(' '),
+                                    _c(
+                                      'el-col',
+                                      {
+                                        staticStyle: { 'text-align': 'right' },
+                                        attrs: { span: 6 }
+                                      },
+                                      [
+                                        _c(
+                                          'el-button',
+                                          {
+                                            attrs: {
+                                              type: 'warning',
+                                              plain: ''
+                                            },
+                                            on: { click: queryMobile }
+                                          },
+                                          [_v('获取')]
+                                        )
+                                      ],
+                                      1
+                                    )
+                                  ],
+                                  1
+                                ),
+                                _v(' '),
+                                _c(
+                                  'el-row',
+                                  { staticStyle: { 'margin-top': '10px' } },
+                                  [
+                                    _c(
+                                      'el-col',
+                                      { attrs: { span: 12 } },
+                                      [
+                                        _c('cc-query-input', {
+                                          attrs: {
+                                            pr20: false,
+                                            pl10: false,
+                                            size: 'unset',
+                                            span: 24,
+                                            labelWidth: '0px',
+                                            prop: 'mobileVerify',
+                                            placeholder: '请输入验证码'
+                                          },
+                                          model: {
+                                            value: ruleForm.mobileVerify,
+                                            callback: function ($$v) {
+                                              $set(
+                                                ruleForm,
+                                                'mobileVerify',
+                                                $$v
+                                              )
+                                            },
+                                            expression: 'ruleForm.mobileVerify'
+                                          }
+                                        })
+                                      ],
+                                      1
+                                    ),
+                                    _v(' '),
+                                    _c(
+                                      'el-col',
+                                      {
+                                        staticStyle: { 'text-align': 'right' },
+                                        attrs: { span: 12 }
+                                      },
+                                      [
+                                        isSend
+                                          ? _c(
+                                              'el-button',
+                                              {
+                                                staticStyle: { width: '90%' },
+                                                attrs: {
+                                                  type: 'warning',
+                                                  plain: ''
+                                                },
+                                                on: { click: sendMobileCode }
+                                              },
+                                              [_v('发送验证码')]
+                                            )
+                                          : _e(),
+                                        _v(' '),
+                                        !isSend
+                                          ? _c(
+                                              'el-button',
+                                              {
+                                                staticStyle: { width: '90%' },
+                                                attrs: {
+                                                  type: 'warning',
+                                                  plain: ''
+                                                }
+                                              },
+                                              [_v(' ' + _s(sendmsg) + ' ')]
+                                            )
+                                          : _e()
+                                      ],
+                                      1
+                                    )
+                                  ],
+                                  1
+                                ),
+                                _v(' '),
+                                _c(
+                                  'div',
+                                  { staticStyle: { 'margin-top': '10px' } },
+                                  [
+                                    _c(
+                                      'el-button',
+                                      {
+                                        staticStyle: { width: '100%' },
+                                        attrs: {
+                                          type: 'primary',
+                                          size: 'medium'
+                                        },
+                                        on: {
+                                          click: function ($event) {
+                                            return loginMobile()
+                                          }
+                                        }
+                                      },
+                                      [_v('登录')]
+                                    )
+                                  ],
+                                  1
+                                )
+                              ],
+                              1
+                            )
+                          ],
+                          1
+                        )
+                      : _e()
+                  ])
+                ]
+              )
+            ]
+          )
+        ])
+      ],
+      1
+    )
+  ]
 }

@@ -1,5 +1,7 @@
 <!-- Start require-js mode auto code -->
+<% if (runMode == 'dev') { %>
 <script type="text/javascript" src="<%= root %>static/lib/pure-lib/babel.min.js"></script>
+<% } %> 
 <!-- <script>
     Babel.registerPreset('es2015', {
       targets: {
@@ -9,11 +11,13 @@
 </script> -->
 <script type="text/javascript" src="<%= root %>static/lib/core-util.js"></script>
 <script type="text/javascript" src="<%= root %>static/lib/pure-lib/require.js"></script>
-<script type="text/javascript" src="<%= root %>static/merge.js?version=<%= version %>"></script>
+<% if (runMode == 'prd') { %>
+  <script type="text/javascript" src="<%= root %>static/merge.js?version=<%= version %>"></script>
+<% } %>
 <script type="text/javascript" src="<%= root %>static/pure-merge.js"></script>
 <script type="text/javascript" src="<%= root %>static/lib/pure-lib/less.min.js"></script>
 <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/less@4.1.1/dist/less.min.js"></script> -->
-<script type="text/babel">
+<script>
     
     logTime();
 

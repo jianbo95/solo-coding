@@ -20,10 +20,7 @@ import V from '../function/V.js';
 import B from '../function/B.js';
 import L from '../function/L.js';
 import P from '../function/P.js';
-// import CrudService from '../service/CrudService.js';
-// import Crud from '../service/Crud.js';
 import Counter from '../util/Counter.js';
-// import BinWrap from '../util/data/BinWrap.js';
 import * as NodeModule from '../NodeModule.js';
 import StoreFactory from '../core/store/store-factory.js';
 
@@ -37,17 +34,12 @@ window.DataInit = DataInit;
 window.NumberUtil = NumberUtil;
 window.StringUtil = StringUtil;
 window.CommonUtil = CommonUtil;
-// window.Crypto = Crypto;
-// window.loginRule = loginRule;
 window.R = R;
 window.V = V;
 window.B = B;
 window.L = L;
 window.P = P;
-// window.Crud = Crud;
-// window.CrudService = CrudService;
 window.Counter = Counter;
-// window.BinWrap = BinWrap;
 window.NodeModule = NodeModule;
 
 window.Json = {

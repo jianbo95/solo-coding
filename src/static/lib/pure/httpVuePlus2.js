@@ -344,7 +344,7 @@ var HttpVuePlus = {
 
         // console.log('parentUrl:' + url);
         // console.log('requestUrl:' + path);
-        console.log('rootUrl:' + resourceUrl);
+        // console.log('rootUrl:' + resourceUrl);
         // console.log('parentUrl:' + url + ' resourceUrl:' + resourceUrl);
         
         var type = this.parseType(resourceUrl);

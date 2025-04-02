@@ -2,7 +2,6 @@ import UI from './util/UI.js';
 import Store from './data/Store.js';
 import Dict from './data/Dict.js';
 import SessionUtil from './util/SessionUtil.js';
-import watermark from './util/watermark.js';
 import Core from './util/Core.js';
 
 /**
@@ -64,13 +63,6 @@ var Api = {
             } else {
                 var userInfo = result.data;
 				var userData = userInfo.userData;
-                
-                // var sysData = userInfo.sysData;
-                watermark.createWM(
-                    userInfo.name, // 传用户名
-                    // 'mobile'
-                );
-
                 Store.commit('setUsername', userInfo.name);
                 Core.put('opinions', userData.opinions)
                 Store.commit('setLogin', true);

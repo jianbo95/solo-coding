@@ -45,9 +45,7 @@ export default {
         RightPanel
     },
     data() {
-        return {
-            'test': 'jianbo1011'
-        }
+        return {}
     }
 }
 </script>

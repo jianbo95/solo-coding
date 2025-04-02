@@ -11845,7 +11845,7 @@
       render: code.render,
       staticRenderFns: code.staticRenderFns
     }
-    console.log('compileResult', result);
+    // console.log('compileResult', result);
     return result;
   });
 
@@ -11963,6 +11963,7 @@
 
   Vue.compile = compileToFunctions;
   Vue.compileToString = compile;
+  Vue.stringToFunction = createFunction;
 
   return Vue;
 
