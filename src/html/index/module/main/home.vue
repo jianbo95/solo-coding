@@ -28,6 +28,7 @@
                 <right-panel></right-panel>
             </div>
         </div>
+        <cc-footer></cc-footer>
     </div>
 </template>
 
@@ -36,13 +37,15 @@
 import SideMenu from '../../component/layout/side-menu.vue';
 import RightPanel from '../../component/layout/right-panel.vue';
 import ArticleList from '../../component/article/article-list.vue';
+import footer from '../../component/layout/footer.vue';
 
 export default {
     // 注册组件
     components: {
         ArticleList,
         SideMenu,
-        RightPanel
+        RightPanel,
+        'cc-footer': footer
     },
     data() {
         return {}

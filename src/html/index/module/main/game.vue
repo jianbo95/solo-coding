@@ -60,6 +60,7 @@ export default {
   // 增加移动设备宽度100%
   @media screen and (max-width: 768px) {
     padding: 10px !important;
+    // height: 100%;
     width: calc(100% - 20px) !important;
   }
   

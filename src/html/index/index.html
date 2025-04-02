@@ -138,12 +138,12 @@
 </html>
 
 <script>
-  var modeuls = [
+  var modules = [
     'markdownit',
     'hljs',
     'loadHighlightCss', 'elementCss'];
   console.log('load start');
-  ModuleDefine.load(modeuls, function() {
-      console.log('load finish');
+  ModuleDefine.load(modules, function() {
+      console.log('load module finish', modules);
   });
 </script>

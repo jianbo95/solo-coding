@@ -1,5 +1,5 @@
 <template>
-    <footer class="footer" v-if="$route.path === '/'">
+    <footer class="footer">
         <div class="footer-content">
             <span class="copyright">
                 © 2025 Solo Coding. All rights reserved.

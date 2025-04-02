@@ -1,7 +1,15 @@
 <!-- Start require-js mode auto code -->
 <% if (runMode == 'dev') { %>
 <script type="text/javascript" src="<%= root %>static/lib/pure-lib/babel.min.js"></script>
+<script>
+  console.log('RequireJs run mode is dev.');
+</script>
+<% } else { %> 
+<script>
+  console.log('RequireJs run mode is prd.');
+</script>
 <% } %> 
+
 <!-- <script>
     Babel.registerPreset('es2015', {
       targets: {

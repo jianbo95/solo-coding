@@ -1,25 +1,22 @@
 <template>
     <div class="app-container" v-if="init">
         <cc-header></cc-header>
-        <div style="width:100%;height:100%;overflow-y: auto;">
+        <div class="app-main">
             <div class="main-content">
                 <keep-alive exclude="article">
                     <router-view></router-view>
                 </keep-alive>
             </div>
         </div>
-        <cc-footer></cc-footer>
     </div>
 </template>
 
 <script>
-import footer from './component/layout/footer.vue';
 import header from './component/layout/header.vue';
 import api from './util/api.js';
 
 export default {
     components: {
-        'cc-footer': footer,
         'cc-header': header,
     },
     data() {
@@ -57,31 +54,35 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
+
 .app-container {
     height: 100%;
     width: calc(100% - 0px);
     overflow: hidden;
+    .app-main{
+        width:100%;
+        height:calc(100% - 50px);
+        margin-top:60px;
+        overflow-y: auto;
+    }
     .main-content {
         height: 100%;
-        
-        @media screen and (max-width: 768px) {
-            margin: 40px auto 0;
-        }
-        @media screen and (min-width: 768.00001px) {
-            margin: 60px auto 0;
-        }
         width: 100%;
         padding: 0px;
-    }
-}
-
-@media screen and (max-width: 1300px) {
-    .app-container {
-        .main-content {
+        
+        // @media screen and (max-width: 768px) {
+        //     margin: 40px auto 0;
+        // }
+        // @media screen and (min-width: 768.00001px) {
+        //     margin: 60px auto 0;
+        // }
+        @media screen and (max-width: 1300px) {
             width: 100%;
         }
     }
+    
 }
+
 </style>
   
