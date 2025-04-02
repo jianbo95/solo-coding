@@ -108,7 +108,7 @@
   <script type="text/javascript" src="./static/lib/util/module-define.js"></script>
   <script type="text/javascript" src="./static/lib/ie-fix/loadjs.js?v=1"></script>
 
-  
+  <!-- <script src="https://pss.bdstatic.com/static/superman/js/lib/jquery-1-edb203c114.10.2.js"></script> -->
   <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script> -->
   <script type="text/javascript" src="./static/lib/jquery/zepto.min.js"></script>
 
@@ -141,7 +141,9 @@
   var modules = [
     'markdownit',
     'hljs',
-    'loadHighlightCss', 'elementCss'];
+    'loadHighlightCss', 
+    'elementCss'
+  ];
   console.log('load start');
   ModuleDefine.load(modules, function() {
       console.log('load module finish', modules);

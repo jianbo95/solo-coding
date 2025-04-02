@@ -1,7 +1,5 @@
 import md5 from '../../../app/util/md5.js'
 
-window.cmptMap = {};
-
 /**
  * 加载vue文件为组件
  */
