@@ -102,6 +102,10 @@ module.exports = {
         return false;
     },
     readFileBuffer(src) {
+        if(src == null) {
+            console.error('参数不能为空');
+            return;
+        }
         const data = fs.readFileSync(src); 
         return data;
     },
