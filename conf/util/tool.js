@@ -113,6 +113,10 @@ module.exports = {
         const data = fs.readFileSync(src, {encoding:'utf8', flag:'r'}); 
         return data;
     },
+    readFileString(src) {
+        const data = fs.readFileSync(src, {encoding:'utf8', flag:'r'}); 
+        return data + '';
+    },
     readFiles (path, arr) {
         if(arr == null) {
             arr = [];

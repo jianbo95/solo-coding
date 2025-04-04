@@ -503,6 +503,56 @@ import md5 from '../../../app/util/md5.js'
 	httpVueLoader.httpRequest = function (url, name) {
 
 		// console.log('requestUrl', url);
+		if(window.FileMap[url] != null) {
+			// console.log('from file map', url);
+			if(Merge[url] == null) {
+				var codeFileUrl = window.FileMap[url];
+				// 同步加载jsFile
+				CoreUtil.requestSync(codeFileUrl, function(xhr, content) {
+					console.log('load MergeJsFile', codeFileUrl);
+					eval(content);
+				});
+			}
+
+			if(Merge[url] != null) {
+				return new Promise(function (resolve, reject) {
+					var responseText = Merge[url];
+					HttpVuePlus.load(responseText, url, name, (code) => {
+						// Logger.info('xhr', xhr);
+						var xhr = {
+							responseURL: url	
+						};
+						httpVueLoader.UrlData[xhr.responseURL] = code;
+						httpVueLoader.UrlMap[url] = xhr;
+						
+						resolve({
+							code: code, 
+							xhr: xhr
+						});
+						// vueCache[url] = js; // 延后缓存
+					});
+				});
+			}
+		}
+		// if(Merge[url] != null) {
+		// 	var responseText = Merge[url];
+		// 	return new Promise(function (resolve, reject) {
+		// 		HttpVuePlus.load(responseText, url, name, (code) => {
+		// 			// Logger.info('xhr', xhr);
+		// 			var xhr = {
+		// 				responseURL: url	
+		// 			};
+		// 			httpVueLoader.UrlData[xhr.responseURL] = code;
+		// 			httpVueLoader.UrlMap[url] = xhr;
+					
+		// 			resolve({
+		// 				code: code, 
+		// 				xhr: xhr
+		// 			});
+		// 			// vueCache[url] = js; // 延后缓存
+		// 		});
+		// 	});
+		// }
 
 		// 存在缓存的情况
 		if(vueCache[url] != null) {

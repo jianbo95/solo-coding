@@ -12,35 +12,57 @@ require('./pure-in-node.js');
 const pageData = require("../../util/page-data.js");
 const pageUtil = require('../../util/page-util');
 const getTimeVersion = require('./getVersion/getTimeVersion.js');
-
+const matchOutput = require('./util/match-output.js');
 // console.log('apiConfig', apiConfig);
 // compileHtml html/test/test.html
 // var configs = pageUtil.getAbsoluteConfig();
 // console.log(configs);return;
 
-var compile = {
+var Compile = {
     pageConfigMap: null,
     lastVersion: null,
     currentVersion: null,
     diffVersion: null,
     compileFileSize: 0,
     skipFileSize: 0,
-
+    merge: [
+        '**.js',
+        '**.vue'
+    ],
     mergeConfig: {
         // 路径匹配
-        '/': []
+        '/static/merge.js': [
+            '/app/**',
+            '/static/lib/pure/*',
+            '/main.js'
+        ],
+        "/html/index/apps/${1}/${1}.js": [
+            '/html/index/apps/(*)/**'
+        ],
+        '/html/index.js': [
+            '!/html/index/article/**',
+            '/html/index/**'
+        ],
+        
     },
 
     options: {
-        mergeJs: false,
+        /**
+         * 构建完成后是否删除cache目录
+         */
+        cleanCache: false,
+        mergeJs: true,
         minifyJs: true,
         compileJs: true,
     },
-    run() {
+    run(compileOption) {
+        this.options = compileOption;
+        this.initCache();
         this.initData();
         this.loadVersion();
-        // this.handleApi();
-        // console.log('handleApi finish');
+        this.cleanDist();
+        this.handleApi();
+        console.log('handleApi finish');
         this.handleSrc();
         console.log('handleSrc finish');
         this.handleCache(); 
@@ -52,9 +74,94 @@ var compile = {
         this.saveVersion();
         console.log('跳过文件数量', this.skipFileSize);
         console.log('编译文件数量', this.compileFileSize);
+        this.cleanCache();
+    },
+    cleanDist() {
+        var path = tool.getRootPath();
+        tool.removeDir(path + 'dist');
+    },
+    initCache() {
+        this.cleanCache();
+    },
+    cleanCache() {
+        if(this.options.cleanCache == true) {
+            var path = tool.getRootPath();
+            tool.removeDir(path + 'cache');
+        }
     },
     handleCache: function() {
+        // 读取cache目录所有文件
+        var cache = tool.getRootPath() + 'cache';
+        var dist = tool.getRootPath() + 'dist';
+        var files = tool.readFiles(cache);
+        var configMap = this.mergeConfig;
+        var outputMap = {};
+        var copyList = [];
+        for(var file of files) {
+            var relativePath = file.replace(cache, '');
+            // console.log(relativePath, this.merge, output);
+            if(this.options.mergeJs == false) {
+                continue;
+            }
+            var matchMergeResult = matchOutput.outputByMatchArray(relativePath, this.merge, 'merge');
+            console.log('matchMergeResult' + relativePath, matchMergeResult);
+            if(matchMergeResult.match == false) {
+                continue;
+            }
+            
+            // console.log('file', relativePath); 
+            // 判断该文件是否需要合并
+            for(var output in configMap) {
+                var matchArray = configMap[output];
+                var matchResult = matchOutput.outputByMatchArray(relativePath, matchArray, output);
+                // console.log('matchResult', matchResult);
+                if(matchResult.match == true) {
+                    // 匹配成功，需要合并
+                    var outputPath = matchResult.output;
+                    if(outputMap[outputPath] == null) {
+                        outputMap[outputPath] = [];
+                    }
+                    outputMap[outputPath].push(relativePath);
+                    break; // 只能成功匹配一次
+                } else if(matchResult.match == false) {
+                    if(matchResult.type == 'reverse') {
+                        break; // 只能匹配一次反向
+                    }
+                }
+            }
+        }
+        console.log('outputMap', outputMap);
 
+        var fileMap = {};
+        for(var output in outputMap) {
+            var fileList = outputMap[output];
+            var codeMap = {};
+            for(var relativePath of fileList) {
+                var file = cache + relativePath;
+                var code = tool.readFileString(file); 
+                codeMap[relativePath] = code;
+                fileMap[relativePath] = output;
+            }
+            var codeMapJson = JSON.stringify(codeMap);
+            // 调用 window.LoadMerge 函数
+            var outputCode = 'window.LoadMerge('+ codeMapJson +');';
+            var outputPath = dist + output;
+            console.log('outputPath', outputPath);
+            tool.writeFileBuffer(outputPath, outputCode);
+        }
+
+        for(var file of files) {
+            var relativePath = file.replace(cache, '');
+            if(fileMap[relativePath] == null) {
+                var file = cache + relativePath;
+                var code = tool.readFileBuffer(file);
+                tool.writeFileBuffer(dist + relativePath, code);
+            }
+        }
+
+        console.log('fileMap', fileMap);
+        var fileMapCode = 'window.FileMap = '+ JSON.stringify(fileMap, true, '  ');
+        tool.writeFileBuffer(dist + '/file-map.js', fileMapCode);
     },
     initData: function() {
         var pageConfigMap = {};
@@ -156,8 +263,15 @@ var compile = {
         }
         var pageConfigMap = this.pageConfigMap;
         var pageConfig = pageConfigMap[relativePath];
+        var isBuild = false;
+        var buildPageConfig = pageConfigUtil.buildPageConfigByUrl('/' + relativePath);
+        
         if(pageConfig == null) {
-            pageConfig = pageConfigUtil.buildPageConfigByUrl('/' + relativePath);
+            pageConfig = buildPageConfig;
+        } else {
+            if(pageConfig.output == null) {
+                pageConfig.output = buildPageConfig.output;
+            }
         }
 
         var code = tool.readFileBuffer(file);
@@ -166,6 +280,10 @@ var compile = {
         var outputPath = relativePath.substring(relativePath.lastIndexOf('/'));
         if(pageConfigMap[relativePath] != null) {
             outputPath = pageConfigMap[relativePath].output;
+        }
+        if(outputPath == null) {
+            console.log('pageConfigMap', pageConfigMap);
+            throw new Error('pageConfig output is null,isBuild' + isBuild);
         }
         
         if(outputPath == '/ie.html') {
@@ -417,4 +535,5 @@ var compile = {
     }
 };
 
-compile.run();
+// compile.run();
+module.exports = Compile;

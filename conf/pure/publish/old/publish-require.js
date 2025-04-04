@@ -1,13 +1,13 @@
 // require('./pre.js');
-const tool = require('../../util/tool.js');
-const Babel = require('../compile/babel.min.js');
-const Uglify = require('../compile/terser.min.js');
-const ejs = require('../compile/ejs.js');
-const projectConfig = require('../../config/project-config.js');
-const pageConfig = require('../../config/page-config.js');
-const pageConfigUtil = require('../../../conf/function/page-config-util.js');
-const apiConfig = require('../../../conf/pure/conf/api-config.js');
-require('./pure-in-node.js');
+const tool = require('../../../util/tool.js');
+const Babel = require('../../compile/babel.min.js');
+const Uglify = require('../../compile/terser.min.js');
+const ejs = require('../../compile/ejs.js');
+const projectConfig = require('../../../config/project-config.js');
+const pageConfig = require('../../../config/page-config.js');
+const pageConfigUtil = require('../../../function/page-config-util.js');
+const apiConfig = require('../../conf/api-config.js');
+require('../pure-in-node.js');
 
 console.log('apiConfig', apiConfig);
 
@@ -19,8 +19,8 @@ for(var i in pageConfig) {
     pageConfigMap[requestUrl] = item;
 }
 
-const pageData = require("../../util/page-data.js");
-const pageUtil = require('../../util/page-util');
+const pageData = require("../../../util/page-data.js");
+const pageUtil = require('../../../util/page-util.js');
 
 // compileHtml html/test/test.html
 var configs = pageUtil.getAbsoluteConfig();

@@ -4,6 +4,31 @@ var requireUrls = {};
 var RequireCode = {};
 
 var requireTool = {
+    requestVueCode: function(url) {
+        if(window.CompileMode == 'prd') {
+            // console.log('will from merge', url);
+            if(Merge[url] != null) {
+                // console.log('from merge', url);
+                var code = Merge[url];
+                return code;
+            }
+            if(window.FileMap[url] != null) {
+                // console.log('from file map', url);
+                var codeFileUrl = window.FileMap[url];
+                // 同步加载jsFile
+                CoreUtil.requestSync(codeFileUrl, function(xhr, content) {
+                    console.log('load MergeJsFile', codeFileUrl);
+                    eval(content);
+                });
+
+                if(Merge[url] != null) {
+                    // console.log('from merge', url);
+                    var code = Merge[url];
+                    return code;
+                }
+            }
+        }
+    },
     requestCode: function(url) {
         
         // 判断是否生产模式
@@ -14,6 +39,21 @@ var requireTool = {
                 // console.log('from merge', url);
                 var code = Merge[url];
                 return code;
+            }
+            if(window.FileMap[url] != null) {
+                // console.log('from file map', url);
+                var codeFileUrl = window.FileMap[url];
+                // 同步加载jsFile
+                CoreUtil.requestSync(codeFileUrl, function(xhr, content) {
+                    console.log('load MergeJsFile', codeFileUrl);
+                    eval(content);
+                });
+
+                if(Merge[url] != null) {
+                    // console.log('from merge', url);
+                    var code = Merge[url];
+                    return code;
+                }
             }
         }
         
@@ -35,6 +75,7 @@ var requireTool = {
         
         // 编译
         var startTime = new Date();
+        console.log('没有编译过，开始编译：' + url);
         var output = CoreUtil.babel(responseText);
         output = output;
     
@@ -134,6 +175,7 @@ var require = function(parentUrl, url) {
     if(url.indexOf('.vue') == url.length - 4) {
         // console.log('require vue', url);
         // console.log(window);
+        // requireTool.requestVueCode(url); // vue 文件也要提前加载，部分vue文件能加载，但不能在这里
         return window.loader(url);
     }
 
@@ -169,5 +211,6 @@ var require = function(parentUrl, url) {
 };
 
 window.require = require;
+window.requireTool = requireTool;
 window._require = require;
 })();
